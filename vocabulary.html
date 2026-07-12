@@ -36,7 +36,7 @@
 
 <!-- ═══ 0b. בחירת נושא ═══════════════════════════════════════════ -->
 <div id="viewTopics" class="reading-wrap" style="max-width:1200px">
-    <button class="back-link" id="topicsBackBtn" onclick="window.location.href='index.html?level=elementary'">→ חזור לדף הבית</button>
+    <button class="back-link" id="topicsBackBtn" onclick="window.location.href='app.html?level=elementary'">→ חזור לדף הבית</button>
     <h2 class="section-title" style="font-size:1.3rem" id="levelTitle">אוצר מילים — נושאים</h2>
     <div id="vocabSummary"></div>
     <div class="topic-tiles-grid" id="stageCards"></div>
@@ -2458,7 +2458,7 @@ window.onBackspace = function() {
     });
     if (!cur) return;
     if (cur === 'viewTopics') {
-        window.location.href = 'index.html?level=elementary';
+        window.location.href = 'app.html?level=elementary';
     } else if (cur === 'viewLearn' || cur === 'viewIntro' || cur === 'viewQuiz') {
         backToSelect();
     } else if (cur === 'viewScore') {
