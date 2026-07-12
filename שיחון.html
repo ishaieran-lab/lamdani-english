@@ -708,7 +708,7 @@ if (location.search.indexOf('direct=1') !== -1) {
     openLevel(1);
     var btn = document.getElementById('topicsBackBtn');
     btn.textContent = '→ חזור לפרקים';
-    btn.onclick = function() { window.location.href = 'index.html?level=elementary'; };
+    btn.onclick = function() { window.location.href = 'app.html?level=elementary'; };
 } else {
     showView('viewSelect');
 }
@@ -721,7 +721,7 @@ window.onBackspace = function() {
     });
     if (!cur) return;
     if (cur === 'viewTopics') {
-        if (location.search.indexOf('direct=1') !== -1) window.location.href = 'index.html?level=elementary';
+        if (location.search.indexOf('direct=1') !== -1) window.location.href = 'app.html?level=elementary';
         else showView('viewSelect');
     } else if (cur === 'viewCards') {
         showView('viewTopics');
