@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אודות — למדני אנגלית</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .about-wrap {
+            max-width: 720px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+        .about-hero {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .about-hero h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+        }
+        .about-hero p {
+            color: var(--gray-txt);
+            font-size: 1.05rem;
+        }
+        .about-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--gray-bdr);
+            padding: 1.75rem 2rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+        .about-card h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.65rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .about-card p, .about-card li {
+            color: #374151;
+            font-size: 0.97rem;
+            line-height: 1.75;
+        }
+        .about-card ul {
+            padding-right: 1.25rem;
+            margin-top: 0.5rem;
+        }
+        .about-card li { margin-bottom: 0.3rem; }
+        .about-modules {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .about-module {
+            background: var(--blue-bg);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+        .about-module-title {
+            font-weight: 700;
+            color: var(--blue-dark);
+            font-size: 0.95rem;
+        }
+        .about-module-desc {
+            color: var(--gray-txt);
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+        }
+    </style>
+    <!-- Google Analytics — החלף G-XXXXXXXXXX במזהה שלך -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+</head>
+<body>
+
+<nav class="toolbar">
+    <a href="index.html" class="toolbar-brand">
+        <span class="accent">Lamdani</span> English
+    </a>
+    <div class="toolbar-nav">
+        <div class="nav-menu-wrap">
+            <button class="nav-icon-btn" id="navMenuBtn" onclick="toggleNavMenu()">
+                <img src="images/ui/menu.png" class="nav-icon-img" alt="תפריט">
+            </button>
+            <div class="nav-menu-panel" id="navMenuPanel">
+                <a href="index.html" class="nav-menu-item">דף הבית</a>
+                <a href="אודות.html" class="nav-menu-item">אודות</a>
+                <a href="צור קשר.html" class="nav-menu-item">צור קשר</a>
+            </div>
+        </div>
+        <a href="index.html" class="nav-icon-btn">
+            <img src="images/ui/home.png" class="nav-icon-img" alt="בית">
+        </a>
+        <div id="userNavArea" style="position:relative"></div>
+    </div>
+</nav>
+
+<div class="about-wrap">
+    <div class="about-hero">
+        <h1><span class="accent">Lamdani</span> English</h1>
+        <p>פלטפורמת לימוד אנגלית אינטראקטיבית לדוברי עברית</p>
+    </div>
+
+    <div class="about-card">
+        <h2>מה זה למדני אנגלית?</h2>
+        <p>
+            למדני אנגלית היא פלטפורמה ללימוד עצמי של שפה אנגלית, בנויה בעברית ומותאמת לדוברי עברית.
+            האתר מציע מסלול לימוד מובנה — מרמה בסיסית ועד מתקדמת — עם תרגול אינטראקטיבי, בוחנים ומעקב התקדמות אישי.
+        </p>
+    </div>
+
+    <div class="about-card">
+        <h2>מה לומדים כאן?</h2>
+        <div class="about-modules">
+            <div class="about-module">
+                <div class="about-module-title">אוצר מילים</div>
+                <div class="about-module-desc">מילים לפי נושאים עם בוחן כתיבה</div>
+            </div>
+            <div class="about-module">
+                <div class="about-module-title">דקדוק</div>
+                <div class="about-module-desc">חוקים, תרגול ומבחנים שלב אחר שלב</div>
+            </div>
+            <div class="about-module">
+                <div class="about-module-title">שיחון</div>
+                <div class="about-module-desc">משפטים שימושיים לשיחה יומיומית</div>
+            </div>
+            <div class="about-module">
+                <div class="about-module-title">הבנת הנקרא</div>
+                <div class="about-module-desc">קטעי קריאה עם שאלות הבנה</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="about-card">
+        <h2>עקרונות הלמידה</h2>
+        <ul>
+            <li>לימוד הדרגתי — כל שלב בנוי על הקודם</li>
+            <li>תרגול אקטיבי — לא רק קריאה, אלא כתיבה ובחירה</li>
+            <li>מעקב התקדמות אישי — ראה כמה השתפרת</li>
+            <li>נגיש בכל מכשיר — מחשב, טאבלט וסמארטפון</li>
+        </ul>
+    </div>
+</div>
+
+<script src="user.js"></script>
+</body>
+</html>

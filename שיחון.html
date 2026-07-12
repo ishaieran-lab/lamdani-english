@@ -1,0 +1,734 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>שיחון — למדני אנגלית</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Analytics — החלף G-XXXXXXXXXX במזהה שלך -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+</head>
+<body>
+
+<nav class="toolbar">
+    <a href="index.html" class="toolbar-brand"><span class="accent">Lamdani</span> English</a>
+    <div class="toolbar-nav">
+        <div class="nav-menu-wrap">
+            <button class="nav-icon-btn" id="navMenuBtn" onclick="toggleNavMenu()">
+                <img src="images/ui/menu.png" class="nav-icon-img" alt="תפריט">
+            </button>
+            <div class="nav-menu-panel" id="navMenuPanel">
+                <a href="index.html" class="nav-menu-item">דף הבית</a>
+                <a href="אודות.html" class="nav-menu-item">אודות</a>
+                <a href="צור קשר.html" class="nav-menu-item">צור קשר</a>
+            </div>
+        </div>
+        <a href="index.html" class="nav-icon-btn">
+            <img src="images/ui/home.png" class="nav-icon-img" alt="בית">
+        </a>
+        <div id="userNavArea" style="position:relative"></div>
+    </div>
+</nav>
+
+<!-- ═══ 0. בחירת שלב ═══════════════════════════════════════════ -->
+<div id="viewSelect" class="reading-wrap">
+    <div class="breadcrumb">
+        <a href="index.html">בית</a>
+        <span class="bc-sep">‹</span>
+        <span>שיחון</span>
+    </div>
+    <h1 class="section-title">שיחון</h1>
+    <p class="section-subtitle">בחר שלב</p>
+    <div class="vocab-levels-row">
+        <div class="vocab-level-btn" onclick="openLevel(1)">
+            <div class="vocab-level-title">שלב 1</div>
+            <div class="vocab-level-desc">6 נושאים · ברכות, משפחה, תחביבים, מזג אוויר, הבנה ועזרה<br>רמה בסיסית A1</div>
+        </div>
+        <div class="vocab-level-btn vocab-level-empty">
+            <div class="vocab-level-title">שלב 2</div>
+            <div class="vocab-level-desc">בקרוב</div>
+        </div>
+        <div class="vocab-level-btn vocab-level-empty">
+            <div class="vocab-level-title">שלב 3</div>
+            <div class="vocab-level-desc">בקרוב</div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ 1. בחירת נושא ══════════════════════════════════════════ -->
+<div id="viewTopics" class="reading-wrap" style="display:none">
+    <button class="back-link" id="topicsBackBtn" onclick="showView('viewSelect')">→ חזור לשלבים</button>
+    <h2 class="section-title" id="levelTitle" style="font-size:1.3rem">שלב 1</h2>
+    <div class="topic-tiles-grid" id="topicCards" style="grid-template-columns: repeat(auto-fill, minmax(155px, 1fr))"></div>
+</div>
+
+<!-- ═══ 2. כרטיסיות שיחון ══════════════════════════════════════ -->
+<div id="viewCards" class="reading-wrap" style="display:none">
+    <button class="back-link" onclick="showView('viewTopics')">→ חזור לנושאים</button>
+    <div class="stage-label" id="cardsLabel"></div>
+
+    <div class="sh-progress-row">
+        <div class="progress-track"><div class="progress-fill" id="shBar"></div></div>
+        <span class="progress-txt" id="shProg"></span>
+    </div>
+
+    <div class="sh-card" id="shCard">
+        <div class="sh-card-badge" id="shBadge"></div>
+        <div class="sh-card-en" id="shEn" dir="ltr"></div>
+        <div class="sh-card-he" id="shHe"></div>
+        <button class="btn-listen-quiz" onclick="speakCurrent()">▶ שמע</button>
+    </div>
+
+    <div class="sh-nav-row">
+        <button class="btn-secondary" id="shPrevBtn" onclick="shPrev()">→ הקודם</button>
+        <button class="btn-next-img"  id="shNextBtn" onclick="shNext()">הבא</button>
+    </div>
+
+    <div id="shDoneBox" style="display:none; text-align:center; margin-top:2rem">
+        <div style="font-size:2rem; margin-bottom:0.5rem">🎉</div>
+        <div style="font-size:1.2rem; font-weight:700; margin-bottom:1rem">סיימת את כל הכרטיסיות!</div>
+        <button class="btn-primary" onclick="shRestart()">מחדש ↺</button>
+        <button class="btn-secondary" style="margin-right:0.5rem" onclick="showView('viewTopics')">חזור לנושאים</button>
+        <br><br>
+        <button class="btn-red-3d" onclick="openQuiz(curTopicIdx)">עבור לבוחן</button>
+    </div>
+</div>
+
+<!-- ═══ 3. בוחן ══════════════════════════════════════════════════ -->
+<div id="viewQuiz" class="reading-wrap" style="display:none">
+    <button class="back-link" onclick="showView('viewTopics')">→ חזור לנושאים</button>
+    <div class="stage-label" id="quizLabel"></div>
+
+    <div class="sh-progress-row">
+        <div class="progress-track"><div class="progress-fill" id="quizBar"></div></div>
+        <span class="progress-txt" id="quizProg"></span>
+    </div>
+
+    <div class="quiz-card">
+        <div class="quiz-prompt">תרגם לעברית</div>
+        <div class="quiz-en" id="quizEn" dir="ltr"></div>
+        <button class="btn-listen-quiz" onclick="speakQuiz()">▶ שמע</button>
+        <div class="quiz-input-wrap">
+            <input class="quiz-input" id="quizInput" type="text" placeholder="כתוב בעברית..." dir="rtl" onkeydown="quizKeyDown(event)">
+        </div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+        <div class="quiz-btns">
+            <button class="btn-primary" id="quizSubmitBtn" onclick="quizSubmit()">בדוק</button>
+            <button class="btn-next-img"  id="quizNextBtn" onclick="quizNext()" style="display:none">הבא</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ 4. ציון בוחן ══════════════════════════════════════════════ -->
+<div id="viewQuizScore" class="reading-wrap" style="display:none">
+    <div class="score-card" id="quizScoreInner"></div>
+</div>
+
+<script src="user.js"></script>
+<script>
+
+// ════════════════════════════════════════════════════════════════
+// נתוני השיחון
+// ════════════════════════════════════════════════════════════════
+var SHICHON = [
+    {
+        level: 1,
+        title: 'היכרות ושיחת חולין',
+        desc: 'Greetings & Small Talk',
+        cards: [
+            { type:'phrase',   en:'Hello!',                    he:'שלום!' },
+            { type:'response', en:'Hello!',                    he:'שלום!' },
+            { type:'response', en:'Hi!',                       he:'היי!' },
+            { type:'response', en:'Hey!',                      he:'הי!' },
+
+            { type:'phrase',   en:'Good morning!',             he:'בוקר טוב!' },
+            { type:'response', en:'Good morning!',             he:'בוקר טוב!' },
+            { type:'response', en:'Good morning to you too!',  he:'בוקר טוב גם לך!' },
+
+            { type:'phrase',   en:'Good evening!',             he:'ערב טוב!' },
+            { type:'response', en:'Good evening!',             he:'ערב טוב!' },
+
+            { type:'phrase',   en:'Good night!',               he:'לילה טוב!' },
+            { type:'response', en:'Good night!',               he:'לילה טוב!' },
+            { type:'response', en:'Sweet dreams!',             he:'חלומות פז!' },
+
+            { type:'phrase',   en:'How are you?',              he:'מה שלומך?' },
+            { type:'response', en:'Fine, thank you!',          he:'בסדר, תודה!' },
+            { type:'response', en:'Very well, thanks!',        he:'מצוין, תודה!' },
+            { type:'response', en:'Not bad.',                  he:'לא רע.' },
+            { type:'response', en:'So-so.',                    he:'ככה ככה.' },
+            { type:'response', en:'I\'m great!',               he:'אני מעולה!' },
+            { type:'response', en:'Could be better.',          he:'יכול להיות טוב יותר.' },
+
+            { type:'phrase',   en:'What\'s your name?',        he:'מה שמך?' },
+            { type:'response', en:'My name is...',             he:'שמי...' },
+            { type:'response', en:'They call me...',           he:'קוראים לי...' },
+            { type:'response', en:'I\'m...',                   he:'אני...' },
+
+            { type:'phrase',   en:'Where are you from?',       he:'מאיפה אתה/את?' },
+            { type:'response', en:'I\'m from Israel.',         he:'אני מישראל.' },
+            { type:'response', en:'I\'m from...',              he:'אני מ...' },
+
+            { type:'phrase',   en:'How old are you?',          he:'בן/בת כמה אתה/את?' },
+            { type:'response', en:'I\'m [X] years old.',       he:'אני בן/בת [X].' },
+            { type:'response', en:'I\'m twenty years old.',    he:'אני בן/בת עשרים.' },
+
+            { type:'phrase',   en:'Do you speak English?',     he:'האם אתה/את מדבר/ת אנגלית?' },
+            { type:'response', en:'Yes, a little.',            he:'כן, קצת.' },
+            { type:'response', en:'I\'m still learning.',      he:'אני עדיין לומד/ת.' },
+            { type:'response', en:'Yes, fluently.',            he:'כן, בשוטף.' },
+
+            { type:'phrase',   en:'Nice to meet you!',         he:'נעים מאוד!' },
+            { type:'response', en:'Nice to meet you too!',     he:'נעים מאוד גם לי!' },
+            { type:'response', en:'The pleasure is mine!',     he:'כל העונג שלי!' },
+
+            { type:'phrase',   en:'Goodbye!',                  he:'להתראות!' },
+            { type:'response', en:'Goodbye!',                  he:'להתראות!' },
+            { type:'response', en:'Bye!',                      he:'ביי!' },
+            { type:'response', en:'See you later!',            he:'נתראה!' },
+            { type:'response', en:'See you tomorrow!',         he:'נתראה מחר!' },
+            { type:'response', en:'Take care!',                he:'תשמור/י על עצמך!' },
+        ]
+    },
+
+    // ── פרק 2א: משפחה וחברים ───────────────────────────────────
+    {
+        level: 1,
+        title: 'משפחה וחברים',
+        desc: 'Family & Social Life',
+        cards: [
+            { type:'phrase',   en:'Are you married?',                       he:'האם אתה נשוי / את נשואה?' },
+            { type:'response', en:'Yes, I am married.',                     he:'כן, אני נשוי/ה.' },
+            { type:'response', en:'No, I\'m single.',                       he:'לא, אני רווק/ה.' },
+            { type:'response', en:'I\'m engaged.',                          he:'אני מאורס/ת.' },
+            { type:'response', en:'I\'m divorced.',                         he:'אני גרוש/ה.' },
+
+            { type:'phrase',   en:'Do you have children?',                  he:'האם יש לך ילדים?' },
+            { type:'response', en:'Yes, I have two children.',              he:'כן, יש לי שני ילדים.' },
+            { type:'response', en:'No, I don\'t have children yet.',        he:'לא, עדיין אין לי ילדים.' },
+            { type:'response', en:'I have one son and one daughter.',       he:'יש לי בן אחד ובת אחת.' },
+            { type:'response', en:'I have three kids.',                     he:'יש לי שלושה ילדים.' },
+
+            { type:'phrase',   en:'I have a big family.',                   he:'יש לי משפחה גדולה.' },
+            { type:'response', en:'Really? How many siblings do you have?', he:'באמת? כמה אחים ואחיות יש לך?' },
+            { type:'response', en:'My family is small.',                    he:'המשפחה שלי קטנה.' },
+            { type:'response', en:'I have three brothers and two sisters.', he:'יש לי שלושה אחים ושתי אחיות.' },
+            { type:'response', en:'I\'m an only child.',                    he:'אני יחיד/ה.' },
+
+            { type:'phrase',   en:'Where do you live?',                     he:'איפה אתה/את גר/ה?' },
+            { type:'response', en:'I live in Tel Aviv.',                    he:'אני גר/ה בתל אביב.' },
+            { type:'response', en:'I live near the city center.',           he:'אני גר/ה קרוב/ה למרכז העיר.' },
+            { type:'response', en:'I live with my family.',                 he:'אני גר/ה עם משפחתי.' },
+
+            { type:'phrase',   en:'What do you do for a living?',           he:'מה אתה/את עושה לפרנסה?' },
+            { type:'response', en:'I\'m a teacher.',                        he:'אני מורה.' },
+            { type:'response', en:'I work in an office.',                   he:'אני עובד/ת במשרד.' },
+            { type:'response', en:'I\'m a student.',                        he:'אני סטודנט/ית.' },
+            { type:'response', en:'I\'m currently looking for work.',       he:'אני כרגע מחפש/ת עבודה.' },
+
+            { type:'phrase',   en:'What is your phone number?',             he:'מה מספר הטלפון שלך?' },
+            { type:'response', en:'My number is...',                        he:'המספר שלי הוא...' },
+            { type:'response', en:'Here is my number.',                     he:'הנה המספר שלי.' },
+            { type:'response', en:'I\'ll send it to you.',                  he:'אשלח לך אותו.' },
+        ]
+    },
+
+    // ── פרק 2ב: פנאי ותחביבים ──────────────────────────────────
+    {
+        level: 1,
+        title: 'פנאי ותחביבים',
+        desc: 'Hobbies & Free Time',
+        cards: [
+            { type:'phrase',   en:'What do you like to do in your free time?', he:'מה אתה/את אוהב/ת לעשות בזמנך הפנוי?' },
+            { type:'response', en:'I like to read books.',                      he:'אני אוהב/ת לקרוא ספרים.' },
+            { type:'response', en:'I enjoy watching movies.',                   he:'אני נהנה/ת לצפות בסרטים.' },
+            { type:'response', en:'I love to travel.',                          he:'אני אוהב/ת לטייל.' },
+            { type:'response', en:'I like cooking.',                            he:'אני אוהב/ת לבשל.' },
+            { type:'response', en:'I spend time with friends.',                 he:'אני מבלה/ה עם חברים.' },
+            { type:'response', en:'I play computer games.',                     he:'אני משחק/ת משחקי מחשב.' },
+
+            { type:'phrase',   en:'What is your favorite food?',                he:'מה האוכל האהוב עליך?' },
+            { type:'response', en:'I love pizza!',                              he:'אני אוהב/ת פיצה!' },
+            { type:'response', en:'My favorite is pasta.',                      he:'האהוב עלי הוא פסטה.' },
+            { type:'response', en:'I enjoy Middle Eastern food.',               he:'אני נהנה/ת מאוכל מזרח תיכוני.' },
+            { type:'response', en:'I like everything!',                         he:'אני אוהב/ת הכל!' },
+
+            { type:'phrase',   en:'I like to listen to music.',                 he:'אני אוהב/ת להקשיב למוזיקה.' },
+            { type:'response', en:'What kind of music do you like?',            he:'איזה סוג מוזיקה אתה/את אוהב/ת?' },
+            { type:'response', en:'Me too!',                                    he:'גם אני!' },
+            { type:'response', en:'I prefer pop music.',                        he:'אני מעדיף/ה מוזיקת פופ.' },
+            { type:'response', en:'I love rock music.',                         he:'אני אוהב/ת מוזיקת רוק.' },
+
+            { type:'phrase',   en:'Do you play any sports?',                    he:'האם אתה/את עוסק/ת בספורט כלשהו?' },
+            { type:'response', en:'Yes, I play football.',                      he:'כן, אני משחק/ת כדורגל.' },
+            { type:'response', en:'I go to the gym.',                           he:'אני הולך/ת לחדר כושר.' },
+            { type:'response', en:'I run every morning.',                       he:'אני רץ/ה כל בוקר.' },
+            { type:'response', en:'No, I\'m not very athletic.',                he:'לא, אני לא כל כך ספורטיבי/ת.' },
+            { type:'response', en:'I love swimming.',                           he:'אני אוהב/ת לשחות.' },
+
+            { type:'phrase',   en:'Do you watch a lot of TV?',                  he:'האם אתה/את צופה הרבה בטלוויזיה?' },
+            { type:'response', en:'Yes, I like watching series.',               he:'כן, אני אוהב/ת לצפות בסדרות.' },
+            { type:'response', en:'Not really, I prefer reading.',              he:'לא ממש, אני מעדיף/ה לקרוא.' },
+            { type:'response', en:'Only the news.',                             he:'רק חדשות.' },
+        ]
+    },
+
+    // ── פרק 2ג: מזג אוויר וזמן ────────────────────────────────
+    {
+        level: 1,
+        title: 'מזג אוויר וזמן',
+        desc: 'Weather & Time',
+        cards: [
+            { type:'phrase',   en:'What time is it?',                    he:'מה השעה?' },
+            { type:'response', en:'It\'s three o\'clock.',               he:'זה שלוש בדיוק.' },
+            { type:'response', en:'It\'s half past two.',                he:'זה שתיים וחצי.' },
+            { type:'response', en:'It\'s quarter to five.',              he:'זה חמש פחות רבע.' },
+            { type:'response', en:'Sorry, I don\'t have a watch.',       he:'סליחה, אין לי שעון.' },
+            { type:'response', en:'Check your phone!',                   he:'בדוק/י בטלפון!' },
+
+            { type:'phrase',   en:'How is the weather today?',           he:'איך מזג האוויר היום?' },
+            { type:'response', en:'It\'s sunny and warm.',               he:'שמשי וחמים.' },
+            { type:'response', en:'It\'s cold and cloudy.',              he:'קר ומעונן.' },
+            { type:'response', en:'It\'s raining.',                      he:'יורד גשם.' },
+            { type:'response', en:'It\'s perfect!',                      he:'מושלם!' },
+            { type:'response', en:'It\'s very hot today.',               he:'חם מאוד היום.' },
+            { type:'response', en:'It\'s windy outside.',                he:'רוחות חזקות בחוץ.' },
+
+            { type:'phrase',   en:'It is very hot today.',               he:'חם מאוד היום.' },
+            { type:'response', en:'Yes, it\'s terrible!',                he:'כן, זה נורא!' },
+            { type:'response', en:'I love the heat!',                    he:'אני אוהב/ת חום!' },
+            { type:'response', en:'Let\'s go to the beach!',             he:'בוא/י נלך לחוף!' },
+            { type:'response', en:'Drink plenty of water.',              he:'שתה/י הרבה מים.' },
+
+            { type:'phrase',   en:'It is raining outside.',              he:'יורד גשם בחוץ.' },
+            { type:'response', en:'Take an umbrella!',                   he:'קח/י מטרייה!' },
+            { type:'response', en:'I love the rain.',                    he:'אני אוהב/ת גשם.' },
+            { type:'response', en:'Great weather for staying home.',     he:'מזג אוויר מושלם להישאר בבית.' },
+            { type:'response', en:'Is it going to rain all day?',        he:'האם ירד גשם כל היום?' },
+
+            { type:'phrase',   en:'What day is today?',                  he:'איזה יום היום?' },
+            { type:'response', en:'Today is Monday.',                    he:'היום יום שני.' },
+            { type:'response', en:'It\'s the weekend!',                  he:'זה סוף שבוע!' },
+            { type:'response', en:'Today is Wednesday.',                 he:'היום יום רביעי.' },
+        ]
+    },
+
+    // ── פרק 3א: כשלא מבינים ────────────────────────────────────
+    {
+        level: 1,
+        title: 'כשלא מבינים',
+        desc: 'When You Don\'t Understand',
+        cards: [
+            { type:'phrase',   en:'I don\'t understand.',                    he:'אני לא מבין/ה.' },
+            { type:'response', en:'Let me explain again.',                   he:'תן/י לי להסביר שוב.' },
+            { type:'response', en:'Maybe I can help.',                       he:'אולי אני יכול/ה לעזור.' },
+            { type:'response', en:'That\'s okay, take your time.',           he:'זה בסדר, אל תמהר/י.' },
+            { type:'response', en:'Don\'t worry, I\'ll explain.',            he:'אל תדאג/י, אסביר.' },
+
+            { type:'phrase',   en:'Can you repeat that, please?',            he:'אתה/את יכול/ה לחזור על זה, בבקשה?' },
+            { type:'response', en:'Of course!',                              he:'כמובן!' },
+            { type:'response', en:'Sure, no problem.',                       he:'בטח, אין בעיה.' },
+            { type:'response', en:'I\'ll say it more slowly.',               he:'אני אגיד את זה לאט יותר.' },
+            { type:'response', en:'Let me write it for you.',                he:'אכתוב לך את זה.' },
+
+            { type:'phrase',   en:'Please speak slowly.',                    he:'בבקשה דבר/י לאט.' },
+            { type:'response', en:'Of course, sorry!',                       he:'כמובן, סליחה!' },
+            { type:'response', en:'Is this better?',                         he:'ככה יותר טוב?' },
+            { type:'response', en:'No problem at all.',                      he:'אין שום בעיה.' },
+
+            { type:'phrase',   en:'How do you say this in English?',         he:'איך אומרים את זה באנגלית?' },
+            { type:'response', en:'In English, we say...',                   he:'באנגלית אומרים...' },
+            { type:'response', en:'Let me think...',                         he:'תן/י לי לחשוב...' },
+            { type:'response', en:'I\'m not sure, sorry.',                   he:'אני לא בטוח/ה, סליחה.' },
+            { type:'response', en:'You can look it up online.',              he:'אתה/את יכול/ה לחפש את זה באינטרנט.' },
+
+            { type:'phrase',   en:'Can you write it down for me?',           he:'אתה/את יכול/ה לכתוב לי את זה?' },
+            { type:'response', en:'Sure, here you go.',                      he:'בטח, הנה.' },
+            { type:'response', en:'Of course!',                              he:'כמובן!' },
+            { type:'response', en:'I\'ll send it to you.',                   he:'אשלח לך את זה.' },
+
+            { type:'phrase',   en:'What does this word mean?',               he:'מה פירוש המילה הזאת?' },
+            { type:'response', en:'It means...',                             he:'זה אומר...' },
+            { type:'response', en:'It\'s similar to...',                     he:'זה דומה ל...' },
+            { type:'response', en:'I\'ll explain with an example.',          he:'אסביר עם דוגמה.' },
+        ]
+    },
+
+    // ── פרק 3ב: בקשת עזרה ──────────────────────────────────────
+    {
+        level: 1,
+        title: 'בקשת עזרה',
+        desc: 'Asking for Help',
+        cards: [
+            { type:'phrase',   en:'Can you help me?',                        he:'אתה/את יכול/ה לעזור לי?' },
+            { type:'response', en:'Of course! What do you need?',            he:'כמובן! מה אתה/את צריך/ה?' },
+            { type:'response', en:'I\'ll do my best.',                       he:'אנסה כמיטב יכולתי.' },
+            { type:'response', en:'Sorry, I\'m in a hurry.',                 he:'סליחה, אני ממהר/ת.' },
+            { type:'response', en:'What\'s the problem?',                    he:'מה הבעיה?' },
+
+            { type:'phrase',   en:'Excuse me.',                              he:'סליחה.' },
+            { type:'response', en:'Yes? Can I help you?',                    he:'כן? אפשר לעזור לך?' },
+            { type:'response', en:'Not a problem.',                          he:'אין בעיה.' },
+            { type:'response', en:'Go ahead.',                               he:'בבקשה.' },
+
+            { type:'phrase',   en:'Where is the restroom?',                  he:'איפה השירותים?' },
+            { type:'response', en:'It\'s on the second floor.',              he:'זה בקומה השנייה.' },
+            { type:'response', en:'Turn right and go straight ahead.',       he:'פנה/י ימינה וישר.' },
+            { type:'response', en:'Follow the signs.',                       he:'עקוב/י אחרי השלטים.' },
+            { type:'response', en:'I\'ll show you.',                         he:'אראה לך.' },
+
+            { type:'phrase',   en:'I\'m lost.',                              he:'אני אבוד/ה.' },
+            { type:'response', en:'Where do you want to go?',               he:'לאן אתה/את רוצה ללכת?' },
+            { type:'response', en:'Let me check on my phone.',               he:'אבדוק בטלפון.' },
+            { type:'response', en:'Follow me, I\'ll take you there.',        he:'בוא/י איתי, אוביל אותך לשם.' },
+
+            { type:'phrase',   en:'I need a doctor.',                        he:'אני צריך/ה רופא.' },
+            { type:'response', en:'There is a clinic nearby.',               he:'יש קליניקה פה קרוב.' },
+            { type:'response', en:'Call an ambulance!',                      he:'תתקשר/י לאמבולנס!' },
+            { type:'response', en:'Are you okay?',                           he:'אתה/את בסדר?' },
+
+            { type:'phrase',   en:'Thank you very much for your help.',      he:'תודה רבה על העזרה שלך.' },
+            { type:'response', en:'You\'re welcome!',                        he:'בבקשה!' },
+            { type:'response', en:'Anytime!',                                he:'תמיד!' },
+            { type:'response', en:'Happy to help!',                          he:'שמחתי לעזור!' },
+            { type:'response', en:'No problem at all!',                      he:'אין שום בעיה!' },
+            { type:'response', en:'It was my pleasure!',                     he:'זה היה לי לתענוג!' },
+        ]
+    },
+];
+
+// ════════════════════════════════════════════════════════════════
+// ניווט
+// ════════════════════════════════════════════════════════════════
+var VIEWS = ['viewSelect','viewTopics','viewCards','viewQuiz','viewQuizScore'];
+
+function showView(id) {
+    VIEWS.forEach(function(v){ document.getElementById(v).style.display='none'; });
+    document.getElementById(id).style.display = 'block';
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+var curLevel = 1;
+
+function openLevel(n) {
+    curLevel = n;
+    document.getElementById('levelTitle').textContent = 'שלב ' + n;
+    var items = SHICHON.filter(function(s){ return s.level === n; });
+    document.getElementById('topicCards').innerHTML = items.map(function(s, i) {
+        var realIdx = SHICHON.indexOf(s);
+        var phrases = s.cards.filter(function(c){return c.type==="phrase";}).length;
+        return '<div class="topic-tile" onclick="openTopic(' + realIdx + ')">' +
+            '<div class="topic-tile-he">' + s.title + '</div>' +
+            '<div class="topic-tile-en">' + s.desc + '</div>' +
+            '<div class="topic-tile-count">' + phrases + ' ביטויים · ' + s.cards.length + ' כרטיסיות</div>' +
+            '<button class="sh-quiz-tile-btn" onclick="openQuiz(' + realIdx + '); event.stopPropagation()">בוחן ✎</button>' +
+        '</div>';
+    }).join('');
+    showView('viewTopics');
+}
+
+// ════════════════════════════════════════════════════════════════
+// כרטיסיות
+// ════════════════════════════════════════════════════════════════
+var curTopicIdx = 0;
+var curCardIdx  = 0;
+
+function openTopic(idx) {
+    curTopicIdx = idx;
+    curCardIdx  = 0;
+    document.getElementById('cardsLabel').textContent = SHICHON[idx].title;
+    document.getElementById('shDoneBox').style.display = 'none';
+    document.getElementById('shCard').style.display    = 'block';
+    document.getElementById('shNavRow') && (document.getElementById('shNavRow').style.display = 'flex');
+    renderCard();
+    showView('viewCards');
+}
+
+function renderCard() {
+    var topic = SHICHON[curTopicIdx];
+    var cards = topic.cards;
+    var c     = cards[curCardIdx];
+    var total = cards.length;
+
+    document.getElementById('shBar').style.width = ((curCardIdx + 1) / total * 100) + '%';
+    document.getElementById('shProg').textContent = (curCardIdx + 1) + ' / ' + total;
+
+    var badge = c.type === 'phrase' ? 'ביטוי' : 'תשובה אפשרית';
+    var badgeCls = c.type === 'phrase' ? 'sh-badge-phrase' : 'sh-badge-response';
+    document.getElementById('shBadge').innerHTML = '<span class="sh-badge ' + badgeCls + '">' + badge + '</span>';
+    document.getElementById('shEn').textContent = c.en;
+    document.getElementById('shHe').textContent = c.he;
+
+    document.getElementById('shPrevBtn').style.display = curCardIdx === 0 ? 'none' : 'inline-flex';
+    var shNext = document.getElementById('shNextBtn');
+    if (curCardIdx === total - 1) { shNext.className = 'btn-primary'; shNext.textContent = 'סיום ✓'; }
+    else                          { shNext.className = 'btn-next-img'; shNext.textContent = 'הבא'; }
+}
+
+function shNext() {
+    var cards = SHICHON[curTopicIdx].cards;
+    if (curCardIdx < cards.length - 1) {
+        curCardIdx++;
+        renderCard();
+    } else {
+        document.getElementById('shCard').style.display    = 'none';
+        document.querySelector('.sh-nav-row').style.display = 'none';
+        document.getElementById('shDoneBox').style.display  = 'block';
+    }
+}
+
+function shPrev() {
+    if (curCardIdx > 0) { curCardIdx--; renderCard(); }
+}
+
+function shRestart() {
+    curCardIdx = 0;
+    document.getElementById('shCard').style.display    = 'block';
+    document.querySelector('.sh-nav-row').style.display = 'flex';
+    document.getElementById('shDoneBox').style.display  = 'none';
+    renderCard();
+}
+
+// ════════════════════════════════════════════════════════════════
+// בוחן — נרמול ובדיקת תשובות
+// ════════════════════════════════════════════════════════════════
+
+function normalizeHe(s) {
+    return s.trim()
+        .replace(/[?.!,،׃"'«»\-–]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function generateAlts(he) {
+    var alts = [he];
+
+    // Space-slash-space " / ": "A part1 / B part2"
+    // → alt1: "A part1" + trailing punct, alt2: firstWord(A) + " " + "B part2"
+    if (he.indexOf(' / ') !== -1) {
+        var sParts = he.split(' / ');
+        var punc = (he.match(/[?.!]+$/) || [''])[0];
+        alts.push(sParts[0] + punc);
+        alts.push(sParts[0]);
+        var firstWord = sParts[0].split(' ')[0];
+        alts.push(firstWord + ' ' + sParts[1]);
+    }
+
+    // No-space slash X/Y — generate masculine (first) and feminine (concat short suffix or swap word)
+    if (/\S+\/\S+/.test(he)) {
+        var masc = he.replace(/(\S+)\/(\S+)/g, function(m, a, b) { return a; });
+        var fem  = he.replace(/(\S+)\/(\S+)/g, function(m, a, b) {
+            var bClean = b.replace(/[?.!,]/g, '');
+            return bClean.length <= 2 ? a + b : b; // short suffix → concat; full word → swap
+        });
+        alts.push(masc);
+        alts.push(fem);
+    }
+
+    // Deduplicate after normalizing
+    var seen = {};
+    var result = [];
+    alts.forEach(function(a) {
+        var n = normalizeHe(a);
+        if (n && !seen[n]) { seen[n] = true; result.push(n); }
+    });
+    return result;
+}
+
+function checkAnswer(input, he) {
+    var u = normalizeHe(input);
+    if (!u) return false;
+    return generateAlts(he).some(function(a) { return a === u; });
+}
+
+// ════════════════════════════════════════════════════════════════
+// בוחן — לוגיקה
+// ════════════════════════════════════════════════════════════════
+
+var quizCards       = [];
+var quizIdx         = 0;
+var quizCorrect     = 0;
+var quizMistakes    = [];
+var quizSubmitted   = false;
+var curQuizTopicIdx = 0;
+
+function openQuiz(topicIdx) {
+    curQuizTopicIdx = topicIdx;
+    var topic = SHICHON[topicIdx];
+    quizCards = topic.cards.slice().sort(function() { return Math.random() - 0.5; });
+    quizIdx       = 0;
+    quizCorrect   = 0;
+    quizMistakes  = [];
+    quizSubmitted = false;
+
+    document.getElementById('quizLabel').textContent = topic.title + ' — בוחן';
+    renderQuizCard();
+    showView('viewQuiz');
+}
+
+function renderQuizCard() {
+    var c = quizCards[quizIdx];
+    var total = quizCards.length;
+
+    document.getElementById('quizBar').style.width = ((quizIdx + 1) / total * 100) + '%';
+    document.getElementById('quizProg').textContent = (quizIdx + 1) + ' / ' + total;
+    document.getElementById('quizEn').textContent = c.en;
+
+    var inp = document.getElementById('quizInput');
+    inp.value = '';
+    inp.className = 'quiz-input';
+    inp.disabled = false;
+    setTimeout(function() { inp.focus(); }, 60);
+
+    document.getElementById('quizFeedback').innerHTML = '';
+    document.getElementById('quizNextBtn').style.display    = 'none';
+    document.getElementById('quizSubmitBtn').style.display  = 'inline-flex';
+    quizSubmitted = false;
+}
+
+function quizKeyDown(e) {
+    if (e.key === 'Enter') {
+        if (!quizSubmitted) quizSubmit();
+        else quizNext();
+    }
+}
+
+function quizSubmit() {
+    if (quizSubmitted) return;
+    var c   = quizCards[quizIdx];
+    var inp = document.getElementById('quizInput');
+    var ok  = checkAnswer(inp.value, c.he);
+
+    quizSubmitted = true;
+    inp.disabled  = true;
+
+    var fb = document.getElementById('quizFeedback');
+    if (ok) {
+        quizCorrect++;
+        inp.className   = 'quiz-input correct';
+        fb.innerHTML    = '<span class="fb-correct">✓ נכון!</span>';
+    } else {
+        inp.className   = 'quiz-input wrong';
+        fb.innerHTML    = '<span class="fb-wrong">✗ התשובה: </span>' +
+                          '<span dir="rtl" style="font-weight:700">' + c.he + '</span>';
+        quizMistakes.push({ en: c.en, he: c.he, typed: inp.value });
+    }
+
+    var nextBtn = document.getElementById('quizNextBtn');
+    nextBtn.style.display  = 'inline-flex';
+    if (quizIdx === quizCards.length - 1) { nextBtn.className = 'btn-primary'; nextBtn.textContent = 'סיום ✓'; }
+    else                                  { nextBtn.className = 'btn-next-img'; nextBtn.textContent = 'הבא'; }
+    document.getElementById('quizSubmitBtn').style.display = 'none';
+}
+
+function quizNext() {
+    if (quizIdx < quizCards.length - 1) {
+        quizIdx++;
+        renderQuizCard();
+    } else {
+        showQuizScore();
+    }
+}
+
+function showQuizScore() {
+    var total = quizCards.length;
+    var pct   = Math.round(quizCorrect / total * 100);
+    var medal = pct >= 80 ? 'gold' : pct >= 60 ? 'silver' : 'bronze';
+    var icon  = pct >= 80 ? '🥇' : pct >= 60 ? '🥈' : '🥉';
+    var msg   = pct === 100 ? 'מושלם! שלטת בכל הביטויים.' :
+                pct >= 80   ? 'יפה מאוד! כמעט מושלם.'    :
+                pct >= 60   ? 'לא רע! כדאי לחזור על החומר.' :
+                              'המשך להתאמן — זה יגיע!';
+
+    var mistakesHtml = '';
+    if (quizMistakes.length) {
+        mistakesHtml = '<div class="mistakes-title">שגיאות:</div>' +
+            quizMistakes.map(function(m) {
+                return '<div class="mistake-row">' +
+                    '<span class="mistake-en" dir="ltr">' + m.en + '</span>' +
+                    '<span class="mistake-arrow">←</span>' +
+                    '<span class="mistake-he">' + m.he + '</span>' +
+                    (m.typed ? '<span class="mistake-typed">(' + m.typed + ')</span>' : '') +
+                '</div>';
+            }).join('');
+    }
+
+    document.getElementById('quizScoreInner').innerHTML =
+        '<div class="score-medal ' + medal + '">' + icon + '</div>' +
+        '<h2>' + pct + '%</h2>' +
+        '<div class="score-fraction">' + quizCorrect + ' / ' + total + '</div>' +
+        '<div class="score-msg">' + msg + '</div>' +
+        '<div class="score-actions">' +
+            '<button class="btn-primary" onclick="openQuiz(' + curQuizTopicIdx + ')">שוב ↺</button>' +
+            '<button class="btn-secondary" onclick="showView(\'viewTopics\')">חזור לנושאים</button>' +
+        '</div>' +
+        mistakesHtml;
+
+    showView('viewQuizScore');
+}
+
+function speakQuiz() {
+    var text = document.getElementById('quizEn').textContent;
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = 0.9;
+    if (prefVoice) u.voice = prefVoice;
+    speechSynthesis.speak(u);
+}
+
+// ════════════════════════════════════════════════════════════════
+// קול
+// ════════════════════════════════════════════════════════════════
+var prefVoice = null;
+function initVoices() {
+    var v = speechSynthesis.getVoices();
+    prefVoice = v.find(function(x){return x.name.includes('Zira');}) ||
+                v.find(function(x){return x.lang==='en-US';}) ||
+                v.find(function(x){return x.lang.startsWith('en');}) || null;
+}
+speechSynthesis.onvoiceschanged = initVoices;
+initVoices();
+
+function speakCurrent() {
+    var text = document.getElementById('shEn').textContent;
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = 0.9;
+    if (prefVoice) u.voice = prefVoice;
+    speechSynthesis.speak(u);
+}
+
+// ════════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() { renderUserNav(); });
+if (location.search.indexOf('direct=1') !== -1) {
+    openLevel(1);
+    var btn = document.getElementById('topicsBackBtn');
+    btn.textContent = '→ חזור לפרקים';
+    btn.onclick = function() { window.location.href = 'index.html?level=elementary'; };
+} else {
+    showView('viewSelect');
+}
+
+window.onBackspace = function() {
+    var views = ['viewSelect','viewTopics','viewCards','viewQuiz','viewQuizScore'];
+    var cur = views.find(function(v) {
+        var el = document.getElementById(v);
+        return el && el.style.display !== 'none';
+    });
+    if (!cur) return;
+    if (cur === 'viewTopics') {
+        if (location.search.indexOf('direct=1') !== -1) window.location.href = 'index.html?level=elementary';
+        else showView('viewSelect');
+    } else if (cur === 'viewCards') {
+        showView('viewTopics');
+    } else if (cur === 'viewQuiz' || cur === 'viewQuizScore') {
+        showView('viewTopics');
+    }
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מדיניות פרטיות — למדני אנגלית</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .legal-wrap { max-width: 760px; margin: 2.5rem auto; padding: 0 1.5rem 4rem; }
+        .legal-wrap h1 { font-size: 1.9rem; font-weight: 800; color: var(--navy); margin-bottom: 0.3rem; }
+        .legal-updated { font-size: 0.85rem; color: var(--gray-txt); margin-bottom: 2.5rem; }
+        .legal-section { margin-bottom: 2rem; }
+        .legal-section h2 { font-size: 1.1rem; font-weight: 700; color: var(--navy); margin-bottom: 0.6rem; border-right: 3px solid var(--blue); padding-right: 0.65rem; }
+        .legal-section p, .legal-section li { font-size: 0.97rem; color: #374151; line-height: 1.85; }
+        .legal-section ul { padding-right: 1.3rem; margin-top: 0.4rem; }
+        .legal-section li { margin-bottom: 0.3rem; }
+        .privacy-highlight { background: #eff6ff; border-radius: 10px; padding: 1rem 1.25rem; margin: 1rem 0; font-size: 0.95rem; color: #1e3a8a; }
+    </style>
+</head>
+<body>
+
+<nav class="toolbar">
+    <a href="index.html" class="toolbar-brand"><span class="accent">Lamdani</span> English</a>
+    <div class="toolbar-nav">
+        <div class="nav-menu-wrap">
+            <button class="nav-icon-btn" id="navMenuBtn" onclick="toggleNavMenu()">
+                <img src="images/ui/menu.png" class="nav-icon-img" alt="תפריט">
+            </button>
+            <div class="nav-menu-panel" id="navMenuPanel">
+                <a href="index.html" class="nav-menu-item">דף הבית</a>
+                <a href="אודות.html" class="nav-menu-item">אודות</a>
+                <a href="צור קשר.html" class="nav-menu-item">צור קשר</a>
+            </div>
+        </div>
+        <a href="index.html" class="nav-icon-btn">
+            <img src="images/ui/home.png" class="nav-icon-img" alt="בית">
+        </a>
+        <div id="userNavArea" style="position:relative"></div>
+    </div>
+</nav>
+
+<div class="legal-wrap">
+    <h1>מדיניות פרטיות</h1>
+    <p class="legal-updated">עדכון אחרון: יולי 2025</p>
+
+    <div class="privacy-highlight">
+        למדני אנגלית מכבדת את פרטיות המשתמשים. אנו אוספים מידע מינימלי הנחוץ לתפעול השירות בלבד, ואינו נמכר לצד שלישי לעולם.
+    </div>
+
+    <div class="legal-section">
+        <h2>1. המידע שאנו אוספים</h2>
+        <p>בעת ההרשמה ושימוש באתר, אנו אוספים:</p>
+        <ul>
+            <li><strong>שם משתמש וכתובת מייל</strong> — לצורך יצירת חשבון וזיהוי</li>
+            <li><strong>נתוני התקדמות</strong> — ציונים, נושאים שנלמדו, היסטוריית בוחנים</li>
+            <li><strong>מידע טכני</strong> — סוג דפדפן, מערכת הפעלה (ללא זיהוי אישי)</li>
+            <li><strong>פרטי תשלום</strong> — מעובדים ישירות על ידי ספק התשלומים (Stripe/Tranzila) ואינם נשמרים אצלנו</li>
+        </ul>
+    </div>
+
+    <div class="legal-section">
+        <h2>2. שימוש במידע</h2>
+        <p>המידע שנאסף משמש אך ורק ל:</p>
+        <ul>
+            <li>ניהול חשבון המשתמש ואימות זהות</li>
+            <li>שמירה ומעקב אחר התקדמות הלמידה</li>
+            <li>שיפור השירות על בסיס נתוני שימוש כלליים</li>
+            <li>שליחת עדכונים חשובים הקשורים לחשבון (לא שיווק ללא הסכמה)</li>
+        </ul>
+    </div>
+
+    <div class="legal-section">
+        <h2>3. שמירת מידע וקוקיז</h2>
+        <p>
+            נתוני ההתקדמות נשמרים בדפדפן (localStorage) ובשרתינו לצורך שמירת הנתונים בין מכשירים.
+            אנו משתמשים בקוקיז טכניים בלבד (לשמירת מצב ההתחברות) ואין קוקיז שיווקיים.
+        </p>
+    </div>
+
+    <div class="legal-section">
+        <h2>4. שיתוף מידע עם צד שלישי</h2>
+        <p>אנו לא מוכרים, שוכרים או משתפים מידע אישי עם גורמים חיצוניים, למעט:</p>
+        <ul>
+            <li><strong>ספק תשלומים</strong> — לצורך עיבוד תשלומים בלבד</li>
+            <li><strong>Google Analytics</strong> — נתונים אנונימיים לניתוח תעבורה (ניתן לביטול)</li>
+            <li><strong>Formspree</strong> — לעיבוד פניות מטופס יצירת הקשר</li>
+            <li><strong>דרישת חוק</strong> — במקרה של צו שיפוטי</li>
+        </ul>
+    </div>
+
+    <div class="legal-section">
+        <h2>5. ילדים קטינים</h2>
+        <p>
+            השירות מיועד גם לילדים. אנו נוקטים זהירות מיוחדת בטיפול במידע של קטינים:
+        </p>
+        <ul>
+            <li>הרשמת קטינים מתחת לגיל 13 מחייבת אישור הורה</li>
+            <li>איננו אוספים מידע אישי מקטינים מעבר לנדרש לתפעול השירות</li>
+            <li>הורים רשאים לבקש מחיקת המידע של ילדם בכל עת</li>
+        </ul>
+    </div>
+
+    <div class="legal-section">
+        <h2>6. זכויות המשתמש</h2>
+        <p>בהתאם לחוק הגנת הפרטיות הישראלי ותקנות GDPR, יש לך זכות ל:</p>
+        <ul>
+            <li>עיון במידע האישי השמור עליך</li>
+            <li>תיקון מידע שגוי</li>
+            <li>מחיקת החשבון וכל המידע הנלווה</li>
+            <li>קבלת עותק של המידע שלך (פורטביליות)</li>
+        </ul>
+        <p>לממוש זכויות אלו פנה אלינו בכתובת: <a href="mailto:ishaieran@gmail.com" style="color:var(--blue)">ishaieran@gmail.com</a></p>
+    </div>
+
+    <div class="legal-section">
+        <h2>7. אבטחת מידע</h2>
+        <p>
+            האתר מוגן בפרוטוקול HTTPS. סיסמאות מאוחסנות בצורה מוצפנת ואין גישה אליהן גם לנו.
+            אנו מיישמים אמצעי אבטחה מקובלים אך איננו יכולים להבטיח אבטחה מוחלטת.
+        </p>
+    </div>
+
+    <div class="legal-section">
+        <h2>8. יצירת קשר</h2>
+        <p>לשאלות בנוגע למדיניות פרטיות זו: <a href="mailto:ishaieran@gmail.com" style="color:var(--blue)">ishaieran@gmail.com</a></p>
+    </div>
+</div>
+
+<script src="user.js"></script>
+</body>
+</html>

@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הבנת הנקרא — למדני אנגלית</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .rc-level-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-top: 1.2rem;
+        }
+        .rc-level-card {
+            background: white;
+            border-radius: 14px;
+            padding: 1.1rem 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 2px solid transparent;
+            transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+        }
+        .rc-level-card:hover { transform: translateY(-4px); border-color: #3b82f6; box-shadow: 0 6px 18px rgba(59,130,246,0.18); }
+        .rc-level-card.done { border-color: #16a34a; background: #f0fdf4; }
+        .rc-level-num { font-size: 1.8rem; font-weight: 900; color: #3b82f6; margin-bottom: 0.2rem; }
+        .rc-level-card.done .rc-level-num { color: #16a34a; }
+        .rc-level-name { font-size: 0.85rem; font-weight: 700; color: #1e293b; margin-bottom: 0.3rem; }
+        .rc-level-desc { font-size: 0.72rem; color: #64748b; line-height: 1.35; }
+        .rc-level-score { margin-top: 0.5rem; font-size: 0.78rem; font-weight: 700; color: #16a34a; }
+        .rc-dots-row { display: flex; gap: 8px; justify-content: center; margin: 0.7rem 0 1.1rem; }
+        .rc-dot { width: 13px; height: 13px; border-radius: 50%; background: #e2e8f0; border: 2px solid #cbd5e1; transition: background 0.2s; }
+        .rc-dot.done { background: #16a34a; border-color: #16a34a; }
+        .rc-dot.active { background: #3b82f6; border-color: #3b82f6; }
+        .rc-passage-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.4rem 1.6rem;
+            box-shadow: 0 3px 14px rgba(0,0,0,0.09);
+            margin-bottom: 1.4rem;
+        }
+        .rc-passage-title { font-size: 1.15rem; font-weight: 800; color: #1e293b; margin-bottom: 0.8rem; }
+        .rc-passage-text { font-size: 1.05rem; line-height: 1.85; color: #1e293b; font-family: Georgia, serif; }
+        .rc-listen-btn { margin-top: 1rem; display: inline-flex; align-items: center; gap: 6px; background: #eff6ff; color: #2563eb; border: 1.5px solid #bfdbfe; border-radius: 20px; padding: 6px 16px; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: background 0.15s; font-family: inherit; }
+        .rc-listen-btn:hover { background: #dbeafe; }
+        .rc-questions { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.2rem; }
+        .rc-question { background: #f8fafc; border-radius: 12px; padding: 1rem 1.1rem; border: 1.5px solid #e2e8f0; }
+        .rc-q-text { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.6rem; }
+        .rc-options { display: flex; flex-direction: column; gap: 6px; }
+        .rc-option { display: flex; align-items: center; gap: 10px; padding: 7px 12px; border-radius: 8px; cursor: pointer; border: 1.5px solid #e2e8f0; background: white; font-size: 0.9rem; color: #334155; transition: border-color 0.15s, background 0.15s; user-select: none; }
+        .rc-option:hover { border-color: #93c5fd; background: #eff6ff; }
+        .rc-option.selected { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; font-weight: 700; }
+        .rc-option.correct { border-color: #0891b2; background: #ecfeff; color: #0e7490; font-weight: 700; }
+        .rc-option.wrong { border-color: #dc2626; background: #fef2f2; color: #b91c1c; font-weight: 700; }
+        .rc-option.show-correct { border-color: #0891b2; background: #ecfeff; }
+        .rc-option-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #cbd5e1; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 900; }
+        .rc-option.selected .rc-option-dot { border-color: #3b82f6; background: #3b82f6; color: white; }
+        .rc-option.correct .rc-option-dot { border-color: #0891b2; background: #0891b2; color: white; }
+        .rc-option.show-correct .rc-option-dot { border-color: #0891b2; background: #0891b2; color: white; }
+        .rc-option.wrong .rc-option-dot { border-color: #dc2626; background: #dc2626; color: white; }
+        .rc-btn-row { display: flex; gap: 0.7rem; justify-content: center; margin-top: 0.5rem; flex-wrap: wrap; }
+        .rc-score-card { background: white; border-radius: 20px; padding: 2rem 1.5rem; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-width: 420px; margin: 2rem auto; }
+        .rc-score-emoji { font-size: 3rem; margin-bottom: 0.5rem; }
+        .rc-score-big { font-size: 2.5rem; font-weight: 900; margin: 0.5rem 0; }
+        .rc-score-big.great { color: #16a34a; }
+        .rc-score-big.ok { color: #d97706; }
+        .rc-score-big.low { color: #dc2626; }
+        .rc-score-msg { font-size: 1rem; color: #475569; margin-bottom: 1.5rem; }
+        .rc-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem; }
+        .rc-level-label { font-size: 0.85rem; font-weight: 700; color: #64748b; }
+    </style>
+    <!-- Google Analytics — החלף G-XXXXXXXXXX במזהה שלך -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+</head>
+<body>
+
+<nav class="toolbar">
+    <a href="index.html" class="toolbar-brand"><span class="accent">Lamdani</span> English</a>
+    <div class="toolbar-nav">
+        <div class="nav-menu-wrap">
+            <button class="nav-icon-btn" id="navMenuBtn" onclick="toggleNavMenu()">
+                <img src="images/ui/menu.png" class="nav-icon-img" alt="תפריט">
+            </button>
+            <div class="nav-menu-panel" id="navMenuPanel">
+                <a href="index.html" class="nav-menu-item">דף הבית</a>
+                <a href="אודות.html" class="nav-menu-item">אודות</a>
+                <a href="צור קשר.html" class="nav-menu-item">צור קשר</a>
+            </div>
+        </div>
+        <a href="index.html" class="nav-icon-btn">
+            <img src="images/ui/home.png" class="nav-icon-img" alt="בית">
+        </a>
+        <div id="userNavArea" style="position:relative"></div>
+    </div>
+</nav>
+
+<!-- ═══ 0. בחירת שלב ═══════════════════════════════════════════ -->
+<div id="viewSelect" class="reading-wrap" style="display:none">
+    <div id="selectNav"></div>
+    <h1 class="section-title">הבנת הנקרא</h1>
+    <p class="section-subtitle">בחר שלב</p>
+    <div class="rc-level-grid" id="levelGrid"></div>
+</div>
+
+<!-- ═══ 1. קטע קריאה ═══════════════════════════════════════════ -->
+<div id="viewPassage" class="reading-wrap" style="display:none">
+    <button class="back-link" id="passageBackBtn" onclick="backToSelect()">→ חזור לשלבים</button>
+    <div class="rc-header-row">
+        <span class="rc-level-label" id="passageLevelLabel"></span>
+        <div class="rc-dots-row" id="passageDots" style="margin:0"></div>
+    </div>
+    <div class="rc-passage-card">
+        <div class="rc-passage-title" id="passageTitle" dir="ltr"></div>
+        <div class="rc-passage-text" id="passageText" dir="ltr"></div>
+        <button class="rc-listen-btn" onclick="listenPassage()"><img src="images/ui/play.png" style="width:20px;height:20px;vertical-align:middle"> האזן לקטע</button>
+    </div>
+    <div class="rc-questions" id="passageQuestions"></div>
+    <div class="rc-btn-row">
+        <button class="btn-primary" id="checkBtn" onclick="checkAnswers()">בדוק תשובות</button>
+        <button class="btn-next-img" id="nextBtn" onclick="nextPassage()" style="display:none">הבא</button>
+    </div>
+</div>
+
+<!-- ═══ 2. סיום שלב ═══════════════════════════════════════════ -->
+<div id="viewDone" class="reading-wrap" style="display:none">
+    <button class="back-link" id="doneBackBtn" onclick="backToSelect()">→ חזור לשלבים</button>
+    <div id="doneContent"></div>
+</div>
+
+<script src="user.js"></script>
+<script>
+
+// ════════════════════════════════════════════════════════════════
+// נתוני הקריאה — 10 שלבים × 3 קטעים
+// ════════════════════════════════════════════════════════════════
+var READINGS = [
+  // ── שלב 1 ──────────────────────────────────────────────────
+  { level:1, name:'מתחיל', desc:'משפטים קצרים מאד, מילים בסיסיות', passages:[
+    { title:'My Family',
+      text:'My name is Tom. I am a boy. I am seven years old. I have a mom and a dad. My mom is nice. My dad is tall. I love my family.',
+      questions:[
+        {q:'מה שם הילד?', opts:['Tom','Bob','Tim'], ans:0},
+        {q:'בן כמה הילד?', opts:['שש','שבע','שמונה'], ans:1},
+        {q:'מי הגבוה במשפחה?', opts:['אמא','אבא','Tom'], ans:1},
+      ]
+    },
+    { title:'My Dog',
+      text:'I have a dog. His name is Max. Max is big and brown. He is my friend. Max runs fast and plays with me. I give him food every day. Max is very happy.',
+      questions:[
+        {q:'על איזה בעל חיים מדובר בקטע?', opts:['חתול','כלב','דג'], ans:1},
+        {q:'מה צבע בעל החיים?', opts:['שחור','חום','לבן'], ans:1},
+        {q:'מה הפעולות שמקס עושה?', opts:['ישן','רץ ומשחק','שר'], ans:1},
+      ]
+    },
+    { title:'My Classroom',
+      text:'I go to school every day. My classroom is big and clean. I have a kind teacher. Her name is Anna. I have five friends at school. We sit together and learn. I like school very much.',
+      questions:[
+        {q:'כיצד מתוארת הכיתה?', opts:['קטנה ומלוכלכת','גדולה ונקייה','ישנה'], ans:1},
+        {q:'מה שם המורה?', opts:['Sara','Lisa','Anna'], ans:2},
+        {q:'כמה חברים בבית הספר יש לגיבור הקטע?', opts:['שלושה','ארבעה','חמישה'], ans:2},
+      ]
+    },
+  ]},
+
+  // ── שלב 2 ──────────────────────────────────────────────────
+  { level:2, name:'בסיסי', desc:'משפטים קצרים, ימות השבוע, צבעים, מספרים', passages:[
+    { title:'A Sunny Day',
+      text:'Today is Monday. The sky is blue and the sun is bright. My friend Sara comes to my house. We drink juice and eat apples together. Then we play games in the garden. At four o\'clock, Sara goes home. It is a very good day.',
+      questions:[
+        {q:'על איזה יום מסופר?', opts:['ראשון','שני','שישי'], ans:1},
+        {q:'מי מגיעה לביקור?', opts:['Tom','Sara','Lisa'], ans:1},
+        {q:'מה הם שותים?', opts:['מים','חלב','מיץ'], ans:2},
+        {q:'איפה הם משחקים?', opts:['בבית','בגינה','בפארק'], ans:1},
+      ]
+    },
+    { title:'My Room',
+      text:'My room is small and clean. I have a bed, a desk, and a chair. On my desk there is a book and a pen. My favorite color is green, so my walls are green. There is a big window in my room. I can see the garden from the window. I love my room.',
+      questions:[
+        {q:'תאר את החדר', opts:['גדול ומלוכלך','קטן ונקי','ישן'], ans:1},
+        {q:'מה נמצא על השולחן?', opts:['צעצוע וכוס','ספר ועט','טלפון ותיק'], ans:1},
+        {q:'מה צבע הקירות?', opts:['כחול','אדום','ירוק'], ans:2},
+        {q:'מה ניתן לראות מהחלון?', opts:['הרחוב','הגינה','בית הספר'], ans:1},
+      ]
+    },
+    { title:'At the Market',
+      text:'On Saturday, my mom and I go to the market. We buy apples, bananas, and bread. We also buy milk and eggs. The fruits are fresh and not expensive. My mom pays and I carry the bags. We walk home together. My mom is happy and I am happy too.',
+      questions:[
+        {q:'מתי הם הולכים לשוק?', opts:['שישי','שבת','ראשון'], ans:1},
+        {q:'מה הם לא קונים?', opts:['תפוחים','דגים','לחם'], ans:1},
+        {q:'תאר את פירות השוק', opts:['יקרים','טריים ולא יקרים','ישנים'], ans:1},
+        {q:'מי נושא את השקיות?', opts:['אמא','המוכר','הילד'], ans:2},
+      ]
+    },
+  ]},
+
+  // ── שלב 3 ──────────────────────────────────────────────────
+  { level:3, name:'בסיסי+', desc:'תארים, לא סדיר, תיאורים אישיים', passages:[
+    { title:'My Best Friend',
+      text:'My best friend\'s name is David. He is twelve years old. He is tall and thin. He has short brown hair and green eyes. David is very funny and kind. He loves playing soccer and reading comics. We go to the same school and sit together in class. David is a great friend.',
+      questions:[
+        {q:'בן כמה דוד?', opts:['עשר','שתים עשרה','ארבע עשרה'], ans:1},
+        {q:'מה צבע עיניו?', opts:['כחול','חום','ירוק'], ans:2},
+        {q:'מה דוד אוהב לעשות?', opts:['לשחות ולבשל','לשחק כדורגל ולקרוא','לצייר ולשיר'], ans:1},
+        {q:'באיזה כיתות הם לומדים?', opts:['בכיתות שונות','ביחד בכיתה','בבית'], ans:1},
+      ]
+    },
+    { title:'A Rainy Day',
+      text:'Today the weather is bad. It is cold and rainy outside. I stay at home. At first I am bored, but then I find good things to do. I read my favorite book about animals. I also draw pictures with my colored pencils. Then my mom makes hot soup for lunch. The soup is delicious. I drink hot chocolate and feel warm. Maybe rainy days are not so bad!',
+      questions:[
+        {q:'תאר את מזג האוויר', opts:['חם ושמשי','קר וגשום','חמים ורוחי'], ans:1},
+        {q:'מה הדבר הראשון שהמספר עושה?', opts:['משתעמם','קורא ספר','משחק משחקים'], ans:0},
+        {q:'מה אמו מכינה לארוחת צהרים?', opts:['פיצה','מרק חם','כריכים'], ans:1},
+        {q:'מה הוא שותה?', opts:['מיץ','תה','שוקו חם'], ans:2},
+      ]
+    },
+    { title:'My School Day',
+      text:'Every day I wake up at seven o\'clock. I wash my face and brush my teeth. I eat breakfast — usually eggs and toast with butter. My school bag is heavy because I have many books. School starts at eight o\'clock. My favorite subject is science. After school, I do my homework. Then I play outside for one hour. At night, I go to bed at nine o\'clock.',
+      questions:[
+        {q:'באיזו שעה הוא מתעורר?', opts:['שש','שבע','שמונה'], ans:1},
+        {q:'מה הוא אוכל לארוחת בוקר?', opts:['דגני בוקר','ביצים וטוסט','כריך'], ans:1},
+        {q:'מה המקצוע האהוב עליו?', opts:['מתמטיקה','אמנות','מדע'], ans:2},
+        {q:'באיזו שעה הוא הולך לישון?', opts:['שמונה','תשע','עשר'], ans:1},
+      ]
+    },
+  ]},
+
+  // ── שלב 4 ──────────────────────────────────────────────────
+  { level:4, name:'יסודי', desc:'have/has, תיאורים מפורטים יותר', passages:[
+    { title:'My House',
+      text:'I live in a house with my family. Our house has six rooms: a kitchen, a living room, three bedrooms, and a bathroom. We have a garden behind the house. My father has a red car. In the kitchen, my mother has everything she needs to cook. We have a big television in the living room. My grandmother has a small room with many flowers. Our house is full of love and laughter.',
+      questions:[
+        {q:'כמה חדרים יש בבית?', opts:['ארבעה','חמישה','שישה'], ans:2},
+        {q:'מה צבע המכונית של אבא?', opts:['כחולה','אדומה','לבנה'], ans:1},
+        {q:'בחדרה של מי יש הרבה פרחים?', opts:['אמא','אחות','סבתא'], ans:2},
+        {q:'מה נמצא בסלון?', opts:['מחשב','טלוויזיה גדולה','פסנתר'], ans:1},
+      ]
+    },
+    { title:'My Hobby',
+      text:'My favorite hobby is cooking. I love making new dishes and trying different recipes. I have many cookbooks in my room. On weekends, I cook breakfast for my whole family. Last Sunday, I made pancakes with honey and bananas. My little brother has a big appetite — he ate five pancakes! My sister thinks I am a great cook. She always helps me in the kitchen. My dream is to open a restaurant one day.',
+      questions:[
+        {q:'מה התחביב האהוב של מספר הקטע?', opts:['קריאה','בישול','ציור'], ans:1},
+        {q:'מה עשה מספר הקטע ביום ראשון שעבר?', opts:['פיצה','פנקייקים','עוגה'], ans:1},
+        {q:'כמה פנקייקים אכל אחיו?', opts:['שלושה','ארבעה','חמישה'], ans:2},
+        {q:'מה החלום של מספר הקטע?', opts:['לטייל','להיות מורה','לפתוח מסעדה'], ans:2},
+      ]
+    },
+    { title:'Sports Day',
+      text:'Every Friday, our school has sports day. We play different games and sports. Some students love soccer and others prefer basketball. I love tennis, but our school does not have a tennis court, so I play soccer. My team has eleven players. Our coach is strong and very experienced. He teaches us how to play together as a team. After sports, we feel tired but very happy. Exercise is important for our health and our mood.',
+      questions:[
+        {q:'מתי מתקיים יום הספורט?', opts:['חמישי','שישי','שבת'], ans:1},
+        {q:'איזה ספורט מספר הקטע אוהב?', opts:['כדורגל','כדורסל','טניס'], ans:2},
+        {q:'כמה שחקנים יש בקבוצה?', opts:['תשעה','עשרה','אחד עשר'], ans:2},
+        {q:'מה המאמן מלמד?', opts:['ריצה','עבודת צוות','בישול'], ans:1},
+      ]
+    },
+  ]},
+
+  // ── שלב 5 ──────────────────────────────────────────────────
+  { level:5, name:'בינוני נמוך', desc:'פעילויות יומיום, בריאות, קניות', passages:[
+    { title:'A Day at the Park',
+      text:'On Sunday, our family goes to the big park near our house. The park has green grass, tall trees, and beautiful flowers of many colors. There is a small lake in the middle of the park. We can see ducks swimming in the water. My brother and I play soccer on the grass. My mom sits on a bench and reads a book. My dad buys ice cream for everyone. We eat our ice cream and watch the ducks. After two hours, we pack our things and walk home. It is a warm and sunny day. I love going to the park with my family.',
+      questions:[
+        {q:'מתי המשפחה הולכת לפארק?', opts:['יום שישי','יום ראשון','יום שבת'], ans:1},
+        {q:'מה יש באמצע הפארק?', opts:['עצים גדולים','אגם קטן','גשר'], ans:1},
+        {q:'מה האח ומספר הקטע עושים?', opts:['שוחים','משחקים כדורגל','רוכבים על אופניים'], ans:1},
+        {q:'מה אבא קונה לכולם?', opts:['שתייה','גלידה','כריכים'], ans:1},
+      ]
+    },
+    { title:'Staying Healthy',
+      text:'It is important to take care of our body every day. Every morning, I wash my face and brush my teeth. I eat breakfast with fruit and drink milk or water. At school, I have gym class twice a week. We run, jump, and play games together. After school, I ride my bike or play outside with my friends for one hour. In the evening, I eat dinner with my family. We usually have vegetables, rice, or pasta. I do not eat too much sugar or fast food. Before bed, I wash my hands and brush my teeth again. I sleep for nine hours every night. When I follow these healthy habits, I feel strong, happy, and ready for the next day.',
+      questions:[
+        {q:'כמה פעמים בשבוע יש שיעור התעמלות?', opts:['פעם אחת','פעמיים','שלוש פעמים'], ans:1},
+        {q:'מה הוא עושה אחרי בית הספר?', opts:['מסתכל בטלוויזיה','רוכב על אופניים או משחק בחוץ','קורא ספרים'], ans:1},
+        {q:'מה הוא אוכל בדרך כלל לארוחת ערב?', opts:['בשר ולחם','ירקות, אורז או פסטה','מזון מהיר'], ans:1},
+        {q:'כמה שעות הוא ישן בלילה?', opts:['שבע','תשע','אחת עשרה'], ans:1},
+      ]
+    },
+    { title:'At the Supermarket',
+      text:'Every Friday, my mom and I go to the supermarket to buy food for the week. The supermarket is big and has many sections. First, we go to the fruit and vegetable section. We buy apples, bananas, tomatoes, and carrots. Then we go to the bread section and buy two loaves of bread. After that, we buy milk, cheese, and eggs from the refrigerator section. My mom looks at the prices and chooses carefully. I help my mom put the food in the shopping cart. At the end, we pay at the counter. The total is ninety shekels. I carry one bag and my mom carries two. We walk to the car and drive home. I always enjoy shopping with my mom.',
+      questions:[
+        {q:'מתי הם הולכים לסופרמרקט?', opts:['יום חמישי','יום שישי','יום שבת'], ans:1},
+        {q:'מה הם קונים בקטע הראשון?', opts:['לחם וחלב','פירות וירקות','גבינה וביצים'], ans:1},
+        {q:'איך אמא בוחרת מה לקנות?', opts:['לפי הצבע','לפי הטעם','לפי המחיר'], ans:2},
+        {q:'כמה שקלים הם משלמים?', opts:['שבעים','שמונים','תשעים'], ans:2},
+      ]
+    },
+  ]},
+
+  // ── שלב 6 ──────────────────────────────────────────────────
+  { level:6, name:'בינוני', desc:'בית ספר, תחביבים, טיול בארץ', passages:[
+    { title:'My School',
+      text:'My school is a big, modern building with three floors. There are twenty classrooms, a library, a gym, a computer room, and a large yard. Every morning, school starts at eight o\'clock. My favorite subjects are science and art. In science class, we do experiments and learn about animals, plants, and the human body. In art class, we paint pictures and make things with clay. We have a school library with hundreds of books. I go there every week and borrow two or three books. My teacher is kind and patient. She explains everything clearly and helps us when we have a problem. I have twenty-five students in my class. We celebrate birthdays and holidays together. I really enjoy going to school and learning new things every day.',
+      questions:[
+        {q:'כמה קומות יש בבית הספר?', opts:['שתיים','שלוש','ארבע'], ans:1},
+        {q:'מה עושים בשיעור מדע?', opts:['מציירים','עושים ניסויים ולומדים על טבע וגוף האדם','משחקים משחקים'], ans:1},
+        {q:'כמה ספרים הוא שואל מהספרייה כל שבוע?', opts:['ספר אחד','שניים או שלושה','חמישה'], ans:1},
+        {q:'כמה תלמידים יש בכיתה?', opts:['עשרים','עשרים וחמישה','שלושים'], ans:1},
+      ]
+    },
+    { title:'My Free Time',
+      text:'After school and on weekends, I love to do different activities. My favorite hobby is drawing. I draw animals, people, and imaginary places. I have many colored pencils, pens, and paints in my room. On Fridays, I play soccer with my friends in the neighborhood. We play for two hours and then drink cold water and rest under a tree. I also like reading adventure books. My favorite book is about a boy who discovers a hidden treasure on a small island. Sometimes, I help my parents at home — I wash the dishes or clean my room. On Saturday evenings, my whole family watches a movie together. We make popcorn and sit on the sofa. I enjoy my free time very much because I can do what I love most.',
+      questions:[
+        {q:'מה התחביב האהוב של מספר הקטע?', opts:['כדורגל','ציור','קריאה'], ans:1},
+        {q:'כמה זמן הם משחקים כדורגל?', opts:['שעה','שעתיים','שלוש שעות'], ans:1},
+        {q:'על מה הספר האהוב עליו?', opts:['ילד שמגלה אוצר נסתר באי קטן','חייל אמיץ','חתול מדבר'], ans:0},
+        {q:'מה המשפחה עושה בערב שבת?', opts:['יוצאת לאכול','צופה בסרט ביחד','משחקת משחקי קופסא'], ans:1},
+      ]
+    },
+    { title:'A Trip to Jerusalem',
+      text:'Last month, our class went on a trip to Jerusalem. We traveled by bus for about one hour. First, we visited the Old City. The streets are narrow and the buildings are made of white and yellow stone. We walked through the market and saw many shops with spices, jewelry, and souvenirs. I bought a small keychain for my mother. Then we went to see the Western Wall. Many people were praying there quietly. It was a very special place. After that, we ate lunch near a beautiful garden. We had sandwiches and fruit that we brought from home. In the afternoon, we visited a museum about the history of Jerusalem and learned many interesting facts. The bus ride home was long because of traffic on the road. I was tired, but very happy. It was one of the best school trips I have ever had.',
+      questions:[
+        {q:'כמה זמן לוקחת הנסיעה לירושלים?', opts:['חצי שעה','כשעה','שעתיים'], ans:1},
+        {q:'מה הוא קנה בשוק לאמא?', opts:['תבלינים','מחזיק מפתחות קטן','תכשיטים'], ans:1},
+        {q:'איפה אנשים התפללו?', opts:['בכנסייה','בכותל המערבי','במסגד'], ans:1},
+        {q:'מה הם אכלו בצהרים?', opts:['אכלו במסעדה','כריכים ופירות שהביאו מהבית','פלאפל מהשוק'], ans:1},
+      ]
+    },
+  ]},
+
+  // ── שלב 7 ──────────────────────────────────────────────────
+  { level:7, name:'בינוני+', desc:'עונות, חגים, בעלי חיים בטבע', passages:[
+    { title:'The Four Seasons in Israel',
+      text:'Israel has four beautiful seasons, and each one is very different from the others. In spring, the weather becomes warm and pleasant. Flowers of many colors bloom all over the country — red, yellow, white, and purple. The trees are green and full of life. Birds sing in the morning and build their nests in the branches. In summer, it is very hot and dry. The sun shines all day long and the sky is bright blue. Children finish school and enjoy their summer vacation. Many families go to the beach or travel to cooler places in the mountains. In autumn, the weather becomes cooler and more comfortable. The days get shorter and the nights get longer. Some trees lose their leaves and the ground is covered in beautiful yellow and orange colors. In winter, it rains a lot in many parts of Israel. Some mountains in the north get snow. People wear warm coats and scarves. Each season brings its own special beauty, foods, and activities.',
+      questions:[
+        {q:'מה מיוחד באביב בישראל?', opts:['יורד שלג','פרחים בצבעים רבים פורחים','עלים נופלים'], ans:1},
+        {q:'מה קורה בקיץ?', opts:['יורד גשם רב','חם ויבש, ילדים בחופש','קר מאוד'], ans:1},
+        {q:'מה מיוחד בסתיו?', opts:['ירד שלג','הימים מתקצרים ועצים מאבדים עלים','פרחים פורחים'], ans:1},
+        {q:'איפה יורד שלג בחורף?', opts:['בתל אביב','בהרים בצפון','בכל הארץ'], ans:1},
+      ]
+    },
+    { title:'Holidays in Our Family',
+      text:'Our family loves celebrating holidays together. On Rosh Hashanah, the Jewish New Year, we eat apples dipped in honey and hope for a sweet new year. Grandma makes delicious chicken soup and we all sit around the big table. On Passover, we clean the whole house and remove all the bread. We have a special dinner called a Seder. We read from the Haggadah and sing songs together. The children look for the hidden matzah called the Afikomen, and the winner gets a small prize. On Hanukkah, we light the menorah every evening for eight nights. We eat sufganiyot — sweet donuts filled with strawberry jam. Children receive gifts and play with the spinning top called a dreidel. On Purim, we dress up in costumes and give food packages to friends and neighbors. Every holiday has its own special food, songs, and traditions. These are some of my happiest memories with my family.',
+      questions:[
+        {q:'מה אוכלים בראש השנה?', opts:['מצות ויין','תפוחים בדבש','סופגניות'], ans:1},
+        {q:'מה מחפשים הילדים בפסח?', opts:['את ההגדה','את האפיקומן','את הנרות'], ans:1},
+        {q:'כמה לילות מדליקים חנוכייה?', opts:['שישה','שמונה','עשרה'], ans:1},
+        {q:'מה עושים בפורים לפי הקטע?', opts:['אוכלים מצות','מתחפשים ונותנים משלוח מנות','הולכים לים'], ans:1},
+      ]
+    },
+    { title:'Animals Around Us',
+      text:'Israel is home to many different wild animals. In the forests and mountains, you can find deer, foxes, and jackals. Near rivers and lakes, you can see many types of birds, frogs, and turtles. The Mediterranean Sea is home to dolphins, colorful fish, and many other sea creatures. In the Negev desert in the south, there are camels, ibex, and many types of lizards and snakes. The ibex is a special wild goat that can climb very steep rocks with amazing skill. Every spring, millions of birds fly over Israel on their way from Africa to Europe. This is called the bird migration, and birdwatchers from around the world come to Israel to see it. It is important to protect wild animals and the places where they live. We must not throw garbage in nature and must not disturb the animals. Every animal has an important role in keeping nature healthy and balanced.',
+      questions:[
+        {q:'איזה בעלי חיים ניתן למצוא ביערות ובהרים?', opts:['דולפינים ודגים','צבי, שועלים ותנים','גמלים ולטאות'], ans:1},
+        {q:'מה מיוחד ביעל?', opts:['הוא שוחה מצוין','הוא יכול לטפס על סלעים תלולים','הוא ציפור נדירה'], ans:1},
+        {q:'מתי ציפורים עוברות מעל ישראל?', opts:['בקיץ','באביב','בחורף'], ans:1},
+        {q:'מה אסור לעשות בטבע לפי הקטע?', opts:['לצלם תמונות','לזרוק אשפה ולהפריע לחיות','לטייל בשבילים'], ans:1},
+      ]
+    },
+  ]},
+
+  // ── שלב 8 ──────────────────────────────────────────────────
+  { level:8, name:'מתקדם נמוך', desc:'אוכל בעולם, ספורט, יומן אישי — קטעים ארוכים יותר', passages:[
+    { title:'Food from Around the World',
+      text:'Every country in the world has its own special food and cooking traditions. In Italy, people love to eat pasta and pizza. Pizza is made from dough, tomato sauce, and cheese, and you can add many toppings like mushrooms, peppers, and olives. In Japan, a very popular dish is sushi — small pieces of rice with fresh fish on top. Japanese people also drink green tea and enjoy eating noodle soup called ramen. In Mexico, people love tacos — a corn tortilla filled with meat, beans, cheese, and vegetables. Indian food is known for its rich and colorful spices. A popular dish is curry — a thick and tasty sauce made with many spices, served with rice or bread. In the Middle East, we eat hummus, falafel, and pita bread. Many Israeli families make a big and special Shabbat dinner every Friday evening, with dishes like chicken soup, salads, and rice. Food connects us to our culture, our family, and our history. Trying food from other countries is a wonderful way to learn about the world and its people.',
+      questions:[
+        {q:'ממה עשוי פיצה?', opts:['בצק, רוטב עגבניות וגבינה','אורז ודגים','עלים ורוטב'], ans:0},
+        {q:'מה זה סושי?', opts:['מרק אטריות','חתיכות אורז עם דג טרי','טורטייה עם שעועית'], ans:1},
+        {q:'במה ידוע האוכל ההודי?', opts:['בפשטות שלו','בתבלינים העשירים שלו','בגודל המנות'], ans:1},
+        {q:'מה משפחות ישראליות רבות עושות ביום שישי בערב?', opts:['הולכות לסופרמרקט','עושות ארוחת שבת מיוחדת','נוסעות לחו"ל'], ans:1},
+        {q:'מה הדרך הטובה ללמוד על עמים אחרים לפי הקטע?', opts:['לנסוע לארצות אחרות','לנסות את האוכל שלהם','לקרוא עליהם בספרים'], ans:1},
+      ]
+    },
+    { title:'My Favorite Sport',
+      text:'Soccer is the most popular sport in the world, and it is my favorite sport too. Every Saturday morning, I play soccer in the local league with my team. Our team has fifteen players and we practice together three times a week — on Monday, Wednesday, and Friday afternoons. Our coach teaches us how to pass the ball correctly, how to defend our goal, and how to score. A soccer field is divided into two halves, and each team has eleven players on the field at a time. The goalkeeper stands in front of the goal and tries to stop the ball from going in. A soccer match is ninety minutes long, divided into two halves of forty-five minutes each. I play in the position of midfielder — I help both in defense and in attack. Last season, our team won the regional championship and we received a beautiful golden trophy. It was the happiest moment of my soccer life. Soccer teaches me teamwork, discipline, and how to deal with both winning and losing. I dream of playing for the national team one day.',
+      questions:[
+        {q:'כמה שחקנים יש בקבוצה שלו?', opts:['אחד עשר','חמישה עשר','עשרים'], ans:1},
+        {q:'כמה זמן נמשך משחק כדורגל?', opts:['שישים דקות','תשעים דקות','שעתיים'], ans:1},
+        {q:'באיזה עמדה הוא משחק?', opts:['שוער','מגן','קשר'], ans:2},
+        {q:'מה הקבוצה זכתה בסוף העונה?', opts:['גביע כסף','אליפות אזורית עם גביע זהב','מדליות'], ans:1},
+        {q:'מה ספורט מלמד לפי הקטע?', opts:['רק כיצד לנצח','עבודת צוות, משמעת וקבלת תוצאות','כיצד לרוץ מהר'], ans:1},
+      ]
+    },
+    { title:'A Letter to My Pen Pal',
+      text:'Dear Emma, my name is Noa and I am eleven years old. I live in a small city near the sea in Israel. My city is very beautiful — the streets are lined with tall palm trees and in summer, everyone goes to the beach to swim and play in the sand. I live with my parents, my little brother Yoav who is eight years old, and our dog Kuki. Kuki is a golden retriever and he loves to run on the beach and play in the water. I am in fifth grade at elementary school. My favorite subjects are English, art, and physical education. My daily routine starts at seven o\'clock when I wake up and eat breakfast with my family. I go to school by bus and school finishes at two o\'clock. After doing my homework, I go to a dance class three times a week. I have been dancing since I was five years old, and I love it very much. On Fridays, we have a big family dinner. My grandparents come to our house and my grandmother always cooks something delicious. I would love to hear about your life and your country. Please write back soon! Your friend, Noa.',
+      questions:[
+        {q:'היכן נואה גרה?', opts:['ליד הרים','ליד הים','ליד מדבר'], ans:1},
+        {q:'מי גר עם נואה בבית?', opts:['הוריה ואחותה','הוריה, אחיה הקטן והכלב','רק הוריה'], ans:1},
+        {q:'לאיזה חוג נואה הולכת?', opts:['שחייה','ריקוד','ציור'], ans:1},
+        {q:'מתי מגיעים הסבא וסבתא?', opts:['בשבת בבוקר','ביום שישי לארוחת ערב','כל יום'], ans:1},
+        {q:'מאיזה גיל נואה רוקדת?', opts:['מגיל שלוש','מגיל חמש','מגיל שבע'], ans:1},
+      ]
+    },
+  ]},
+
+  // ── שלב 9 ──────────────────────────────────────────────────
+  { level:9, name:'מתקדם', desc:'טכנולוגיה, קריאה, סביבה — קטעים ארוכים עם אוצר מילים עשיר', passages:[
+    { title:'Technology in Our Daily Life',
+      text:'Technology is a very big part of our daily lives today. Every morning, my parents use their smartphones to read the news and check messages. At school, we use computers and tablets in many lessons. Our teacher shows us educational videos on the screen, and we do exercises and quizzes on special websites. The internet helps us find information quickly for school projects. Instead of spending hours in the library looking for information in heavy books, I can find what I need in just a few minutes on a computer. Technology also helps families stay connected. We can make video calls and see the faces of grandparents and relatives who live far away. However, it is very important to use technology carefully and wisely. We should not spend too many hours looking at screens — it can make our eyes tired and make it hard to fall asleep at night. We should also never share personal information like our address or phone number with strangers on the internet. The most important thing is to find a good balance: use technology for learning and communication, but also spend time outside, reading books, and talking with friends and family face to face.',
+      questions:[
+        {q:'איך טכנולוגיה עוזרת בלימודים?', opts:['מחליפה מורים לגמרי','עוזרת למצוא מידע ולעשות תרגילים','אין לה השפעה על הלימודים'], ans:1},
+        {q:'מה יכול להזיק משימוש יתר במסכים?', opts:['כאבי גב','עיניים עייפות וקושי בשינה','כאבי ידיים'], ans:1},
+        {q:'מה אסור לשתף עם זרים באינטרנט?', opts:['תמונות של הטבע','ציורים שציירנו','פרטים אישיים כמו כתובת ומספר טלפון'], ans:2},
+        {q:'מה הדבר החשוב ביותר בשימוש בטכנולוגיה לפי הקטע?', opts:['להשתמש בה כמה שיותר','למצוא איזון ולא לוותר על פעילויות אחרות','לקנות את המכשיר החדש ביותר'], ans:1},
+        {q:'מה ניתן לעשות עם שיחות וידאו?', opts:['לראות פנים של אנשים שגרים רחוק','לשחק משחקים','להזמין אוכל'], ans:0},
+      ]
+    },
+    { title:'Why Reading Is Important',
+      text:'Reading is one of the most important and valuable skills a person can have. When we read, we learn new words and improve our language. We discover new ideas and learn about places, people, animals, and events that we have never experienced ourselves. Reading a good book is like going on an exciting adventure without leaving your home — every book takes you to a different world. Research shows that children who read regularly have larger vocabularies, better grades at school, and stronger concentration. They can also focus for longer periods of time and have a stronger imagination and creativity. There are many different types of books to choose from: adventure stories, fairy tales, animal books, history books, science books, poetry, and much more. You do not need to read long books to enjoy reading. Short stories and picture books are wonderful too. Many children say they do not like reading because they have not found the right book for them yet. The best advice is to try different types of books until you find one that you absolutely cannot put down. Ask your teacher or school librarian for recommendations, or ask a friend what they are currently reading. Once you find the right book, you will understand why reading is such a wonderful gift.',
+      questions:[
+        {q:'מה היתרונות של ילדים שקוראים באופן קבוע?', opts:['ציונים נמוכים יותר','אוצר מילים גדול, ציונים טובים וריכוז חזק','הם שקטים יותר בכיתה'], ans:1},
+        {q:'למה הכותב משווה קריאת ספר טוב?', opts:['לצפייה בטלוויזיה','להרפתקה ללא יציאה מהבית','לשיחה עם חבר'], ans:1},
+        {q:'אילו סוגי ספרים מוזכרים בקטע?', opts:['רק ספרי הרפתקאות','רק ספרים מדעיים','הרפתקאות, אגדות, מדע, היסטוריה, שירה ועוד'], ans:2},
+        {q:'מה מוצע לילדים שלא אוהבים לקרוא?', opts:['לא לקרוא בכלל','לנסות סוגים שונים של ספרים עד שמוצאים את הנכון','לקרוא רק ספרים קצרים'], ans:1},
+        {q:'ממי ניתן לבקש המלצה על ספר טוב?', opts:['מאיש זר ברחוב','ממורה, ספרנית או חבר','מהחנות'], ans:1},
+      ]
+    },
+    { title:'Taking Care of Our Environment',
+      text:'The environment is everything around us — the air we breathe, the water we drink, the land we live on, and all the plants and animals that share the planet with us. Today, our environment faces some serious problems that we all need to know about. Air pollution happens when cars, buses, and factories release smoke and gases into the air. In big cities, the air can be dirty, and this can cause health problems for children and elderly people. Water pollution happens when people throw garbage or chemicals into rivers, lakes, and the sea. This is very dangerous for the fish and animals that live in the water. Another big problem is plastic waste. Every year, millions of plastic bags and bottles end up in the sea, where sea animals can get stuck in them or eat them by mistake. The good news is that every one of us can help make things better. We can separate our garbage so that paper, plastic, and glass can be recycled. We can use cloth bags instead of plastic bags when we go shopping. We can save water by turning off the tap while brushing our teeth. We can turn off lights when we leave a room to save electricity. Every small action matters. Our planet is our only home, and we must take care of it.',
+      questions:[
+        {q:'מה גורם לזיהום האוויר?', opts:['רק מפעלים','מכוניות, אוטובוסים ומפעלים','רק מכוניות'], ans:1},
+        {q:'על מי זיהום האוויר משפיע במיוחד?', opts:['על מבוגרים צעירים ובריאים','על ילדים וקשישים','על בעלי חיים בלבד'], ans:1},
+        {q:'מה מסוכן בשקיות וקבוקי פלסטיק בים?', opts:['הם מכוערים','בעלי חיים נתקעים בהם או אוכלים אותם','הם חוסמים ספינות'], ans:1},
+        {q:'מה ניתן לעשות כדי לחסוך מים?', opts:['לשתות פחות מים','לסגור את הברז בזמן צחצוח שיניים','לא להתרחץ'], ans:1},
+        {q:'מדוע כדאי לכבות אורות בעזיבת חדר?', opts:['כדי לישון טוב יותר','כדי לחסוך חשמל','כדי לא להפריע לאחרים'], ans:1},
+      ]
+    },
+  ]},
+
+  // ── שלב 10 ──────────────────────────────────────────────────
+  { level:10, name:'תחילת חטיבה', desc:'קטעים ארוכים ומורכבים — רמת תחילת חטיבת ביניים', passages:[
+    { title:'The History of the State of Israel',
+      text:'The State of Israel was officially established on May 14, 1948. This was a historic and very emotional moment for the Jewish people, who had dreamed of returning to their ancient homeland for thousands of years. Before the establishment of the state, the Land of Israel was under British control. After World War Two ended, and after the terrible Holocaust in which six million Jewish people were murdered in Europe, the United Nations voted to create a Jewish state in the Land of Israel. Jewish leaders accepted the plan happily, but Arab leaders rejected it. On the very day that Israel declared independence, five Arab countries attacked the new state. Despite having very few soldiers and weapons, the young Israeli army defended the country successfully. This war is called the War of Independence. In the years that followed, millions of Jewish immigrants arrived in Israel from many different countries — from Europe, from Arab countries in the Middle East and North Africa, and later from Ethiopia and the former Soviet Union. Each wave of immigrants brought their own language, culture, food, and traditions, and together they built the diverse and colorful Israeli society that exists today. Israel has achieved remarkable things in science, medicine, agriculture, and technology. It is a small country with a very big and fascinating history.',
+      questions:[
+        {q:'מתי הוכרזה מדינת ישראל?', opts:['מאי 1947','מאי 1948','יוני 1948'], ans:1},
+        {q:'מה האו"ם הצביע להקים?', opts:['מדינה ערבית בלבד','מדינה יהודית בארץ ישראל','שלטון בריטי ממושך'], ans:1},
+        {q:'מה קרה ביום הכרזת העצמאות?', opts:['חגיגות שלוות בכל הארץ','חמש מדינות ערביות תקפו את ישראל','הבריטים נשארו לשמור על הסדר'], ans:1},
+        {q:'מאיפה הגיעו עולים לישראל לאחר הקמתה?', opts:['רק מאירופה','ממדינות רבות כולל אתיופיה וברית המועצות','רק מהמזרח התיכון'], ans:1},
+        {q:'במה ישראל השיגה הישגים בולטים?', opts:['רק בספורט','במדע, רפואה, חקלאות וטכנולוגיה','רק בתיירות'], ans:1},
+        {q:'מה הקטע אומר על גודלה של ישראל?', opts:['היא מדינה גדולה מאוד','היא מדינה קטנה עם היסטוריה עשירה','גודלה אינו מוזכר'], ans:1},
+      ]
+    },
+    { title:'How Our Body Works',
+      text:'The human body is an incredible and complex machine made up of many different systems that all work together to keep us alive and healthy. The skeletal system is the framework of our body — it is made up of 206 bones that support our body, protect our important organs, and allow us to stand up, walk, and move in many ways. Connected to the bones are our muscles. We have more than 600 muscles in our body! Some muscles, like the heart muscle, work automatically without us needing to think about them. Others, like the muscles in our arms and legs, we control ourselves. The digestive system is responsible for breaking down the food we eat into nutrients that our body can use for energy and growth. This process starts in the mouth when we chew our food, continues in the stomach, and finishes in the intestines, where the nutrients pass into the blood. The respiratory system brings oxygen into our body. When we breathe in, air enters through the nose and mouth, travels down through the windpipe, and reaches the lungs. The lungs pass the oxygen into the blood. The circulatory system moves blood around the whole body. The heart pumps the blood — it beats about seventy times per minute, every minute of every day, without ever stopping. To keep all these amazing systems working well, we need to eat healthy food, drink enough water, exercise regularly, sleep enough hours, and breathe clean air.',
+      questions:[
+        {q:'כמה עצמות יש בגוף האדם?', opts:['186','206','260'], ans:1},
+        {q:'מה שריר הלב מיוחד בו?', opts:['הוא הגדול ביותר בגוף','הוא עובד אוטומטית בלי שנחשוב עליו','ניתן לשלוט בו ידנית'], ans:1},
+        {q:'איפה מתחיל תהליך העיכול?', opts:['בקיבה','בפה','במעיים'], ans:1},
+        {q:'כמה פעמים פועם הלב בדקה?', opts:['חמישים','שבעים','תשעים'], ans:1},
+        {q:'מה מערכת הנשימה עושה?', opts:['מעבירה מזון לדם','מביאה חמצן לגוף','מסירה פסולת מהגוף'], ans:1},
+        {q:'מה נחוץ כדי לשמור על כל המערכות בגוף?', opts:['רק שינה ומנוחה','אוכל בריא, מים, פעילות גופנית, שינה ואוויר נקי','רק תזונה נכונה'], ans:1},
+      ]
+    },
+    { title:'Famous Inventions That Changed the World',
+      text:'Throughout history, people have invented remarkable things that completely changed the way we live. One of the most important inventions of all time is the wheel. It was invented about five thousand years ago in Mesopotamia, in the area that is today the country of Iraq. The wheel made it possible to transport heavy objects over long distances much more easily. Another revolutionary invention was the printing press, invented by Johannes Gutenberg in Germany around the year 1440. Before the printing press existed, books had to be written by hand and only rich people could own them. After the invention of the printing press, books could be produced very quickly and cheaply, and knowledge began to spread to ordinary people all over Europe. This helped education grow and new ideas to develop. The electric light bulb, invented by Thomas Edison in 1879, changed night into day. Before electricity, people used candles and oil lamps to light their homes. The telephone, invented by Alexander Graham Bell in 1876, allowed people to speak to each other from far away for the first time in history. Today, the smartphone — a device that combines a telephone, a computer, a camera, and much more — is used by billions of people all around the world. Each of these great inventions built on the ideas that came before it. Who knows what amazing inventions the next generation of young people will create?',
+      questions:[
+        {q:'מתי ואיפה הומצא הגלגל?', opts:['לפני 3,000 שנה בסין','לפני 5,000 שנה במסופוטמיה','לפני 2,000 שנה ביוון'], ans:1},
+        {q:'מה השתנה אחרי המצאת מכונת הדפוס?', opts:['ספרים הפכו ליקרים יותר','ספרים יוצרו מהר וזול וידע התפשט','רק עשירים יכלו לקרוא'], ans:1},
+        {q:'מי המציא את הנורה החשמלית?', opts:['אלכסנדר גרהם בל','יוהנס גוטנברג','תומס אדיסון'], ans:2},
+        {q:'מה היה משמש לפני החשמל לתאורת בתים?', opts:['נרות ומנורות שמן','עצים ופחם','לפידים'], ans:0},
+        {q:'מה הסמארטפון משלב?', opts:['טלפון ורדיו','טלפון, מחשב, מצלמה ועוד','רק טלפון ומצלמה'], ans:1},
+        {q:'באיזו שאלה הכותב מסיים את הקטע?', opts:['מי ימציא גלגל חדש','מה ההמצאות המדהימות שהדור הצעיר הבא ייצור','האם יש עוד המצאות לגלות'], ans:1},
+      ]
+    },
+  ]},
+];
+
+// ════════════════════════════════════════════════════════════════
+// מצב
+// ════════════════════════════════════════════════════════════════
+var curLevel    = 0;
+var curPassage  = 0;
+var userAnswers = [];
+var levelCorrect = 0, levelTotal = 0;
+var answered    = false;
+var isDirect    = location.search.indexOf('direct=1') !== -1;
+
+// ════════════════════════════════════════════════════════════════
+// ניווט
+// ════════════════════════════════════════════════════════════════
+var VIEWS = ['viewSelect','viewPassage','viewDone'];
+function showView(id) {
+    VIEWS.forEach(function(v){ document.getElementById(v).style.display = 'none'; });
+    document.getElementById(id).style.display = 'block';
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function toggleNavMenu() {
+    var p = document.getElementById('navMenuPanel');
+    p.style.display = p.style.display === 'block' ? 'none' : 'block';
+}
+
+// ════════════════════════════════════════════════════════════════
+// מסך בחירת שלב
+// ════════════════════════════════════════════════════════════════
+function buildSelectNav() {
+    var backLabel = isDirect ? '→ חזור לפרקים' : '→ חזור';
+    var backAction = isDirect ? 'window.location.href=\'index.html?level=elementary\'' : 'window.history.back()';
+    document.getElementById('selectNav').innerHTML =
+        '<button class="back-link" onclick="' + backAction + '" style="margin-bottom:0.8rem">' + backLabel + '</button>';
+}
+
+function buildLevelGrid() {
+    var loggedIn = typeof getUser === 'function' && !!getUser();
+    var p = loggedIn && typeof getProgress === 'function' ? (getProgress()['reading'] || {}) : {};
+    var html = '';
+    READINGS.forEach(function(lvl, i) {
+        var saved = loggedIn ? (p[i] || {}) : {};
+        var done  = saved.best !== undefined;
+        var score = done ? saved.best : null;
+        var scoreHtml = done ? '<div class="rc-level-score">✓ ציון: ' + score + '%</div>' : '';
+        html += '<div class="rc-level-card ' + (done ? 'done' : '') + '" onclick="openLevel(' + i + ')">' +
+            '<div class="rc-level-num">' + lvl.level + '</div>' +
+            '<div class="rc-level-name">' + lvl.name + '</div>' +
+            '<div class="rc-level-desc">' + lvl.desc + '</div>' +
+            scoreHtml +
+        '</div>';
+    });
+    document.getElementById('levelGrid').innerHTML = html;
+}
+
+function openLevel(i) {
+    curLevel   = i;
+    curPassage = 0;
+    levelCorrect = 0;
+    levelTotal   = 0;
+    showPassage();
+}
+
+function backToSelect() {
+    buildLevelGrid();
+    showView('viewSelect');
+}
+
+// ════════════════════════════════════════════════════════════════
+// קטע קריאה
+// ════════════════════════════════════════════════════════════════
+function showPassage() {
+    answered   = false;
+    userAnswers = [];
+    var lvl = READINGS[curLevel];
+    var pas = lvl.passages[curPassage];
+
+    // כותרת ותגית
+    document.getElementById('passageLevelLabel').textContent =
+        'שלב ' + lvl.level + ' — קטע ' + (curPassage + 1) + ' מתוך 3';
+
+    // נקודות התקדמות
+    var dotsHtml = '';
+    for (var d = 0; d < 3; d++) {
+        var cls = d < curPassage ? 'done' : (d === curPassage ? 'active' : '');
+        dotsHtml += '<div class="rc-dot ' + cls + '"></div>';
+    }
+    document.getElementById('passageDots').innerHTML = dotsHtml;
+
+    // כפתור חזרה
+    document.getElementById('passageBackBtn').onclick = backToSelect;
+
+    // טקסט
+    document.getElementById('passageTitle').textContent = pas.title;
+    document.getElementById('passageText').textContent  = pas.text;
+
+    // שאלות
+    var qHtml = '';
+    pas.questions.forEach(function(q, qi) {
+        qHtml += '<div class="rc-question" id="q' + qi + '">' +
+            '<div class="rc-q-text">' + (qi+1) + '. ' + q.q + '</div>' +
+            '<div class="rc-options">';
+        q.opts.forEach(function(opt, oi) {
+            qHtml += '<div class="rc-option" id="q' + qi + 'o' + oi + '" onclick="selectOption(' + qi + ',' + oi + ')">' +
+                '<div class="rc-option-dot"></div>' + opt +
+            '</div>';
+        });
+        qHtml += '</div></div>';
+    });
+    document.getElementById('passageQuestions').innerHTML = qHtml;
+
+    document.getElementById('checkBtn').style.display = '';
+    document.getElementById('nextBtn').style.display  = 'none';
+
+    showView('viewPassage');
+}
+
+function selectOption(qi, oi) {
+    if (answered) return;
+    var pas = READINGS[curLevel].passages[curPassage];
+    // הסר בחירה קודמת באותה שאלה
+    pas.questions[qi].opts.forEach(function(_, idx) {
+        document.getElementById('q' + qi + 'o' + idx).classList.remove('selected');
+    });
+    document.getElementById('q' + qi + 'o' + oi).classList.add('selected');
+    userAnswers[qi] = oi;
+}
+
+function checkAnswers() {
+    var pas = READINGS[curLevel].passages[curPassage];
+    var allAnswered = true;
+    pas.questions.forEach(function(q, qi) {
+        if (userAnswers[qi] === undefined) allAnswered = false;
+    });
+    if (!allAnswered) {
+        alert('יש לענות על כל השאלות לפני הבדיקה.');
+        return;
+    }
+
+    answered = true;
+    var correct = 0;
+    pas.questions.forEach(function(q, qi) {
+        var chosen = userAnswers[qi];
+        q.opts.forEach(function(_, oi) {
+            var el  = document.getElementById('q' + qi + 'o' + oi);
+            var dot = el.querySelector('.rc-option-dot');
+            el.classList.remove('selected');
+            if (oi === q.ans) {
+                el.classList.add(chosen === q.ans ? 'correct' : 'show-correct');
+                dot.textContent = '✓';
+            }
+            if (oi === chosen && chosen !== q.ans) {
+                el.classList.add('wrong');
+                dot.textContent = '✗';
+            }
+        });
+        if (chosen === q.ans) correct++;
+    });
+
+    levelCorrect += correct;
+    levelTotal   += pas.questions.length;
+
+    document.getElementById('checkBtn').style.display = 'none';
+    var isLast = curPassage === 2;
+    var nextBtn = document.getElementById('nextBtn');
+    if (isLast) { nextBtn.className = 'btn-primary'; nextBtn.textContent = 'סיום השלב ←'; }
+    else        { nextBtn.className = 'btn-next-img'; nextBtn.textContent = 'קטע הבא'; }
+    nextBtn.style.display = '';
+}
+
+function nextPassage() {
+    if (curPassage < 2) {
+        curPassage++;
+        showPassage();
+    } else {
+        showLevelDone();
+    }
+}
+
+// ════════════════════════════════════════════════════════════════
+// השמעה
+// ════════════════════════════════════════════════════════════════
+var prefVoice = null;
+function initVoices() {
+    var v = speechSynthesis.getVoices();
+    prefVoice = v.find(function(x){ return x.name.includes('Zira'); }) ||
+                v.find(function(x){ return x.lang === 'en-US'; }) ||
+                v.find(function(x){ return x.lang.startsWith('en'); }) || null;
+}
+speechSynthesis.onvoiceschanged = initVoices;
+initVoices();
+
+function listenPassage() {
+    speechSynthesis.cancel();
+    var txt = document.getElementById('passageText').textContent;
+    var u   = new SpeechSynthesisUtterance(txt);
+    u.lang  = 'en-US'; u.rate = 0.88;
+    if (prefVoice) u.voice = prefVoice;
+    speechSynthesis.speak(u);
+}
+
+// ════════════════════════════════════════════════════════════════
+// סיום שלב
+// ════════════════════════════════════════════════════════════════
+function showLevelDone() {
+    var pct  = Math.round(levelCorrect / levelTotal * 100);
+    var lvl  = READINGS[curLevel];
+    var emoji, cls, msg;
+    if (pct >= 85) { emoji = '🏆'; cls = 'great'; msg = 'כל הכבוד! ביצועים מצוינים!'; }
+    else if (pct >= 60) { emoji = '👍'; cls = 'ok'; msg = 'יפה! אפשר לשפר עוד.'; }
+    else { emoji = '💪'; cls = 'low'; msg = 'כדאי לקרוא שוב את הקטעים ולנסות שנית.'; }
+
+    // שמור התקדמות — רק אם יש משתמש רשום
+    if (typeof getUser === 'function' && getUser() && typeof getProgress === 'function') {
+        var p = getProgress();
+        if (!p.reading) p.reading = {};
+        var prev = p.reading[curLevel] ? p.reading[curLevel].best : 0;
+        if (pct > (prev || 0)) {
+            p.reading[curLevel] = { best: pct };
+            if (typeof saveProgress === 'function') saveProgress(p);
+        }
+    }
+
+    document.getElementById('doneContent').innerHTML =
+        '<div class="rc-score-card">' +
+            '<div class="rc-score-emoji">' + emoji + '</div>' +
+            '<div style="font-size:1.1rem;font-weight:700;color:#1e293b;margin-bottom:0.3rem">שלב ' + lvl.level + ' — ' + lvl.name + '</div>' +
+            '<div class="rc-score-big ' + cls + '">' + pct + '%</div>' +
+            '<div class="rc-score-msg">' + levelCorrect + ' מתוך ' + levelTotal + ' תשובות נכונות<br>' + msg + '</div>' +
+            '<div style="display:flex;gap:0.7rem;justify-content:center;flex-wrap:wrap">' +
+                '<button class="btn-secondary" onclick="openLevel(' + curLevel + ')">נסה שנית ↺</button>' +
+                '<button class="btn-primary" onclick="backToSelect()">חזור לשלבים</button>' +
+                (curLevel < 9 ? '<button class="btn-primary" onclick="openLevel(' + (curLevel+1) + ')">שלב הבא ←</button>' : '') +
+            '</div>' +
+        '</div>';
+
+    showView('viewDone');
+}
+
+// ════════════════════════════════════════════════════════════════
+// אתחול
+// ════════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof renderUserNav === 'function') renderUserNav();
+    buildSelectNav();
+    buildLevelGrid();
+    showView('viewSelect');
+});
+
+window.onBackspace = function() {
+    var views = ['viewSelect','viewPassage','viewDone'];
+    var cur = views.find(function(v) {
+        var el = document.getElementById(v);
+        return el && el.style.display !== 'none';
+    });
+    if (!cur) return;
+    if (cur === 'viewSelect') {
+        if (isDirect) window.location.href = 'index.html?level=elementary';
+    } else {
+        backToSelect();
+    }
+};
+
+</script>
+</body>
+</html>

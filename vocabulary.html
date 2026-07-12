@@ -1,0 +1,2471 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אוצר מילים — למדני אנגלית</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Analytics — החלף G-XXXXXXXXXX במזהה שלך -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+</head>
+<body>
+
+<nav class="toolbar">
+    <a href="index.html" class="toolbar-brand"><span class="accent">Lamdani</span> English</a>
+    <div class="toolbar-nav">
+        <div class="nav-menu-wrap">
+            <button class="nav-icon-btn" id="navMenuBtn" onclick="toggleNavMenu()">
+                <img src="images/ui/menu.png" class="nav-icon-img" alt="תפריט">
+            </button>
+            <div class="nav-menu-panel" id="navMenuPanel">
+                <a href="index.html" class="nav-menu-item">דף הבית</a>
+                <a href="אודות.html" class="nav-menu-item">אודות</a>
+                <a href="צור קשר.html" class="nav-menu-item">צור קשר</a>
+            </div>
+        </div>
+        <a href="index.html" class="nav-icon-btn">
+            <img src="images/ui/home.png" class="nav-icon-img" alt="בית">
+        </a>
+        <div id="userNavArea" style="position:relative"></div>
+    </div>
+</nav>
+
+<!-- ═══ 0b. בחירת נושא ═══════════════════════════════════════════ -->
+<div id="viewTopics" class="reading-wrap" style="max-width:1200px">
+    <button class="back-link" id="topicsBackBtn" onclick="window.location.href='index.html?level=elementary'">→ חזור לדף הבית</button>
+    <h2 class="section-title" style="font-size:1.3rem" id="levelTitle">אוצר מילים — נושאים</h2>
+    <div id="vocabSummary"></div>
+    <div class="topic-tiles-grid" id="stageCards"></div>
+    <div class="full-quiz-wrap">
+        <div class="quiz-menu-wrap" id="quizMenuWrap">
+            <button class="btn-check-3d quiz-menu-trigger">בוחן</button>
+            <div class="quiz-menu-panel">
+                <div class="quiz-menu-item" onclick="startFullQuiz()">
+                    <span>כל המילים</span>
+                    <span class="quiz-menu-count" id="fullQuizCount"></span>
+                </div>
+                <div class="quiz-menu-item" id="btnLearnedQuiz" onclick="startLearnedQuiz()" style="display:none">
+                    <span>בוחן על הנלמד</span>
+                    <span class="quiz-menu-count" id="learnedQuizCount"></span>
+                </div>
+                <div class="quiz-menu-item" onclick="toggleSelectMode()">
+                    <span>בחר כרטיסיות</span>
+                </div>
+            </div>
+        </div>
+        <div class="select-action-bar" id="selectActionBar" style="display:none">
+            <button class="btn-start-quiz-img" id="btnStartCustom" onclick="startCustomQuiz()" disabled><img src="images/ui/התחל בוחן אייקון.png" alt="התחל בוחן"></button>
+            <button class="btn-check-3d" onclick="toggleSelectMode()">ביטול</button>
+            <span id="selectCount" style="display:none"></span>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ 1. לימוד מילים ════════════════════════════════════════════ -->
+<div id="viewLearn" class="reading-wrap" style="display:none">
+    <button class="back-link" onclick="backToSelect()">→ חזור לנושאים</button>
+    <div style="display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1.5rem">
+        <h2 id="learnLabel" style="font-size:1.5rem;font-weight:700;color:var(--navy);margin:0"></h2>
+        <button id="combosBtn" onclick="startCombos()" style="display:none;background:none;border:none;color:#3b82f6;font-size:0.9rem;cursor:pointer;padding:0;font-family:inherit;">תרגול צירופי מילים ←</button>
+    </div>
+    <div class="vocab-grid" id="vocabGrid"></div>
+    <div class="vocab-quiz-btn">
+        <button class="btn-start-quiz-img" onclick="startQuiz()">
+            <img src="images/ui/התחל בוחן.png" alt="התחל בוחן">
+            <div class="btn-quiz-label">התחל בוחן</div>
+        </button>
+    </div>
+</div>
+
+<!-- ═══ 1b. דף הסבר (נושאים עם intro) ═══════════════════════════ -->
+<div id="viewIntro" class="reading-wrap" style="display:none">
+    <button class="back-link" onclick="backToSelect()">→ חזור לנושאים</button>
+    <div style="display:flex;align-items:center;justify-content:center;gap:1rem">
+        <h2 id="introLabel" style="text-align:center;font-size:1.5rem;font-weight:700;color:var(--navy);margin:0"></h2>
+        <button onclick="showVocabWords()" style="background:none;border:none;color:#3b82f6;font-size:0.95rem;cursor:pointer;padding:0;font-family:inherit;">לאוצר המילים ←</button>
+    </div>
+    <div id="introContent" style="margin-top:1rem"></div>
+    <div style="text-align:center;margin-top:2rem;margin-bottom:1rem">
+        <button class="btn-primary btn-lg" onclick="showVocabWords()">לאוצר המילים ←</button>
+    </div>
+</div>
+
+<!-- ═══ 1c. תרגול צירופי מילים ═══════════════════════════════════ -->
+<div id="viewCombos" class="reading-wrap" style="display:none">
+    <button class="back-link" onclick="showVocabWords()">→ חזור לאוצר המילים</button>
+    <h2 id="combosLabel" style="text-align:center;font-size:1.6rem;font-weight:800;color:var(--navy);margin-bottom:0.4rem"></h2>
+    <div style="text-align:center;margin-bottom:1.2rem">
+        <span id="combosProg" style="font-size:1.3rem;font-weight:700;color:var(--blue)"></span>
+    </div>
+    <div class="quiz-card">
+        <div class="quiz-prompt">תרגם לעברית:</div>
+        <div class="quiz-en" id="combosPhrase" dir="ltr"></div>
+        <div class="quiz-input-wrap">
+            <input type="text" id="combosInput" class="quiz-input" placeholder="כתוב כאן בעברית..." dir="rtl" autocomplete="off" autocorrect="off" spellcheck="false">
+        </div>
+        <div class="quiz-feedback" id="combosFeedback"></div>
+        <div class="quiz-btns">
+            <div class="quiz-btn-main-slot">
+                <button class="btn-check-3d" id="combosBtnCheck" onclick="checkCombo()">✓ בדוק</button>
+                <button class="btn-check-3d" id="combosBtnNext" onclick="nextCombo()" style="visibility:hidden">הבא</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ 2. בוחן ══════════════════════════════════════════════════ -->
+<div id="viewQuiz" class="reading-wrap" style="display:none">
+    <button class="back-link" onclick="backToLearn()">→ חזור לאוצר המילים</button>
+    <h2 id="quizLabel" style="text-align:center;font-size:1.6rem;font-weight:800;color:var(--navy);margin-bottom:0.4rem"></h2>
+    <div style="text-align:center;margin-bottom:1.2rem">
+        <span id="quizProg" style="font-size:1.3rem;font-weight:700;color:var(--blue)"></span>
+    </div>
+    <div class="quiz-card">
+        <div class="quiz-prompt">תרגם לעברית:</div>
+        <div class="quiz-en" id="quizWord" dir="ltr"></div>
+        <button class="play-btn" id="quizAudio" onclick="speakQuizWord()" style="margin-bottom:1.5rem"></button>
+        <div class="quiz-input-wrap">
+            <input
+                type="text"
+                id="quizInput"
+                class="quiz-input"
+                placeholder="כתוב כאן בעברית..."
+                dir="rtl"
+                autocomplete="off"
+                autocorrect="off"
+                spellcheck="false"
+            >
+        </div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+        <div class="quiz-btns">
+            <div class="quiz-btn-main-slot">
+                <button class="btn-check-3d" id="btnCheck" onclick="checkAnswer()">✓ בדוק</button>
+                <button class="btn-check-3d" id="btnNext" onclick="nextQuizWord()" style="visibility:hidden">הבא</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ 3. תוצאות ════════════════════════════════════════════════ -->
+<div id="viewScore" class="reading-wrap" style="display:none">
+    <div class="score-card">
+        <h2 id="scoreTitle" style="margin-bottom:0.75rem"></h2>
+        <div style="position:relative;display:inline-block;margin-bottom:1rem">
+            <img id="scoreImg" src="" alt="" style="width:560px;max-width:100%;display:block">
+            <div id="scoreCheck" style="display:none;position:absolute;top:40%;left:5%;color:#16a34a;font-size:6rem;font-weight:900;line-height:1">✓</div>
+        </div>
+        <div class="score-fraction" id="scoreFraction" dir="ltr"></div>
+        <p class="score-msg" id="scoreMsg"></p>
+        <div class="score-actions">
+            <button class="btn-check-3d btn-sm" onclick="retryQuiz()" style="white-space:nowrap">נסה שוב</button>
+            <button class="btn-check-3d btn-sm" onclick="backToLearn()" style="white-space:nowrap">חזור לאוצר המילים</button>
+        </div>
+        <div id="scoreMistakes"></div>
+    </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// נתוני אוצר המילים
+// ════════════════════════════════════════════════════════════════
+var VOCAB = [
+    {
+        title: 'כינויי גוף – נושא',
+        desc: 'Subject Pronouns',
+        img: 'images/vocabulary/כינויי גוף.png',
+        cols: 4,
+        words: [
+            {en:'I',    he:'אני'},
+            {en:'you',  he:'אתה',   alts:['את']},
+            {en:'we',   he:'אנחנו', alts:['אנו']},
+            {en:'they', he:'הם',    alts:['הן']},
+            {en:'he',   he:'הוא'},
+            {en:'she',  he:'היא'},
+            {en:'it',   he:'זה',    alts:['זו']},
+        ]
+    },
+    {
+        title: 'כינויי גוף ב\'',
+        desc: 'Object & Possessive',
+        img: 'images/vocabulary/כינויי גוף.png',
+        words: [
+            {en:'me',    he:'אותי'},
+            {en:'him',   he:'אותו'},
+            {en:'her',   he:'אותה'},
+            {en:'us',    he:'אותנו'},
+            {en:'them',  he:'אותם',  alts:['אותן']},
+            {en:'my',    he:'שלי'},
+            {en:'your',  he:'שלך',   alts:['שלכם']},
+            {en:'his',   he:'שלו'},
+            {en:'her',   he:'שלה'},
+            {en:'our',   he:'שלנו'},
+            {en:'their', he:'שלהם',  alts:['שלהן']},
+        ]
+    },
+    {
+        title: 'בני משפחה',
+        desc: 'Family',
+        img: 'images/vocabulary/משפחה.jpg',
+        words: [
+            {en:'mother',      he:'אמא',        alts:['אם']},
+            {en:'father',      he:'אבא',        alts:['אב']},
+            {en:'sister',      he:'אחות'},
+            {en:'brother',     he:'אח'},
+            {en:'grandmother', he:'סבתא'},
+            {en:'grandfather', he:'סבא'},
+            {en:'son',         he:'בן'},
+            {en:'daughter',    he:'בת'},
+            {en:'husband',     he:'בעל'},
+            {en:'wife',        he:'אישה',       alts:['אשה']},
+            {en:'uncle',       he:'דוד'},
+            {en:'aunt',        he:'דודה'},
+            {en:'cousin',      he:'בן דוד',     alts:['בת דודה']},
+            {en:'baby',        he:'תינוק',      alts:['תינוקת']},
+                    {en:'boy',        he:'ילד'},
+            {en:'girl',       he:'ילדה'},
+            {en:'dad',        he:'אבא'},
+            {en:'mom',        he:'אמא'},
+            {en:'parents',    he:'הורים'},
+            {en:'child',      he:'ילד',          alts:['ילדה']},
+            {en:'children',   he:'ילדים'},
+            {en:'kid',        he:'ילד'},
+            {en:'man',        he:'גבר',          alts:['איש']},
+            {en:'woman',      he:'אישה'},
+            {en:'person',     he:'אדם'},
+            {en:'people',     he:'אנשים'},
+            {en:'friend',     he:'חבר',          alts:['חברה']},
+            {en:'neighbor',   he:'שכן',          alts:['שכנה']},
+]
+    },
+    {
+        title: 'מספרים',
+        desc: 'Numbers',
+        img: 'images/vocabulary/numbers.jpg',
+        words: [
+            {en:'one',      he:'אחת',    alts:['אחד','1']},
+            {en:'two',      he:'שתיים',  alts:['שניים','שנים','2']},
+            {en:'three',    he:'שלוש',   alts:['שלושה','3']},
+            {en:'four',     he:'ארבע',   alts:['ארבעה','4']},
+            {en:'five',     he:'חמש',    alts:['חמישה','5']},
+            {en:'six',      he:'שש',     alts:['שישה','6']},
+            {en:'seven',    he:'שבע',    alts:['שבעה','7']},
+            {en:'eight',    he:'שמונה',  alts:['8']},
+            {en:'nine',     he:'תשע',    alts:['תשעה','9']},
+            {en:'ten',      he:'עשר',    alts:['עשרה','10']},
+            {en:'hundred',  he:'מאה',    alts:['100']},
+            {en:'thousand', he:'אלף',    alts:['1000']},
+        ]
+    },
+    {
+        title: 'מספרים המשך',
+        desc: 'Numbers+',
+        img: 'images/vocabulary/מספרים המשך.jpg',
+        intro: '<img src="images/grammar/מספרים המשך הסבר.png" style="width:100%;border-radius:12px;display:block" alt="מספרים המשך">',
+        words: [
+            {en:'eleven',      he:'אחת עשרה',    alts:['אחד עשר','11']},
+            {en:'twelve',      he:'שתים עשרה',   alts:['שנים עשר','שניים עשר','12']},
+            {en:'thirteen',    he:'שלוש עשרה',   alts:['שלושה עשר','13']},
+            {en:'fourteen',    he:'ארבע עשרה',   alts:['ארבעה עשר','14']},
+            {en:'fifteen',     he:'חמש עשרה',    alts:['חמישה עשר','15']},
+            {en:'sixteen',     he:'שש עשרה',     alts:['שישה עשר','16']},
+            {en:'seventeen',   he:'שבע עשרה',    alts:['שבעה עשר','17']},
+            {en:'eighteen',    he:'שמונה עשרה',  alts:['שמונה עשר','18']},
+            {en:'nineteen',    he:'תשע עשרה',    alts:['תשעה עשר','19']},
+            {en:'twenty',      he:'עשרים',       alts:['20']},
+            {en:'thirty',      he:'שלושים',      alts:['30']},
+            {en:'forty',       he:'ארבעים',      alts:['40']},
+            {en:'fifty',       he:'חמישים',      alts:['50']},
+            {en:'sixty',       he:'שישים',       alts:['60']},
+            {en:'seventy',     he:'שבעים',       alts:['70']},
+            {en:'eighty',      he:'שמונים',      alts:['80']},
+            {en:'ninety',      he:'תשעים',       alts:['90']},
+            {en:'twenty-one',  he:'עשרים ואחת',  alts:['עשרים ואחד','21']},
+            {en:'thirty-five', he:'שלושים וחמש', alts:['35']},
+            {en:'sixty-eight', he:'שישים ושמונה',alts:['68']},
+        ]
+    },
+    {
+        title: 'צבעים',
+        desc: 'Colors',
+        img: 'images/vocabulary/colors.jpg',
+        words: [
+            {en:'red',    he:'אדום'},
+            {en:'blue',   he:'כחול'},
+            {en:'green',  he:'ירוק'},
+            {en:'yellow', he:'צהוב'},
+            {en:'white',  he:'לבן'},
+            {en:'black',  he:'שחור'},
+            {en:'orange', he:'כתום'},
+            {en:'purple', he:'סגול'},
+            {en:'pink',   he:'ורוד'},
+            {en:'brown',  he:'חום'},
+            {en:'grey',   he:'אפור'},
+            {en:'gold',   he:'זהב'},
+                    {en:'color',      he:'צבע'},
+]
+    },
+    {
+        title: 'ימות השבוע',
+        desc: 'Days of the Week',
+        img: 'images/vocabulary/ימות השבוע.png',
+        words: [
+            {en:'Sunday',    he:'יום ראשון',  alts:['ראשון']},
+            {en:'Monday',    he:'יום שני',    alts:['שני']},
+            {en:'Tuesday',   he:'יום שלישי',  alts:['שלישי']},
+            {en:'Wednesday', he:'יום רביעי',  alts:['רביעי']},
+            {en:'Thursday',  he:'יום חמישי',  alts:['חמישי']},
+            {en:'Friday',    he:'יום שישי',   alts:['שישי']},
+            {en:'Saturday',  he:'שבת'},
+            {en:'weekend',   he:'סוף שבוע',    alts:['סופ"ש',"סופ''ש",'סופ״ש','סופש']},
+        ]
+    },
+    {
+        title: 'חודשים ועונות',
+        desc: 'Months & Seasons',
+        img: 'images/vocabulary/עונות השנה.png',
+        words: [
+            {en:'January',   he:'ינואר'},
+            {en:'February',  he:'פברואר'},
+            {en:'March',     he:'מרץ'},
+            {en:'April',     he:'אפריל'},
+            {en:'May',       he:'מאי'},
+            {en:'June',      he:'יוני'},
+            {en:'July',      he:'יולי'},
+            {en:'August',    he:'אוגוסט'},
+            {en:'September', he:'ספטמבר'},
+            {en:'October',   he:'אוקטובר'},
+            {en:'November',  he:'נובמבר'},
+            {en:'December',  he:'דצמבר'},
+            {en:'summer',    he:'קיץ'},
+            {en:'winter',    he:'חורף'},
+            {en:'autumn',    he:'סתיו',  alts:['סתו']},
+            {en:'spring',    he:'אביב'},
+        ]
+    },
+    {
+        title: 'בעלי חיים',
+        desc: 'Animals',
+        img: 'images/vocabulary/חיות.jpg',
+        words: [
+            {en:'dog',      he:'כלב'},
+            {en:'cat',      he:'חתול'},
+            {en:'bird',     he:'ציפור'},
+            {en:'fish',     he:'דג'},
+            {en:'horse',    he:'סוס'},
+            {en:'cow',      he:'פרה'},
+            {en:'lion',     he:'אריה'},
+            {en:'elephant', he:'פיל'},
+            {en:'rabbit',   he:'ארנב'},
+            {en:'snake',    he:'נחש'},
+            {en:'dolphin',  he:'דולפין'},
+            {en:'butterfly',he:'פרפר'},
+        ]
+    },
+    {
+        title: 'חלקי הגוף',
+        desc: 'Body Parts',
+        img: 'images/vocabulary/חלקי גוף.jpg',
+        words: [
+            {en:'head',     he:'ראש'},
+            {en:'eye',      he:'עין'},
+            {en:'ear',      he:'אוזן'},
+            {en:'nose',     he:'אף'},
+            {en:'mouth',    he:'פה'},
+            {en:'hand',     he:'יד'},
+            {en:'leg',      he:'רגל'},
+            {en:'arm',      he:'זרוע'},
+            {en:'back',     he:'גב'},
+            {en:'hair',     he:'שיער'},
+            {en:'face',     he:'פנים'},
+            {en:'tooth',    he:'שן'},
+            {en:'stomach',  he:'בטן'},
+            {en:'shoulder', he:'כתף'},
+                    {en:'body',       he:'גוף'},
+            {en:'foot',       he:'כף רגל',       alts:['feet']},
+            {en:'feet',       he:'כפות רגליים'},
+]
+    },
+    {
+        title: 'בגדים ואופנה',
+        desc: 'Clothes & Fashion',
+        img: 'images/vocabulary/בגדים.jpg',
+        words: [
+            {en:'shirt',   he:'חולצה'},
+            {en:'pants',   he:'מכנסיים',  alts:['מכנסים']},
+            {en:'dress',   he:'שמלה'},
+            {en:'shoes',   he:'נעליים',   alts:['נעלים']},
+            {en:'hat',     he:'כובע'},
+            {en:'jacket',  he:"ג'קט",     alts:["ז'קט",'מעיל קצר']},
+            {en:'socks',   he:'גרביים',   alts:['גרבים']},
+            {en:'skirt',   he:'חצאית'},
+            {en:'coat',    he:'מעיל'},
+            {en:'scarf',   he:'צעיף'},
+            {en:'glasses', he:'משקפיים',  alts:['משקפים']},
+            {en:'bag',     he:'תיק'},
+        ]
+    },
+    {
+        title: 'מילות שאלה',
+        desc: 'Question Words',
+        img: 'images/vocabulary/מילות שאלה.jpg',
+        words: [
+            {en:'what',       he:'מה'},
+            {en:'who',        he:'מי'},
+            {en:'where',      he:'איפה',  alts:['היכן']},
+            {en:'when',       he:'מתי'},
+            {en:'why',        he:'למה',   alts:['מדוע']},
+            {en:'how',        he:'איך',   alts:['כיצד']},
+            {en:'which',      he:'איזה',  alts:['איזו']},
+            {en:'how much',   he:'כמה'},
+            {en:'how many',   he:'כמה'},
+            {en:'whose',      he:'של מי'},
+            {en:'how old',    he:'בן כמה',alts:['בת כמה']},
+            {en:'how far',    he:'כמה רחוק'},
+        ]
+    },
+    {
+        title: 'פירות',
+        desc: 'Fruits',
+        img: 'images/vocabulary/פירות.png',
+        words: [
+            {en:'fruits',      he:'פירות',   alts:['פרי']},
+            {en:'apple',       he:'תפוח'},
+            {en:'banana',      he:'בננה'},
+            {en:'orange',      he:'תפוז'},
+            {en:'grapes',      he:'ענבים',   alts:['ענב']},
+            {en:'strawberry',  he:'תות'},
+            {en:'watermelon',  he:'אבטיח'},
+            {en:'lemon',       he:'לימון'},
+            {en:'pear',        he:'אגס'},
+            {en:'peach',       he:'אפרסק'},
+            {en:'mango',       he:'מנגו'},
+            {en:'pineapple',   he:'אננס'},
+            {en:'cherry',      he:'דובדבן'},
+        ]
+    },
+    {
+        title: 'ירקות',
+        desc: 'Vegetables',
+        img: 'images/vocabulary/ירקות.png',
+        words: [
+            {en:'vegetables',  he:'ירקות',          alts:['ירק']},
+            {en:'tomato',      he:'עגבנייה',         alts:['עגבניה']},
+            {en:'carrot',      he:'גזר'},
+            {en:'potato',      he:'תפוח אדמה',       alts:['תפו"א']},
+            {en:'cucumber',    he:'מלפפון'},
+            {en:'onion',       he:'בצל'},
+            {en:'pepper',      he:'פלפל'},
+            {en:'lettuce',     he:'חסה'},
+            {en:'corn',        he:'תירס'},
+            {en:'broccoli',    he:'ברוקולי'},
+            {en:'garlic',      he:'שום'},
+        ]
+    },
+    {
+        title: 'אוכל ושתייה',
+        desc: 'Food & Drinks',
+        img: 'images/vocabulary/אוכל ושתיה.jpg',
+        words: [
+            {en:'food',      he:'אוכל'},
+            {en:'breakfast', he:'ארוחת בוקר'},
+            {en:'lunch',     he:'ארוחת צהריים'},
+            {en:'dinner',    he:'ארוחת ערב'},
+            {en:'water',     he:'מים'},
+            {en:'milk',      he:'חלב'},
+            {en:'tea',       he:'תה'},
+            {en:'coffee',    he:'קפה'},
+            {en:'juice',     he:'מיץ'},
+            {en:'bread',     he:'לחם'},
+            {en:'egg',       he:'ביצה'},
+            {en:'chicken',   he:'עוף'},
+            {en:'cheese',    he:'גבינה'},
+            {en:'rice',      he:'אורז'},
+            {en:'meat',      he:'בשר'},
+            {en:'pizza',     he:'פיצה'},
+            {en:'salad',     he:'סלט'},
+            {en:'chocolate', he:'שוקולד'},
+        ]
+    },
+    {
+        title: 'הבית ורהיטים',
+        desc: 'Home & Furniture',
+        img: 'images/vocabulary/בית ורהיטים.jpg',
+        words: [
+            {en:'home',            he:'בית'},
+            {en:'house',           he:'בית',          alts:['דירה']},
+            {en:'door',            he:'דלת'},
+            {en:'window',          he:'חלון'},
+            {en:'chair',           he:'כיסא',            alts:['כסא']},
+            {en:'table',           he:'שולחן',           alts:['שלחן']},
+            {en:'bed',             he:'מיטה',            alts:['מטה']},
+            {en:'kitchen',         he:'מטבח'},
+            {en:'room',            he:'חדר'},
+            {en:'sofa',            he:'ספה'},
+            {en:'bathroom',        he:'חדר אמבטיה',   alts:['אמבטיה']},
+            {en:'lamp',            he:'מנורה'},
+            {en:'refrigerator',    he:'מקרר'},
+            {en:'washing machine', he:'מכונת כביסה'},
+            {en:'floor',           he:'רצפה',            alts:['ריצפה']},
+            {en:'bottle',          he:'בקבוק'},
+            {en:'box',             he:'קופסה',           alts:['קופסא']},
+        ]
+    },
+    {
+        title: 'מזג אוויר',
+        desc: 'Weather',
+        img: 'images/vocabulary/מזג אויר.jpg',
+        words: [
+            {en:'sun',         he:'שמש'},
+            {en:'rain',        he:'גשם'},
+            {en:'cloud',       he:'ענן'},
+            {en:'snow',        he:'שלג'},
+            {en:'wind',        he:'רוח'},
+            {en:'hot',         he:'חם'},
+            {en:'cold',        he:'קר'},
+            {en:'warm',        he:'חמים'},
+            {en:'storm',       he:'סערה'},
+        ]
+    },
+    {
+        title: 'בית ספר',
+        desc: 'School',
+        img: 'images/vocabulary/בית ספר.png',
+        words: [
+            {en:'class',    he:'כיתה'},
+            {en:'lesson',   he:'שיעור'},
+            {en:'teacher',  he:'מורה'},
+            {en:'test',     he:'מבחן'},
+            {en:'grade',    he:'ציון'},
+            {en:'book',     he:'ספר'},
+            {en:'notebook', he:'מחברת'},
+            {en:'pen',      he:'עט'},
+            {en:'pencil',   he:'עיפרון',  alts:['עפרון']},
+            {en:'student',  he:'תלמיד',   alts:['תלמידה']},
+        ]
+    },
+    {
+        title: 'ציוד בכיתה',
+        desc: 'Classroom Supplies',
+        img: "images/vocabulary/ציוד בי''ס.jpg",
+        words: [
+            {en:'classroom',      he:'כיתה',   alts:['כתה']},
+            {en:'principal',      he:'מנהל'},
+            {en:'board',          he:'לוח'},
+            {en:'backpack',       he:'תיק גב'},
+            {en:'ruler',          he:'סרגל'},
+            {en:'eraser',         he:'מחק'},
+            {en:'scissors',       he:'מספריים'},
+            {en:'glue',           he:'דבק'},
+            {en:'marker',         he:'טוש'},
+            {en:'pencil case',    he:'קלמר'},
+            {en:'sharpener',      he:'מחדד'},
+            {en:'dictionary',     he:'מילון'},
+        ]
+    },
+    {
+        title: 'לימודים',
+        desc: 'Learning',
+        img: 'images/vocabulary/לימודים.png',
+        words: [
+            {en:'learn',    he:'ללמוד'},
+            {en:'study',    he:'ללמוד'},
+            {en:'question', he:'שאלה'},
+            {en:'answer',   he:'תשובה'},
+            {en:'sentence', he:'משפט'},
+            {en:'word',     he:'מילה'},
+            {en:'letter',   he:'אות',     alts:['מכתב']},
+            {en:'number',   he:'מספר'},
+            {en:'example',  he:'דוגמה'},
+            {en:'mistake',  he:'טעות'},
+            {en:'rule',     he:'כלל'},
+            {en:'practice', he:'תרגול'},
+            {en:'exercise', he:'תרגיל'},
+            {en:'page',     he:'עמוד'},
+            {en:'idea',     he:'רעיון'},
+        ]
+    },
+    {
+        title: 'זמן',
+        desc: 'Time',
+        img: 'images/vocabulary/זמן.png',
+        words: [
+            {en:'second',     he:'שנייה',   alts:['שניה']},
+            {en:'minute',     he:'דקה'},
+            {en:'hour',       he:'שעה'},
+            {en:'day',        he:'יום'},
+            {en:'week',       he:'שבוע'},
+            {en:'year',       he:'שנה'},
+            {en:'morning',    he:'בוקר'},
+            {en:'afternoon',  he:'אחר הצהריים', alts:['אחר צהרים','אחר צהריים','אחר הצהרים']},
+            {en:'evening',    he:'ערב'},
+            {en:'night',      he:'לילה'},
+            {en:'time',       he:'זמן'},
+            {en:'moment',     he:'רגע'},
+            {en:'date',       he:'תאריך'},
+            {en:'age',        he:'גיל'},
+            {en:'past',       he:'עבר'},
+        ]
+    },
+    {
+        title: 'מתי ותדירות',
+        desc: 'When & Frequency',
+        img: 'images/vocabulary/זמן.png',
+        words: [
+            {en:'yesterday',  he:'אתמול'},
+            {en:'today',      he:'היום'},
+            {en:'tomorrow',   he:'מחר'},
+            {en:'now',        he:'עכשיו',          alts:['עכשו']},
+            {en:'soon',       he:'בקרוב'},
+            {en:'early',      he:'מוקדם'},
+            {en:'late',       he:'מאוחר'},
+            {en:'last',       he:'אחרון',          alts:['הקודם']},
+            {en:'always',     he:'תמיד'},
+            {en:'usually',    he:'בדרך כלל',       alts:['בד"כ','בדכ']},
+            {en:'often',      he:'לעיתים קרובות',  alts:['לעתים קרובות']},
+            {en:'sometimes',  he:'לפעמים',         alts:['לעיתים','לעתים']},
+            {en:'never',      he:'אף פעם'},
+        ]
+    },
+    {
+        title: 'מראה חיצוני',
+        desc: 'Physical Appearance',
+        img: 'images/vocabulary/תארים למראה חיצוני.png',
+        words: [
+            {en:'tall',      he:'גבוה',    alts:['גבוהה']},
+            {en:'short',     he:'נמוך',    alts:['נמוכה']},
+            {en:'fat',       he:'שמן',     alts:['שמנה']},
+            {en:'thin',      he:'רזה'},
+            {en:'young',     he:'צעיר',    alts:['צעירה']},
+            {en:'old',       he:'זקן',     alts:['זקנה','מבוגר']},
+            {en:'beautiful', he:'יפה'},
+            {en:'ugly',      he:'מכוער',   alts:['מכוערת']},
+            {en:'dark',      he:'כהה'},
+            {en:'light',     he:'בהיר',    alts:['בהירה']},
+
+            {en:'strong',    he:'חזק',     alts:['חזקה']},
+            {en:'weak',      he:'חלש',     alts:['חלשה']},
+            {en:'pretty',    he:'יפה'},
+        ]
+    },
+    {
+        title: 'תארים לאופי',
+        desc: 'Personality Traits A',
+        img: 'images/vocabulary/תארים לאופי.png',
+        words: [
+            {en:'kind',       he:'נחמד',         alts:['נחמדה','אדיב']},
+            {en:'funny',      he:'מצחיק',        alts:['מצחיקה']},
+            {en:'brave',      he:'אמיץ',         alts:['אמיצה']},
+            {en:'lazy',       he:'עצלן',         alts:['עצלנית']},
+            {en:'honest',     he:'ישר',          alts:['ישרה']},
+            {en:'generous',   he:'נדיב',         alts:['נדיבה']},
+            {en:'shy',        he:'ביישן',        alts:['ביישנית']},
+            {en:'serious',    he:'רציני',        alts:['רצינית']},
+            {en:'nice',       he:'נחמד',         alts:['נחמדה']},
+            {en:'smart',      he:'חכם',          alts:['חכמה']},
+        ]
+    },
+    {
+        title: 'תארים כללים א',
+        desc: 'General Adjectives A',
+        img: 'images/vocabulary/תארים כללים.jpg',
+        combos: [
+            {en:'a good boy',                        he:'ילד טוב'},
+            {en:'a bad and hard test',               he:'מבחן רע וקשה'},
+            {en:'a wonderful and interesting book',  he:'ספר נפלא ומעניין'},
+            {en:'an important day',                  he:'יום חשוב'},
+            {en:'it is possible',                    he:'זה אפשרי'},
+            {en:'a big and heavy dog',               he:'כלב גדול וכבד'},
+            {en:'a small and clean room',            he:'חדר קטן ונקי'},
+            {en:'a large and round table',           he:'שולחן גדול ועגול'},
+            {en:'a long and straight road',          he:'כביש ארוך וישר'},
+            {en:'a high and dry mountain',           he:'הר גבוה ויבש'},
+            {en:'a fast car',                         he:'מכונית מהירה'},
+            {en:'a cool wind',                       he:'רוח קרירה'},
+            {en:'a quick answer',                    he:'תשובה מהירה'},
+            {en:'a slow cat',                        he:'חתול איטי'},
+        ],
+        words: [
+            {en:'good',        he:'טוב',     alts:['טובה']},
+            {en:'bad',         he:'רע',      alts:['רעה']},
+            {en:'wonderful',   he:'נפלא',    alts:['נהדר']},
+            {en:'important',   he:'חשוב',    alts:['חשובה']},
+            {en:'interesting', he:'מעניין',  alts:['מעניינת']},
+            {en:'possible',    he:'אפשרי'},
+            {en:'big',         he:'גדול',    alts:['גדולה']},
+            {en:'small',       he:'קטן',     alts:['קטנה']},
+            {en:'large',       he:'גדול'},
+            {en:'long',        he:'ארוך',    alts:['ארוכה']},
+            {en:'high',        he:'גבוה',    alts:['גבוהה']},
+            {en:'heavy',       he:'כבד',     alts:['כבדה']},
+            {en:'fast',        he:'מהיר',    alts:['מהירה']},
+            {en:'quick',       he:'מהיר'},
+            {en:'slow',        he:'איטי',    alts:['איטית']},
+            {en:'round',       he:'עגול',    alts:['עגולה']},
+            {en:'straight',    he:'ישר',     alts:['ישרה']},
+            {en:'hard',        he:'קשה'},
+            {en:'clean',       he:'נקי',     alts:['נקייה']},
+            {en:'dry',         he:'יבש',     alts:['יבשה']},
+            {en:'cool',        he:'קריר',    alts:['מגניב']},
+        ]
+    },
+    {
+        title: 'תארים כללים ב',
+        desc: 'General Adjectives B',
+        img: 'images/vocabulary/תארים כללים.jpg',
+        combos: [
+            {en:'an easy and simple test',           he:'מבחן קל ופשוט'},
+            {en:'a difficult question',              he:'שאלה קשה'},
+            {en:'a wrong answer',                    he:'תשובה שגויה',  alts:['תשובה לא נכונה']},
+            {en:'it is true and real',               he:'זה נכון ואמיתי'},
+            {en:'it is impossible',                  he:'זה בלתי אפשרי'},
+            {en:'a clear sky',                       he:'שמיים ברורים'},
+            {en:'are you sure?',                     he:'אתה בטוח?',          alts:['את בטוחה?']},
+            {en:'a full plate',                      he:'צלחת מלאה'},
+            {en:'a free day',                        he:'יום חופשי'},
+            {en:'a quiet room',                      he:'חדר שקט'},
+            {en:'a different way',                   he:'דרך שונה'},
+            {en:'a strange and special animal',      he:'חיה מוזרה ומיוחדת'},
+            {en:'a great teacher',                   he:'מורה נהדר',          alts:['מורה נהדרת']},
+            {en:'it is not fair',                    he:'זה לא הוגן'},
+            {en:'a lucky and favorite student',      he:'תלמיד בר מזל ומועדף'},
+        ],
+        words: [
+            {en:'easy',       he:'קל',           alts:['קלה']},
+            {en:'difficult',  he:'קשה'},
+            {en:'simple',     he:'פשוט',         alts:['פשוטה']},
+            {en:'true',       he:'נכון',         alts:['אמיתי']},
+            {en:'wrong',      he:'לא נכון',      alts:['שגוי','טעות']},
+            {en:'real',       he:'אמיתי',        alts:['אמיתית']},
+            {en:'impossible', he:'בלתי אפשרי'},
+            {en:'clear',      he:'ברור',         alts:['ברורה']},
+            {en:'sure',       he:'בטוח',         alts:['בטוחה']},
+            {en:'full',       he:'מלא',          alts:['מלאה']},
+            {en:'free',       he:'חופשי',        alts:['חינם']},
+            {en:'quiet',      he:'שקט',          alts:['שקטה']},
+            {en:'different',  he:'שונה'},
+            {en:'strange',    he:'מוזר',         alts:['מוזרה']},
+            {en:'great',      he:'נהדר',         alts:['מצוין']},
+            {en:'special',    he:'מיוחד',        alts:['מיוחדת']},
+            {en:'fair',       he:'הוגן',         alts:['הוגנת']},
+            {en:'lucky',      he:'בר מזל'},
+            {en:'favorite',   he:'מועדף',        alts:['מועדפת']},
+        ]
+    },
+    {
+        title: 'פעלים א',
+        desc: 'Daily Verbs A',
+        img: 'images/vocabulary/פעלים יומיים.png',
+        combos: [
+            {en:'I go to school',                    he:'אני הולך לבית ספר',      alts:['אני הולכת לבית ספר']},
+            {en:'she eats and drinks',               he:'היא אוכלת ושותה'},
+            {en:'he sleeps and works',               he:'הוא ישן ועובד'},
+            {en:'we play and read',                  he:'אנחנו משחקים וקוראים'},
+            {en:'I write and watch TV',              he:'אני כותב וצופה בטלוויזיה', alts:['אני כותבת וצופה בטלוויזיה']},
+            {en:'they listen and speak',             he:'הם מקשיבים ומדברים'},
+            {en:'she walks to buy food',              he:'היא הולכת לקנות אוכל'},
+            {en:'he helps me',                       he:'הוא עוזר לי'},
+            {en:'come home please',                  he:'בוא הביתה בבקשה'},
+            {en:'I say hello',                       he:'אני אומר שלום',           alts:['אני אומרת שלום']},
+            {en:'I see the dog',                     he:'אני רואה את הכלב'},
+            {en:'I find my book',                    he:'אני מוצא את הספר שלי',   alts:['אני מוצאת את הספר שלי']},
+            {en:'she gets a present',                he:'היא מקבלת מתנה'},
+            {en:'I make a cake',                     he:'אני מכין עוגה',           alts:['אני מכינה עוגה']},
+            {en:'give me the book',                  he:'תן לי את הספר'},
+            {en:'I know the answer',                 he:'אני יודע את התשובה',     alts:['אני יודעת את התשובה']},
+            {en:'I think it is good',                he:'אני חושב שזה טוב',       alts:['אני חושבת שזה טוב']},
+            {en:'take the bag',                      he:'קח את התיק'},
+            {en:'tell me a story',                   he:'ספר לי סיפור'},
+        ],
+        words: [
+            {en:'go',        he:'ללכת',         alts:['לנסוע']},
+            {en:'eat',       he:'לאכול'},
+            {en:'drink',     he:'לשתות'},
+            {en:'sleep',     he:'לישון'},
+            {en:'work',      he:'לעבוד'},
+            {en:'play',      he:'לשחק'},
+            {en:'read',      he:'לקרוא'},
+            {en:'write',     he:'לכתוב'},
+            {en:'watch',     he:'לצפות'},
+            {en:'listen',    he:'להקשיב',       alts:['לשמוע']},
+            {en:'speak',     he:'לדבר'},
+            {en:'walk',      he:'ללכת',          alts:['לטייל']},
+            {en:'buy',       he:'לקנות'},
+            {en:'help',      he:'לעזור'},
+            {en:'come',      he:'לבוא'},
+            {en:'say',       he:'לומר'},
+            {en:'see',       he:'לראות'},
+            {en:'get',       he:'לקבל',         alts:['להגיע']},
+            {en:'make',      he:'לעשות',        alts:['להכין']},
+            {en:'know',      he:'לדעת'},
+            {en:'think',     he:'לחשוב'},
+            {en:'take',      he:'לקחת'},
+            {en:'give',      he:'לתת'},
+            {en:'find',      he:'למצוא'},
+            {en:'tell',      he:'לספר'},
+        ]
+    },
+    {
+        title: 'פעלים ב',
+        desc: 'Daily Verbs B',
+        img: 'images/vocabulary/פעלים יומיים.png',
+        combos: [
+            {en:'I ask and want to know',            he:'אני שואל ורוצה לדעת',     alts:['אני שואלת ורוצה לדעת']},
+            {en:'she calls and needs help',          he:'היא מתקשרת וצריכה עזרה'},
+            {en:'he feels happy and becomes strong', he:'הוא מרגיש שמח ונהיה חזק'},
+            {en:'I leave and put my bag here',       he:'אני עוזב ושם את התיק שלי פה', alts:['אני עוזבת ושמה את התיק שלי פה','אני עוזב ושם את התיק שלי כאן','אני עוזבת ושמה את התיק שלי כאן']},
+            {en:'she keeps a secret and begins to smile', he:'היא שומרת סוד ומתחילה לחייך'},
+            {en:'I start and show my work',          he:'אני מתחיל ומראה את העבודה שלי', alts:['אני מתחילה ומראה את העבודה שלי']},
+            {en:'he hears and turns',                he:'הוא שומע ופונה'},
+            {en:'she moves and understands',         he:'היא זזה ומבינה'},
+            {en:'he uses and tries a new phone',     he:'הוא משתמש ומנסה טלפון חדש'},
+            {en:'I open and close the door',         he:'אני פותח וסוגר את הדלת',  alts:['אני פותחת וסוגרת את הדלת']},
+            {en:'she stops and waits',               he:'היא עוצרת ומחכה'},
+            {en:'I talk and sing',                   he:'אני מדבר ושר',             alts:['אני מדברת ושרה']},
+            {en:'he sits quietly',                   he:'הוא יושב בשקט'},
+        ],
+        words: [
+
+            {en:'ask',       he:'לשאול'},
+            {en:'want',      he:'לרצות'},
+            {en:'call',      he:'להתקשר',       alts:['לקרוא']},
+            {en:'need',      he:'לצרוך',        alts:['להזדקק']},
+            {en:'feel',      he:'להרגיש'},
+            {en:'become',    he:'להפוך'},
+            {en:'leave',     he:'לעזוב'},
+            {en:'put',       he:'לשים'},
+            {en:'keep',      he:'לשמור'},
+            {en:'begin',     he:'להתחיל'},
+            {en:'start',     he:'להתחיל'},
+            {en:'show',      he:'להראות'},
+            {en:'hear',      he:'לשמוע'},
+            {en:'turn',      he:'לפנות',        alts:['לסובב']},
+            {en:'move',      he:'לזוז',         alts:['לעבור']},
+            {en:'understand',he:'להבין'},
+            {en:'use',       he:'להשתמש'},
+            {en:'try',       he:'לנסות'},
+            {en:'open',      he:'לפתוח'},
+            {en:'close',     he:'לסגור'},
+            {en:'stop',      he:'לעצור'},
+            {en:'wait',      he:'לחכות'},
+            {en:'talk',      he:'לדבר'},
+            {en:'sing',      he:'לשיר'},
+            {en:'sit',       he:'לשבת'},
+        ]
+    },
+    {
+        title: 'פעלים ג',
+        desc: 'Daily Verbs C',
+        img: 'images/vocabulary/פעלים יומיים.png',
+        combos: [
+            {en:'why do you run?',                   he:'למה אתה רץ?',              alts:['למה את רצה?']},
+            {en:'the baby smiles',                   he:'התינוק מחייך'},
+            {en:'what do you bring?',                he:'מה אתה מביא?',             alts:['מה את מביאה?']},
+            {en:'I send to my mother',               he:'אני שולח לאמא שלי',        alts:['אני שולחת לאמא שלי']},
+            {en:'we meet friends',                   he:'אנחנו פוגשים חברים'},
+            {en:'do you forget me?',                 he:'האם אתה שוכח אותי?',       alts:['האם את שוכחת אותי?']},
+            {en:'I remember you',                    he:'אני זוכר אותך',            alts:['אני זוכרת אותך']},
+            {en:'do we believe?',                    he:'האם אנחנו מאמינים?'},
+            {en:'I hope you return',                 he:'אני מקווה שתחזור',         alts:['אני מקווה שתחזרי']},
+            {en:'who teaches us?',                   he:'מי מלמד אותנו?'},
+            {en:'what do we learn?',                 he:'מה אנחנו לומדים?'},
+            {en:'why do you change?',                he:'למה אתה מחליף?',           alts:['למה את מחליפה?']},
+            {en:'they build a house',                he:'הם בונים בית'},
+            {en:'what do you draw?',                 he:'מה אתה מצייר?',            alts:['מה את מציירת?']},
+            {en:'mother washes',                     he:'אמא שוטפת'},
+            {en:'what do you wear?',                 he:'מה אתה לובש?',             alts:['מה את לובשת?']},
+            {en:'I carry the baby',                  he:'אני נושא את התינוק',       alts:['אני נושאת את התינוק']},
+            {en:'she catches and laughs',            he:'היא תופסת וצוחקת'},
+            {en:'the baby cries',                    he:'התינוק בוכה'},
+            {en:'why do you shout?',                 he:'למה אתה צועק?',            alts:['למה את צועקת?']},
+            {en:'does it fly?',                      he:'האם זה עף?'},
+            {en:'he falls down',                     he:'הוא נופל'},
+            {en:'I cut the bread',                   he:'אני חותך את הלחם',         alts:['אני חותכת את הלחם']},
+        ],
+        words: [
+            {en:'run',       he:'לרוץ'},
+            {en:'smile',     he:'לחייך'},
+            {en:'bring',     he:'להביא'},
+            {en:'send',      he:'לשלוח'},
+            {en:'meet',      he:'לפגוש'},
+            {en:'forget',    he:'לשכוח'},
+            {en:'remember',  he:'לזכור'},
+            {en:'believe',   he:'להאמין'},
+            {en:'hope',      he:'לקוות'},
+            {en:'teach',     he:'ללמד'},
+            {en:'learn',     he:'ללמוד'},
+            {en:'return',    he:'לחזור'},
+            {en:'change',    he:'לשנות'},
+            {en:'build',     he:'לבנות'},
+            {en:'draw',      he:'לצייר'},
+            {en:'wash',      he:'לשטוף'},
+            {en:'wear',      he:'ללבוש'},
+            {en:'carry',     he:'לשאת'},
+            {en:'catch',     he:'לתפוס'},
+            {en:'laugh',     he:'לצחוק'},
+            {en:'cry',       he:'לבכות'},
+            {en:'shout',     he:'לצעוק'},
+            {en:'fly',       he:'לעוף'},
+            {en:'fall',      he:'ליפול'},
+            {en:'cut',       he:'לחתוך'},
+        ]
+    },
+    {
+        title: 'פעלים ד',
+        desc: 'Daily Verbs D',
+        img: 'images/vocabulary/פעלים יומיים.png',
+        combos: [
+            {en:'he drives, she pays',               he:'הוא נוהג, היא משלמת'},
+            {en:'I enjoy and rest',                  he:'אני נהנה ונח',             alts:['אני נהנית ונחה']},
+            {en:'they visit us',                     he:'הם מבקרים אותנו'},
+            {en:'where do you travel?',              he:'לאן אתה נוסע?',            alts:['לאן את נוסעת?']},
+            {en:'why do you climb?',                 he:'למה אתה מטפס?',            alts:['למה את מטפסת?']},
+            {en:'when do you arrive?',               he:'מתי אתה מגיע?',            alts:['מתי את מגיעה?']},
+            {en:'he enters and finishes',            he:'הוא נכנס ומסיים'},
+            {en:'who decides?',                      he:'מי מחליט?'},
+            {en:'she invites us',                    he:'היא מזמינה אותנו'},
+            {en:'why do you push?',                  he:'למה אתה דוחף?',            alts:['למה את דוחפת?']},
+            {en:'she holds and counts',              he:'היא מחזיקה וסופרת'},
+            {en:'the baby grows',                    he:'התינוק גדל'},
+            {en:'what do you pick?',                 he:'מה אתה קוטף?',             alts:['מה את קוטפת?','מה אתה בוחר?','מה את בוחרת?']},
+            {en:'what do you wish?',                 he:'מה אתה מאחל?',             alts:['מה את מאחלת?']},
+            {en:'why do you copy?',                  he:'למה אתה מעתיק?',           alts:['למה את מעתיקה?']},
+            {en:'where do you cross?',               he:'איפה אתה חוצה?',           alts:['איפה את חוצה?']},
+            {en:'what do you hang?',                 he:'מה אתה תולה?',             alts:['מה את תולה?']},
+            {en:'what happens?',                     he:'מה קורה?'},
+            {en:'we dance together',                 he:'אנחנו רוקדים ביחד'},
+            {en:'what do you plan?',                 he:'מה אתה מתכנן?',            alts:['מה את מתכננת?']},
+        ],
+        words: [
+            {en:'drive',     he:'לנהוג'},
+            {en:'pay',       he:'לשלם'},
+            {en:'enjoy',     he:'ליהנות'},
+            {en:'rest',      he:'לנוח'},
+            {en:'visit',     he:'לבקר'},
+            {en:'travel',    he:'לנסוע'},
+            {en:'climb',     he:'לטפס'},
+            {en:'arrive',    he:'להגיע'},
+            {en:'enter',     he:'להיכנס'},
+            {en:'finish',    he:'לסיים'},
+            {en:'decide',    he:'להחליט'},
+            {en:'invite',    he:'להזמין'},
+            {en:'push',      he:'לדחוף'},
+            {en:'hold',      he:'להחזיק'},
+            {en:'count',     he:'לספור'},
+            {en:'grow',      he:'לגדול'},
+            {en:'pick',      he:'לקטוף',        alts:['להרים']},
+            {en:'wish',      he:'לאחל'},
+            {en:'copy',      he:'להעתיק'},
+            {en:'cross',     he:'לחצות'},
+            {en:'hang',      he:'לתלות'},
+            {en:'happen',    he:'לקרות'},
+            {en:'dance',     he:'לרקוד'},
+            {en:'plan',      he:'לתכנן'},
+        ]
+    },
+    {
+        title: 'רגשות ותחושות',
+        desc: 'Feelings & Emotions',
+        img: 'images/vocabulary/רגשות.jpg',
+        combos: [
+            {en:'happy kid',          he:'ילד שמח'},
+            {en:'sad and lonely',     he:'עצוב ובודד',        alts:['עצובה ובודדה']},
+            {en:'my dad is angry',    he:'אבא שלי כועס'},
+            {en:'afraid of the dog',  he:'מפחד מהכלב',        alts:['מפחדת מהכלב']},
+            {en:'excited and glad',   he:'נרגש ושמח',          alts:['נרגשת ושמחה']},
+            {en:'surprised mother',   he:'אמא מופתעת'},
+            {en:'tired and bored',    he:'עייף ומשועמם',       alts:['עייפה ומשועממת']},
+            {en:'proud father',       he:'אבא גאה'},
+            {en:'nervous and alone',  he:'עצבני ולבד',         alts:['עצבנית ולבד']},
+            {en:'stay calm',          he:'תישאר רגוע',         alts:['תישארי רגועה']},
+            {en:'I am sorry',         he:'אני מצטער',          alts:['אני מצטערת']},
+            {en:'a boring lesson',    he:'שיעור משעמם'},
+            {en:'hungry and thirsty', he:'רעב וצמא',           alts:['רעבה וצמאה']},
+            {en:'very busy',          he:'מאוד עסוק',          alts:['מאוד עסוקה','עסוק מאוד','עסוק מאד','מאד עסוק','עסוקה מאוד','עסוקה מאד','מאד עסוקה']},
+        ],
+        words: [
+            {en:'happy',     he:'שמח',         alts:['שמחה']},
+            {en:'sad',       he:'עצוב',        alts:['עצובה']},
+            {en:'angry',     he:'כועס',        alts:['כועסת']},
+            {en:'afraid',    he:'מפחד',        alts:['מפחדת']},
+            {en:'excited',   he:'נרגש',        alts:['נרגשת']},
+            {en:'surprised', he:'מופתע',       alts:['מופתעת']},
+            {en:'tired',     he:'עייף',        alts:['עייפה']},
+            {en:'bored',     he:'משועמם',      alts:['משועממת']},
+            {en:'proud',     he:'גאה'},
+            {en:'nervous',   he:'עצבני',       alts:['עצבנית']},
+            {en:'calm',      he:'רגוע',        alts:['רגועה']},
+            {en:'lonely',    he:'בודד',        alts:['בודדה']},
+                    {en:'glad',       he:'שמח'},
+            {en:'sorry',      he:'מצטער',        alts:['מצטערת']},
+            {en:'boring',     he:'משעמם'},
+            {en:'alone',      he:'לבד'},
+            {en:'hungry',     he:'רעב',          alts:['רעבה']},
+            {en:'thirsty',    he:'צמא',          alts:['צמאה']},
+            {en:'busy',       he:'עסוק',         alts:['עסוקה']},
+]
+    },
+    {
+        title: 'תחביבים ופנאי',
+        desc: 'Hobbies & Free Time',
+        img: 'images/vocabulary/תחביבים.png',
+        words: [
+            {en:'reading',     he:'קריאה'},
+            {en:'cooking',     he:'בישול'},
+            {en:'swimming',    he:'שחייה'},
+            {en:'dancing',     he:'ריקוד'},
+            {en:'painting',    he:'ציור'},
+            {en:'gardening',   he:'גינון'},
+            {en:'photography', he:'צילום'},
+            {en:'music',       he:'מוזיקה'},
+            {en:'hiking',      he:'טיולים'},
+            {en:'gaming',      he:'משחקי מחשב'},
+            {en:'yoga',        he:'יוגה'},
+            {en:'shopping',    he:'קניות'},
+                    {en:'movie',      he:'סרט',          alts:['film']},
+            {en:'story',      he:'סיפור'},
+]
+    },
+    {
+        title: 'ספורט ומשחקים',
+        desc: 'Sports & Games',
+        img: 'images/vocabulary/ספורט.jpg',
+        words: [
+            {en:'football',   he:'כדורגל',    alts:['כדור רגל']},
+            {en:'basketball', he:'כדורסל',    alts:['כדור סל']},
+            {en:'swimming',   he:'שחייה'},
+            {en:'tennis',     he:'טניס'},
+            {en:'running',    he:'ריצה'},
+            {en:'cycling',    he:'רכיבה על אופניים', alts:['רכיבה']},
+            {en:'volleyball', he:'כדורעף'},
+            {en:'boxing',     he:'איגרוף'},
+            {en:'chess',      he:'שחמט'},
+            {en:'team',       he:'קבוצה'},
+            {en:'ball',       he:'כדור'},
+            {en:'match',      he:'משחק'},
+                    {en:'game',       he:'משחק'},
+            {en:'sport',      he:'ספורט'},
+            {en:'jump',       he:'לקפוץ'},
+            {en:'swim',       he:'לשחות'},
+            {en:'win',        he:'לנצח'},
+            {en:'lose',       he:'להפסיד'},
+]
+    },
+    {
+        title: 'מקצועות',
+        desc: 'Jobs & Occupations',
+        img: 'images/vocabulary/מקצועות.jpg',
+        words: [
+            {en:'doctor',     he:'רופא',        alts:['רופאה']},
+            {en:'teacher',    he:'מורה'},
+            {en:'police',     he:'שוטר',        alts:['שוטרת']},
+            {en:'engineer',   he:'מהנדס',       alts:['מהנדסת']},
+            {en:'chef',       he:'שף'},
+            {en:'lawyer',     he:'עורך דין'},
+            {en:'nurse',      he:'אחות'},
+            {en:'soldier',    he:'חייל',        alts:['חיילת']},
+            {en:'driver',     he:'נהג'},
+            {en:'farmer',     he:'חקלאי'},
+            {en:'journalist', he:'עיתונאי'},
+            {en:'manager',    he:'מנהל'},
+                    {en:'job',        he:'עבודה',        alts:['מקצוע']},
+]
+    },
+    {
+        title: 'מילות קישור',
+        desc: 'Linking Words',
+        img: 'images/vocabulary/מילות קישור.jpg',
+        combos: [
+            {en:'eat and drink',       he:'לאכול ולשתות',       alts:['אוכל ושותה','אוכלת ושותה']},
+            {en:'happy but tired',     he:'שמח אבל עייף',        alts:['שמחה אבל עייפה']},
+            {en:'because I am hungry', he:'כי אני רעב',          alts:['כי אני רעבה']},
+            {en:'although tired',      he:'למרות שעייף',         alts:['למרות שעייפה']},
+            {en:'therefore sad',       he:'לכן עצוב',            alts:['לכן עצובה']},
+            {en:'however happy',       he:'עם זאת שמח',          alts:['עם זאת שמחה']},
+            {en:'so I go',             he:'אז אני הולך',         alts:['אז אני הולכת']},
+            {en:'I also run',          he:'אני גם רץ',           alts:['אני גם רצה']},
+            {en:'if hungry',           he:'אם רעב',              alts:['אם רעבה']},
+            {en:'when sad',            he:'כאשר עצוב',           alts:['כאשר עצובה']},
+            {en:'while eating',        he:'בזמן שאוכל',          alts:['בזמן שאוכלת']},
+            {en:'after school',        he:'אחרי בית ספר'},
+            {en:'before the test',     he:'לפני המבחן'},
+            {en:'then I sleep',        he:'אז אני ישן',          alts:['לאחר מכן אני ישן','אז אני ישנה','לאחר מכן אני ישנה']},
+            {en:'soon together',       he:'בקרוב ביחד'},
+            {en:'try again',           he:'לנסות שוב'},
+            {en:'still tired',         he:'עדיין עייף',          alts:['עדיין עייפה']},
+            {en:'already home',        he:'כבר בבית'},
+            {en:'just go',             he:'רק לך'},
+            {en:'too tired',           he:'עייף מידי',           alts:['עייפה מידי']},
+            {en:'usually happy',       he:'בדרך כלל שמח',        alts:['בדרך כלל שמחה']},
+        ],
+        words: [
+            {en:'and',      he:'וגם',        alts:['ו']},
+            {en:'but',      he:'אבל'},
+            {en:'because',  he:'כי'},
+            {en:'although', he:'למרות ש'},
+            {en:'therefore',he:'לכן'},
+            {en:'however',  he:'עם זאת'},
+            {en:'so',       he:'אז'},
+            {en:'also',     he:'גם'},
+            {en:'if',       he:'אם'},
+            {en:'when',     he:'כאשר'},
+            {en:'while',    he:'בזמן ש'},
+            {en:'after',    he:'אחרי'},
+                    {en:'before',     he:'לפני'},
+            {en:'then',       he:'אז',           alts:['לאחר מכן']},
+            {en:'soon',       he:'בקרוב'},
+            {en:'together',   he:'ביחד'},
+            {en:'again',      he:'שוב'},
+            {en:'still',      he:'עדיין'},
+            {en:'already',    he:'כבר'},
+            {en:'just',       he:'רק',           alts:['זה עתה']},
+            {en:'too',        he:'גם',           alts:['מידי']},
+            {en:'usually',    he:'בדרך כלל'},
+]
+    },
+    {
+        title: 'מילות יחס',
+        desc: 'Prepositions',
+        img: 'images/vocabulary/מילות יחס.png',
+        words: [
+            {en:'in',          he:'בתוך / ב'},
+            {en:'on',          he:'על'},
+            {en:'at',          he:'ב / אצל'},
+            {en:'under',       he:'מתחת ל'},
+            {en:'next to',     he:'ליד'},
+            {en:'between',     he:'בין'},
+            {en:'behind',      he:'מאחורי'},
+            {en:'in front of', he:'מול / לפני'},
+            {en:'near',        he:'קרוב ל'},
+            {en:'above',       he:'מעל'},
+        ]
+    },
+    {
+        title: 'כיוונים ומיקום',
+        desc: 'Directions & Position',
+        img: 'images/vocabulary/כיוונים.jpg',
+        words: [
+            {en:'right',   he:'ימין'},
+            {en:'left',    he:'שמאל'},
+            {en:'up',      he:'למעלה'},
+            {en:'down',    he:'למטה'},
+            {en:'north',   he:'צפון'},
+            {en:'south',   he:'דרום'},
+            {en:'east',    he:'מזרח'},
+            {en:'west',    he:'מערב'},
+            {en:'near',    he:'קרוב'},
+            {en:'far',     he:'רחוק'},
+            {en:'inside',  he:'בפנים'},
+            {en:'outside', he:'בחוץ'},
+            {en:'next to', he:'ליד'},
+        ]
+    },
+    {
+        title: 'קניות וכסף',
+        desc: 'Shopping & Money',
+        img: 'images/vocabulary/קניות.jpg',
+        words: [
+            {en:'money',       he:'כסף'},
+            {en:'price',       he:'מחיר'},
+            {en:'cheap',       he:'זול'},
+            {en:'expensive',   he:'יקר'},
+            {en:'buy',         he:'לקנות'},
+            {en:'sell',        he:'למכור'},
+            {en:'market',      he:'שוק'},
+            {en:'wallet',      he:'ארנק'},
+            {en:'change',      he:'עודף'},
+            {en:'credit card', he:'כרטיס אשראי'},
+            {en:'discount',    he:'הנחה'},
+            {en:'receipt',     he:'קבלה'},
+                    {en:'cost',       he:'עלות',         alts:['לעלות']},
+            {en:'pay',        he:'לשלם'},
+            {en:'poor',       he:'עני',          alts:['עניה']},
+            {en:'rich',       he:'עשיר',         alts:['עשירה']},
+            {en:'size',       he:'מידה'},
+]
+    },
+    {
+        title: 'טבע וסביבה',
+        desc: 'Nature & Environment',
+        img: 'images/vocabulary/טבע וסביבה.jpg',
+        words: [
+            {en:'sun',      he:'שמש'},
+            {en:'moon',     he:'ירח'},
+            {en:'stars',    he:'כוכבים', alts:['כוכב']},
+            {en:'sky',      he:'שמיים'},
+            {en:'cloud',    he:'ענן'},
+            {en:'air',      he:'אוויר'},
+            {en:'wind',     he:'רוח'},
+            {en:'rain',     he:'גשם'},
+            {en:'snow',     he:'שלג'},
+            {en:'earth',    he:'אדמה'},
+            {en:'land',     he:'יבשה',  alts:['אדמה']},
+            {en:'ocean',    he:'אוקיינוס'},
+            {en:'sea',      he:'ים'},
+            {en:'lake',     he:'אגם'},
+            {en:'river',    he:'נהר'},
+            {en:'mountain', he:'הר'},
+            {en:'desert',   he:'מדבר'},
+            {en:'forest',   he:'יער'},
+            {en:'grass',    he:'דשא'},
+            {en:'tree',     he:'עץ'},
+            {en:'flower',   he:'פרח'},
+            {en:'rock',     he:'סלע'},
+            {en:'fire',     he:'אש'},
+        ]
+    },
+    {
+        title: 'חגים ואירועים',
+        desc: 'Holidays & Celebrations',
+        img: 'images/vocabulary/חגים.jpg',
+        words: [
+            {en:'birthday',    he:'יום הולדת'},
+            {en:'holiday',     he:'חג'},
+            {en:'party',       he:'מסיבה'},
+            {en:'gift',        he:'מתנה'},
+            {en:'candle',      he:'נר'},
+            {en:'celebration', he:'חגיגה'},
+            {en:'wedding',     he:'חתונה'},
+            {en:'invitation',  he:'הזמנה'},
+            {en:'cake',        he:'עוגה'},
+            {en:'fireworks',   he:'זיקוקין'},
+            {en:'New Year',    he:'שנה חדשה'},
+        ]
+    },
+    {
+        title: 'בריאות ורפואה',
+        desc: 'Health & Medicine',
+        img: 'images/vocabulary/רפואה.png',
+        words: [
+            {en:'pain',        he:'כאב'},
+            {en:'medicine',    he:'תרופה'},
+            {en:'pill',        he:'כדור',     alts:['טבלייה']},
+            {en:'sick',        he:'חולה'},
+            {en:'healthy',     he:'בריא',     alts:['בריאה']},
+            {en:'headache',    he:'כאב ראש'},
+            {en:'fever',       he:'חום'},
+            {en:'cold',        he:'הצטננות'},
+            {en:'allergy',     he:'אלרגיה'},
+            {en:'surgery',     he:'ניתוח'},
+            {en:'appointment', he:'תור'},
+            {en:'ambulance',   he:'אמבולנס'},
+        ]
+    },
+    {
+        title: 'כלי תחבורה',
+        desc: 'Transportation',
+        img: 'images/vocabulary/תחבורה.jpg',
+        words: [
+            {en:'car',         he:'מכונית',   alts:['רכב','אוטו']},
+            {en:'bus',         he:'אוטובוס'},
+            {en:'train',       he:'רכבת'},
+            {en:'airplane',    he:'מטוס'},
+            {en:'bicycle',     he:'אופניים'},
+            {en:'motorcycle',  he:'אופנוע'},
+            {en:'taxi',        he:'מונית',    alts:['טקסי']},
+            {en:'boat',        he:'סירה'},
+            {en:'ship',        he:'ספינה',    alts:['אנייה']},
+            {en:'helicopter',  he:'מסוק'},
+            {en:'subway',      he:'מטרו',     alts:['רכבת תחתית']},
+            {en:'truck',       he:'משאית'},
+        ]
+    },
+    {
+        title: 'מקומות בעיר',
+        desc: 'Places in Town',
+        img: 'images/vocabulary/מקומות בעיר.jpg',
+        words: [
+            {en:'hospital',    he:'בית חולים'},
+            {en:'school',      he:'בית ספר'},
+            {en:'bank',        he:'בנק'},
+            {en:'park',        he:'פארק'},
+            {en:'restaurant',  he:'מסעדה'},
+            {en:'shop',        he:'חנות'},
+            {en:'post office', he:'דואר'},
+            {en:'library',     he:'ספרייה'},
+            {en:'museum',      he:'מוזיאון'},
+            {en:'hotel',       he:'מלון'},
+            {en:'supermarket', he:'סופרמרקט'},
+            {en:'airport',     he:'שדה תעופה'},
+                    {en:'center',     he:'מרכז'},
+            {en:'road',       he:'כביש',         alts:['דרך']},
+            {en:'town',       he:'עיירה',        alts:['עיר']},
+            {en:'street',     he:'רחוב'},
+            {en:'station',    he:'תחנה'},
+            {en:'store',      he:'חנות',         alts:['shop']},
+            {en:'garden',     he:'גן',           alts:['גינה']},
+            {en:'synagogue',  he:'בית כנסת'},
+            {en:'place',      he:'מקום'},
+            {en:'address',    he:'כתובת'},
+]
+    },
+    {
+        title: 'מדינות ושפות',
+        desc: 'Countries & Languages',
+        img: 'images/vocabulary/מדינות.jpg',
+        words: [
+            {en:'Israel',   he:'ישראל'},
+            {en:'USA',      he:'ארצות הברית', alts:['אמריקה']},
+            {en:'England',  he:'אנגליה'},
+            {en:'France',   he:'צרפת'},
+            {en:'Germany',  he:'גרמניה'},
+            {en:'Hebrew',   he:'עברית'},
+            {en:'English',  he:'אנגלית'},
+            {en:'Arabic',   he:'ערבית'},
+            {en:'French',   he:'צרפתית'},
+            {en:'Russian',  he:'רוסית'},
+            {en:'Chinese',  he:'סינית'},
+            {en:'Spanish',  he:'ספרדית'},
+                    {en:'world',      he:'עולם'},
+]
+    },
+    {
+        title: 'טכנולוגיה',
+        desc: 'Technology & Computers',
+        img: 'images/vocabulary/טכנולוגיה ומחשבים.png',
+        words: [
+            {en:'computer',  he:'מחשב'},
+            {en:'phone',     he:'טלפון'},
+            {en:'internet',  he:'אינטרנט'},
+            {en:'app',       he:'אפליקציה', alts:['אפ']},
+            {en:'email',     he:'אימייל'},
+            {en:'camera',    he:'מצלמה'},
+            {en:'battery',   he:'סוללה'},
+            {en:'screen',    he:'מסך'},
+            {en:'keyboard',  he:'מקלדת'},
+            {en:'password',  he:'סיסמה'},
+            {en:'download',  he:'הורדה'},
+            {en:'network',   he:'רשת'},
+        ]
+    },
+    {
+        title: 'נסיעות וטיולים',
+        desc: 'Travel & Tourism',
+        img: 'images/vocabulary/נסיעות.jpg',
+        words: [
+            {en:'passport', he:'דרכון'},
+            {en:'airport',  he:'שדה תעופה'},
+            {en:'hotel',    he:'מלון'},
+            {en:'ticket',   he:'כרטיס'},
+            {en:'map',      he:'מפה'},
+            {en:'luggage',  he:'מזוודה'},
+            {en:'tourist',  he:'תייר'},
+            {en:'trip',     he:'טיול'},
+            {en:'flight',   he:'טיסה'},
+            {en:'visa',     he:'ויזה'},
+            {en:'beach',    he:'חוף ים',  alts:['חוף']},
+            {en:'tour',     he:'סיור'},
+                    {en:'vacation',   he:'חופשה'},
+]
+    },
+    {
+        title: 'תקשורת ותרבות',
+        desc: 'Media & Culture',
+        img: 'images/vocabulary/תרבות.jpg',
+        words: [
+            {en:'television', he:'טלוויזיה'},
+            {en:'newspaper',  he:'עיתון'},
+            {en:'internet',   he:'אינטרנט'},
+            {en:'art',        he:'אמנות'},
+            {en:'music',      he:'מוזיקה'},
+            {en:'science',    he:'מדע'},
+            {en:'culture',    he:'תרבות'},
+            {en:'news',       he:'חדשות'},
+            {en:'film',       he:'סרט'},
+            {en:'book',       he:'ספר'},
+            {en:'theater',    he:'תיאטרון'},
+            {en:'media',      he:'מדיה'},
+                    {en:'radio',      he:'רדיו'},
+            {en:'song',       he:'שיר'},
+            {en:'telephone',  he:'טלפון',        alts:['phone']},
+]
+    },
+    {
+        title: 'צורות הנדסיות',
+        desc: 'Shapes',
+        img: 'images/vocabulary/צורות.png',
+        words: [
+            {en:'circle',    he:'עיגול',    alts:['מעגל']},
+            {en:'square',    he:'ריבוע'},
+            {en:'triangle',  he:'משולש'},
+            {en:'star',      he:'כוכב'},
+            {en:'heart',     he:'לב'},
+            {en:'diamond',   he:'מעין',     alts:['יהלום']},
+            {en:'line',      he:'קו'},
+            {en:'angle',     he:'זווית'},
+        ]
+    },
+    {
+        title: 'חומרים',
+        desc: 'Materials',
+        img: 'images/vocabulary/חומרים.png',
+        words: [
+            {en:'wood',     he:'עץ'},
+            {en:'metal',    he:'מתכת'},
+            {en:'plastic',  he:'פלסטיק'},
+            {en:'glass',    he:'זכוכית'},
+            {en:'paper',    he:'נייר'},
+            {en:'stone',    he:'אבן'},
+            {en:'iron',     he:'ברזל'},
+            {en:'gold',     he:'זהב'},
+        ]
+    },
+    {
+        title: 'כלי עבודה',
+        desc: 'Tools',
+        img: 'images/vocabulary/TOOLS.png',
+        words: [
+            {en:'hammer',      he:'פטיש'},
+            {en:'saw',         he:'מסור'},
+            {en:'screwdriver', he:'מברג'},
+            {en:'nail',        he:'מסמר'},
+            {en:'drill',       he:'מקדחה'},
+            {en:'ladder',      he:'סולם'},
+            {en:'rope',        he:'חבל'},
+            {en:'knife',       he:'סכין'},
+        ]
+    },
+    // ══════════════════════ שלב 2 ══════════════════════
+    {
+        level: 2,
+        title: 'פעלים מנטליים ורגשיים',
+        desc: 'Mental & Emotional Verbs',
+        words: [
+            {en:'think',     he:'לחשוב'},
+            {en:'feel',      he:'להרגיש'},
+            {en:'know',      he:'לדעת'},
+            {en:'believe',   he:'להאמין'},
+            {en:'understand',he:'להבין'},
+            {en:'remember',  he:'לזכור'},
+            {en:'forget',    he:'לשכוח'},
+            {en:'hope',      he:'לקוות'},
+            {en:'want',      he:'לרצות'},
+            {en:'need',      he:'להזדקק', alts:['לצרוך']},
+            {en:'love',      he:'לאהוב'},
+            {en:'hate',      he:'לשנוא'},
+            {en:'prefer',    he:'להעדיף'},
+            {en:'enjoy',     he:'ליהנות'},
+            {en:'miss',      he:'לגעגע'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'פעלים חברתיים ותקשורת',
+        desc: 'Social & Communication Verbs',
+        words: [
+            {en:'ask',       he:'לשאול'},
+            {en:'answer',    he:'לענות'},
+            {en:'tell',      he:'לספר'},
+            {en:'explain',   he:'להסביר'},
+            {en:'agree',     he:'להסכים'},
+            {en:'disagree',  he:'לא להסכים'},
+            {en:'suggest',   he:'להציע'},
+            {en:'promise',   he:'להבטיח'},
+            {en:'invite',    he:'להזמין'},
+            {en:'thank',     he:'להודות'},
+            {en:'apologize', he:'להתנצל'},
+            {en:'complain',  he:'להתלונן'},
+            {en:'describe',  he:'לתאר'},
+            {en:'discuss',   he:'לדון'},
+            {en:'decide',    he:'להחליט'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'פעלים של פעולה ותנועה',
+        desc: 'Action & Movement Verbs',
+        words: [
+            {en:'bring',     he:'להביא'},
+            {en:'take',      he:'לקחת'},
+            {en:'send',      he:'לשלוח'},
+            {en:'give',      he:'לתת'},
+            {en:'get',       he:'לקבל', alts:['להשיג']},
+            {en:'put',       he:'לשים'},
+            {en:'pick up',   he:'להרים', alts:['לאסוף']},
+            {en:'turn on',   he:'להדליק'},
+            {en:'turn off',  he:'לכבות'},
+            {en:'open',      he:'לפתוח'},
+            {en:'close',     he:'לסגור'},
+            {en:'start',     he:'להתחיל'},
+            {en:'stop',      he:'לעצור'},
+            {en:'finish',    he:'לסיים'},
+            {en:'continue',  he:'להמשיך'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'תארים מתקדמים',
+        desc: 'Advanced Adjectives',
+        words: [
+            {en:'confident',    he:'בטוח בעצמו'},
+            {en:'nervous',      he:'עצבני'},
+            {en:'serious',      he:'רציני'},
+            {en:'patient',      he:'סבלני'},
+            {en:'curious',      he:'סקרן'},
+            {en:'surprising',   he:'מפתיע'},
+            {en:'proud',        he:'גאה'},
+            {en:'bored',        he:'משועמם'},
+            {en:'excited',      he:'נרגש'},
+            {en:'disappointed', he:'מאוכזב'},
+            {en:'grateful',     he:'אסיר תודה'},
+            {en:'exhausted',    he:'עייף מאד', alts:['עייף מאוד']},
+        ]
+    },
+    {
+        level: 2,
+        title: 'מקצועות ועבודה',
+        desc: 'Jobs & Work',
+        words: [
+            {en:'job',        he:'עבודה'},
+            {en:'salary',     he:'משכורת'},
+            {en:'meeting',    he:'פגישה'},
+            {en:'deadline',   he:'מועד אחרון'},
+            {en:'colleague',  he:'עמית'},
+            {en:'manager',    he:'מנהל'},
+            {en:'employee',   he:'עובד'},
+            {en:'project',    he:'פרויקט'},
+            {en:'experience', he:'ניסיון'},
+            {en:'skill',      he:'מיומנות', alts:['כישרון']},
+            {en:'company',    he:'חברה'},
+            {en:'office',     he:'משרד'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'בריאות וגוף',
+        desc: 'Health & Body',
+        words: [
+            {en:'headache',    he:'כאב ראש'},
+            {en:'fever',       he:'חום'},
+            {en:'doctor',      he:'רופא'},
+            {en:'medicine',    he:'תרופה'},
+            {en:'pain',        he:'כאב'},
+            {en:'healthy',     he:'בריא'},
+            {en:'sick',        he:'חולה'},
+            {en:'appointment', he:'תור'},
+            {en:'hospital',    he:'בית חולים'},
+            {en:'allergy',     he:'אלרגיה'},
+            {en:'recovery',    he:'החלמה'},
+            {en:'pharmacy',    he:'בית מרקחת'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'טכנולוגיה יומיומית',
+        desc: 'Everyday Technology',
+        words: [
+            {en:'smartphone',    he:'סמארטפון'},
+            {en:'password',      he:'סיסמה'},
+            {en:'message',       he:'הודעה'},
+            {en:'download',      he:'להוריד'},
+            {en:'upload',        he:'להעלות'},
+            {en:'social media',  he:'רשתות חברתיות'},
+            {en:'video call',    he:'שיחת וידאו'},
+            {en:'application',   he:'אפליקציה'},
+            {en:'battery',       he:'סוללה'},
+            {en:'charger',       he:'מטען'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'פעלים של שינוי',
+        desc: 'Verbs of Change',
+        words: [
+            {en:'grow',      he:'לגדול'},
+            {en:'change',    he:'לשנות'},
+            {en:'improve',   he:'לשפר'},
+            {en:'increase',  he:'להגדיל', alts:['לעלות']},
+            {en:'decrease',  he:'להקטין', alts:['לרדת']},
+            {en:'develop',   he:'לפתח'},
+            {en:'break',     he:'לשבור'},
+            {en:'fix',       he:'לתקן'},
+            {en:'build',     he:'לבנות'},
+            {en:'destroy',   he:'להרוס'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'פעלים של תנועה מתקדמים',
+        desc: 'Advanced Movement Verbs',
+        words: [
+            {en:'arrive',   he:'להגיע'},
+            {en:'leave',    he:'לעזוב'},
+            {en:'return',   he:'לחזור'},
+            {en:'escape',   he:'לברוח'},
+            {en:'follow',   he:'לעקוב'},
+            {en:'chase',    he:'לרדוף'},
+            {en:'climb',    he:'לטפס'},
+            {en:'fall',     he:'ליפול'},
+            {en:'rise',     he:'לעלות'},
+            {en:'pull',     he:'למשוך'},
+            {en:'push',     he:'לדחוף'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'רגשות ומצבי רוח',
+        desc: 'Emotions & Moods',
+        words: [
+            {en:'joy',       he:'שמחה'},
+            {en:'sadness',   he:'עצב'},
+            {en:'anger',     he:'כעס'},
+            {en:'fear',      he:'פחד'},
+            {en:'surprise',  he:'הפתעה'},
+            {en:'shame',     he:'בושה'},
+            {en:'pride',     he:'גאווה'},
+            {en:'stress',    he:'לחץ'},
+            {en:'relief',    he:'הקלה'},
+            {en:'jealousy',  he:'קנאה'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'מזג אוויר מתקדם',
+        desc: 'Advanced Weather',
+        words: [
+            {en:'storm',     he:'סערה'},
+            {en:'thunder',   he:'רעם'},
+            {en:'lightning', he:'ברק'},
+            {en:'flood',     he:'שיטפון'},
+            {en:'drought',   he:'בצורת'},
+            {en:'fog',       he:'ערפל'},
+            {en:'breeze',    he:'רוח קלה'},
+            {en:'humid',     he:'לח'},
+            {en:'freezing',  he:'קפוא'},
+            {en:'mild',      he:'מתון'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'אוכל ובישול',
+        desc: 'Food & Cooking',
+        words: [
+            {en:'ingredient', he:'מרכיב'},
+            {en:'recipe',     he:'מתכון'},
+            {en:'boil',       he:'להרתיח'},
+            {en:'fry',        he:'לטגן'},
+            {en:'bake',       he:'לאפות'},
+            {en:'grill',      he:'לצלות'},
+            {en:'taste',      he:'טעם'},
+            {en:'portion',    he:'מנה'},
+            {en:'diet',       he:'דיאטה'},
+            {en:'flavour',    he:'ניחוח'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'כסף וכלכלה',
+        desc: 'Money & Economy',
+        words: [
+            {en:'budget',    he:'תקציב'},
+            {en:'invest',    he:'להשקיע'},
+            {en:'profit',    he:'רווח'},
+            {en:'loan',      he:'הלוואה'},
+            {en:'debt',      he:'חוב'},
+            {en:'rent',      he:'שכר דירה'},
+            {en:'income',    he:'הכנסה'},
+            {en:'tax',       he:'מס'},
+            {en:'insurance', he:'ביטוח'},
+            {en:'savings',   he:'חסכונות'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'טבע וסביבה',
+        desc: 'Nature & Environment',
+        words: [
+            {en:'environment', he:'סביבה'},
+            {en:'pollution',   he:'זיהום'},
+            {en:'climate',     he:'אקלים'},
+            {en:'recycle',     he:'למחזר'},
+            {en:'energy',      he:'אנרגיה'},
+            {en:'forest',      he:'יער'},
+            {en:'ocean',       he:'אוקיינוס'},
+            {en:'wildlife',    he:'חיות בר'},
+            {en:'planet',      he:'כוכב לכת'},
+            {en:'natural',     he:'טבעי'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'חינוך ולמידה',
+        desc: 'Education & Learning',
+        words: [
+            {en:'lesson',      he:'שיעור'},
+            {en:'exam',        he:'מבחן'},
+            {en:'grade',       he:'ציון'},
+            {en:'degree',      he:'תואר'},
+            {en:'subject',     he:'מקצוע'},
+            {en:'university',  he:'אוניברסיטה'},
+            {en:'research',    he:'מחקר'},
+            {en:'knowledge',   he:'ידע'},
+            {en:'pass',        he:'לעבור'},
+            {en:'fail',        he:'להיכשל'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'ספורט ופעילות גופנית',
+        desc: 'Sports & Activity',
+        words: [
+            {en:'exercise',     he:'פעילות גופנית'},
+            {en:'train',        he:'להתאמן'},
+            {en:'compete',      he:'להתחרות'},
+            {en:'win',          he:'לנצח'},
+            {en:'lose',         he:'להפסיד'},
+            {en:'score',        he:'ניקוד'},
+            {en:'team',         he:'קבוצה'},
+            {en:'match',        he:'משחק'},
+            {en:'coach',        he:'מאמן'},
+            {en:'championship', he:'אליפות'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'תחבורה עירונית',
+        desc: 'Urban Transport',
+        words: [
+            {en:'traffic',     he:'תנועה'},
+            {en:'bus stop',    he:'תחנת אוטובוס'},
+            {en:'parking',     he:'חניה'},
+            {en:'highway',     he:'כביש מהיר'},
+            {en:'pedestrian',  he:'הולך רגל'},
+            {en:'rush hour',   he:'שעת עומס'},
+            {en:'crosswalk',   he:'מעבר חציה'},
+            {en:'lane',        he:'נתיב'},
+            {en:'toll',        he:'אגרה'},
+            {en:'traffic jam', he:'פקק תנועה'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'ביטויי זמן',
+        desc: 'Time Expressions',
+        words: [
+            {en:'as soon as',    he:'ברגע ש'},
+            {en:'by the time',   he:'עד שעה ש'},
+            {en:'used to',       he:'נהגתי'},
+            {en:'no longer',     he:'כבר לא'},
+            {en:'ever since',    he:'מאז ש'},
+            {en:'at the moment', he:'כרגע'},
+            {en:'lately',        he:'לאחרונה'},
+            {en:'eventually',    he:'בסופו של דבר'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'ביטויי עמדה ודעה',
+        desc: 'Opinion Expressions',
+        words: [
+            {en:'in my opinion',     he:'לדעתי'},
+            {en:'I agree',           he:'אני מסכים'},
+            {en:'I disagree',        he:'אני לא מסכים'},
+            {en:'as far as I know',  he:'למיטב ידיעתי'},
+            {en:'on the other hand', he:'מצד שני'},
+            {en:'personally',        he:'אישית'},
+            {en:'to be honest',      he:'להיות כנה'},
+            {en:'absolutely',        he:'בהחלט'},
+            {en:'exactly',           he:'בדיוק'},
+            {en:'I am not sure',     he:'אני לא בטוח'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'חלקי גוף מתקדמים',
+        desc: 'Advanced Body Parts',
+        words: [
+            {en:'neck',     he:'צוואר'},
+            {en:'chest',    he:'חזה'},
+            {en:'knee',     he:'ברך'},
+            {en:'elbow',    he:'מרפק'},
+            {en:'wrist',    he:'פרק כף יד'},
+            {en:'ankle',    he:'קרסול'},
+            {en:'finger',   he:'אצבע'},
+            {en:'thumb',    he:'בוהן'},
+            {en:'chin',     he:'סנטר'},
+            {en:'forehead', he:'מצח'},
+            {en:'skin',     he:'עור'},
+            {en:'bone',     he:'עצם'},
+            {en:'muscle',   he:'שריר'},
+            {en:'tongue',   he:'לשון'},
+            {en:'lip',      he:'שפה'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'ביטויי מקום מתקדמים',
+        desc: 'Advanced Place Expressions',
+        words: [
+            {en:'across',    he:'מנגד', alts:['מהצד השני']},
+            {en:'through',   he:'דרך'},
+            {en:'along',     he:'לאורך'},
+            {en:'beyond',    he:'מעבר ל'},
+            {en:'towards',   he:'לכיוון'},
+            {en:'between',   he:'בין'},
+            {en:'among',     he:'בתוך', alts:['בין']},
+            {en:'opposite',  he:'ממול', alts:['מול']},
+            {en:'beside',    he:'לצד'},
+            {en:'above',     he:'מעל'},
+            {en:'below',     he:'מתחת'},
+            {en:'throughout',he:'לאורך כל'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'תארי השוואה',
+        desc: 'Comparative Adjectives',
+        words: [
+            {en:'better',           he:'טוב יותר'},
+            {en:'worse',            he:'גרוע יותר'},
+            {en:'the best',         he:'הטוב ביותר', alts:['הכי טוב']},
+            {en:'the worst',        he:'הגרוע ביותר', alts:['הכי גרוע']},
+            {en:'faster',           he:'מהיר יותר'},
+            {en:'slower',           he:'איטי יותר'},
+            {en:'bigger',           he:'גדול יותר'},
+            {en:'smaller',          he:'קטן יותר'},
+            {en:'more expensive',   he:'יקר יותר'},
+            {en:'cheaper',          he:'זול יותר'},
+            {en:'more difficult',   he:'קשה יותר'},
+            {en:'easier',           he:'קל יותר'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'בני משפחה מורחב',
+        desc: 'Extended Family',
+        words: [
+            {en:'nephew',        he:'אחיין'},
+            {en:'niece',         he:'אחיינית'},
+            {en:'twin',          he:'תאום',         alts:['תאומה']},
+            {en:'stepfather',    he:'אב חורג'},
+            {en:'stepmother',    he:'אם חורגת'},
+            {en:'father-in-law', he:'חמי'},
+            {en:'mother-in-law', he:'חמות'},
+            {en:'grandchild',    he:'נכד',          alts:['נכדה']},
+            {en:'relative',      he:'קרוב משפחה'},
+            {en:'engaged',       he:'מאורס',        alts:['מאורסת']},
+            {en:'divorced',      he:'גרוש',         alts:['גרושה']},
+            {en:'widow',         he:'אלמן',         alts:['אלמנה']},
+        ]
+    },
+    {
+        level: 2,
+        title: 'חיות מתקדמות',
+        desc: 'Advanced Animals',
+        words: [
+            {en:'bear',      he:'דוב'},
+            {en:'fox',       he:'שועל'},
+            {en:'wolf',      he:'זאב'},
+            {en:'monkey',    he:'קוף'},
+            {en:'penguin',   he:'פינגווין'},
+            {en:'crocodile', he:'תנין'},
+            {en:'shark',     he:'כריש'},
+            {en:'owl',       he:'ינשוף'},
+            {en:'eagle',     he:'נשר'},
+            {en:'bee',       he:'דבורה'},
+            {en:'spider',    he:'עכביש'},
+            {en:'deer',      he:'צבי'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'אוכל ושתייה מתקדם',
+        desc: 'Advanced Food & Drinks',
+        words: [
+            {en:'pasta',      he:'פסטה'},
+            {en:'soup',       he:'מרק'},
+            {en:'butter',     he:'חמאה'},
+            {en:'sugar',      he:'סוכר'},
+            {en:'salt',       he:'מלח'},
+            {en:'flour',      he:'קמח'},
+            {en:'chocolate',  he:'שוקולד'},
+            {en:'yogurt',     he:'יוגורט'},
+            {en:'honey',      he:'דבש'},
+            {en:'lemon',      he:'לימון'},
+            {en:'garlic',     he:'שום'},
+            {en:'onion',      he:'בצל'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'הבית ורהיטים מתקדם',
+        desc: 'Advanced Home & Furniture',
+        words: [
+            {en:'ceiling',   he:'תקרה'},
+            {en:'floor',     he:'רצפה'},
+            {en:'wall',      he:'קיר'},
+            {en:'stairs',    he:'מדרגות'},
+            {en:'balcony',   he:'מרפסת'},
+            {en:'garage',    he:'מוסך'},
+            {en:'cupboard',  he:'ארון'},
+            {en:'shelf',     he:'מדף'},
+            {en:'curtain',   he:'וילון'},
+            {en:'pillow',    he:'כרית'},
+            {en:'blanket',   he:'שמיכה'},
+            {en:'microwave', he:'מיקרוגל'},
+        ]
+    },
+    {
+        level: 2,
+        title: 'מקומות בעיר מתקדם',
+        desc: 'Advanced Places in Town',
+        words: [
+            {en:'pharmacy',       he:'בית מרקחת'},
+            {en:'gym',            he:'חדר כושר'},
+            {en:'cinema',         he:'קולנוע'},
+            {en:'stadium',        he:'אצטדיון'},
+            {en:'police station', he:'תחנת משטרה'},
+            {en:'court',          he:'בית משפט'},
+            {en:'embassy',        he:'שגרירות'},
+            {en:'kindergarten',   he:'גן ילדים'},
+            {en:'shopping mall',  he:'קניון'},
+            {en:'gas station',    he:'תחנת דלק'},
+            {en:'synagogue',      he:'בית כנסת'},
+            {en:'town hall',      he:'עירייה'},
+        ]
+    },
+];
+
+// ════════════════════════════════════════════════════════════════
+// קול
+// ════════════════════════════════════════════════════════════════
+var prefVoice = null;
+function initVoices() {
+    var v = speechSynthesis.getVoices();
+    prefVoice = v.find(function(x){return x.name.includes('Zira');}) ||
+                v.find(function(x){return x.lang==='en-US';}) ||
+                v.find(function(x){return x.lang.startsWith('en');}) || null;
+}
+speechSynthesis.onvoiceschanged = initVoices;
+initVoices();
+
+function speak(text) {
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = 0.65;
+    if (prefVoice) u.voice = prefVoice;
+    speechSynthesis.speak(u);
+}
+
+// ════════════════════════════════════════════════════════════════
+// ניווט
+// ════════════════════════════════════════════════════════════════
+var VIEWS = ['viewTopics','viewLearn','viewIntro','viewCombos','viewQuiz','viewScore'];
+
+function showView(id) {
+    VIEWS.forEach(function(v){ document.getElementById(v).style.display='none'; });
+    document.getElementById(id).style.display = 'block';
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function backToSelect()  { showView('viewTopics'); }
+var curLevel = 1;
+function openLevel(n) {
+    curLevel = n || 1;
+    document.getElementById('levelTitle').textContent = location.search.indexOf('direct=1') !== -1
+        ? 'כרטיסיות אוצר מילים לפי נושאים'
+        : 'שלב ' + curLevel + ' — נושאים';
+    selectMode = false; selectedIndices = [];
+    document.getElementById('selectActionBar').style.display = 'none';
+    document.getElementById('quizMenuWrap').style.display = 'inline-block';
+    initStageCards();
+    var totalWords = VOCAB.filter(function(s){ return (s.level||1)===curLevel; })
+                          .reduce(function(sum,s){ return sum+s.words.length; }, 0);
+    document.getElementById('fullQuizCount').textContent = totalWords + ' מילים';
+    showView('viewTopics');
+}
+function backToLearn()  {
+    showView('viewTopics');
+}
+
+// ════════════════════════════════════════════════════════════════
+// בחירת נושא
+// ════════════════════════════════════════════════════════════════
+var selectMode = false;
+var selectedIndices = [];
+
+function initStageCards() {
+    var hasUser  = typeof getUser === 'function';
+    var u        = hasUser ? getUser() : null;
+    var vocabP   = (hasUser && typeof getProgress === 'function') ? (getProgress()['vocabulary'] || {}) : {};
+
+    // סיכום התקדמות
+    var sumEl = document.getElementById('vocabSummary');
+    if (sumEl) {
+        if (u) {
+            var levelTotal = VOCAB.filter(function(s){ return (s.level||1) === curLevel; }).length;
+            var doneCount = 0;
+            for (var k = 0; k < VOCAB.length; k++) {
+                if ((VOCAB[k].level||1) === curLevel && vocabP[k] && vocabP[k].vocabBest !== undefined) doneCount++;
+            }
+            if (doneCount > 0) {
+                sumEl.innerHTML = '<div style="text-align:center;font-style:italic;font-size:1.2rem;font-weight:800;margin-bottom:1rem;background:linear-gradient(90deg,#16a34a,#dc2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">השלמת ' + doneCount + ' מתוך ' + levelTotal + '</div>';
+            } else {
+                sumEl.innerHTML = '';
+            }
+            // כפתור בוחן על הנלמד
+            var learnedBtn = document.getElementById('btnLearnedQuiz');
+            var learnedCnt = document.getElementById('learnedQuizCount');
+            if (learnedBtn) {
+                if (doneCount > 0) {
+                    var learnedWords = 0;
+                    for (var j = 0; j < VOCAB.length; j++) {
+                        if (vocabP[j] && vocabP[j].vocabBest !== undefined) learnedWords += VOCAB[j].words.length;
+                    }
+                    learnedCnt.textContent = '(' + learnedWords + ' מילים)';
+                    learnedBtn.style.display = '';
+                } else {
+                    learnedBtn.style.display = 'none';
+                }
+            }
+        } else {
+            sumEl.innerHTML = '';
+            var lb = document.getElementById('btnLearnedQuiz');
+            if (lb) lb.style.display = 'none';
+        }
+    }
+
+    // אריחים — מסנן לפי רמה
+    var levelItems = [];
+    VOCAB.forEach(function(s, i) { if ((s.level||1) === curLevel) levelItems.push({s:s, i:i}); });
+
+    document.getElementById('stageCards').innerHTML = levelItems.map(function(item, idx) {
+        var s = item.s, i = item.i;
+        var tp         = vocabP[i];
+        var score      = (u && tp && tp.vocabBest !== undefined) ? Math.min(100, tp.vocabBest) : undefined;
+        var isSelected = selectedIndices.indexOf(i) !== -1;
+        var bottomHtml;
+        var scoreHtml = '';
+        if (score !== undefined) {
+            var cls = score >= 80 ? 'tsc-green' : score >= 60 ? 'tsc-ok' : 'tsc-low';
+            scoreHtml = '<div class="topic-tile-score ' + cls + '">✓ ' + score + '%</div>';
+        }
+        var wordCountHtml = '<div class="topic-tile-count">' + s.words.length + ' מילים</div>';
+        var tileExtra = score !== undefined ? (score >= 80 ? ' tile-done' : ' tile-attempted') : '';
+        if (isSelected) tileExtra += ' tile-selected';
+        var clickFn   = selectMode ? 'toggleTile(' + i + ')' : 'selectStage(' + i + ')';
+        var checkMark = selectMode ? '<div class="tile-checkbox">' + (isSelected ? '✓' : '') + '</div>' : '';
+        var numHtml = s.combos
+            ? '<div class="tile-num-row"><div class="tile-number">' + (idx + 1) + '</div><div class="tile-combos-tag">כולל תרגול</div></div>'
+            : '<div class="tile-number">' + (idx + 1) + '</div>';
+        var bottomHtml = '<div class="tile-bottom-row" dir="ltr">' + wordCountHtml + scoreHtml + '</div>';
+        if (s.img) {
+            return '<div class="topic-tile topic-tile-has-img' + tileExtra + '" onclick="' + clickFn + '">' +
+                checkMark +
+                numHtml +
+                '<div class="topic-tile-he">' + s.title + '</div>' +
+                '<img src="' + s.img + '" class="topic-tile-img" alt="' + s.title + '">' +
+                bottomHtml +
+            '</div>';
+        }
+        return '<div class="topic-tile' + tileExtra + '" onclick="' + clickFn + '">' +
+            checkMark +
+            numHtml +
+            '<div class="topic-tile-he">' + s.title + '</div>' +
+            '<div class="topic-tile-en">' + s.desc + '</div>' +
+            bottomHtml +
+        '</div>';
+    }).join('');
+}
+
+window.onProgressUpdated = initStageCards;
+
+function toggleSelectMode() {
+    selectMode = !selectMode;
+    selectedIndices = [];
+    var bar = document.getElementById('selectActionBar');
+    var menuWrap = document.getElementById('quizMenuWrap');
+    bar.style.display = selectMode ? 'flex' : 'none';
+    menuWrap.style.display = selectMode ? 'none' : 'inline-block';
+    updateSelectCount();
+    initStageCards();
+}
+
+function toggleTile(i) {
+    var idx = selectedIndices.indexOf(i);
+    if (idx === -1) selectedIndices.push(i);
+    else selectedIndices.splice(idx, 1);
+    updateSelectCount();
+    initStageCards();
+}
+
+function updateSelectCount() {
+    var totalWords = selectedIndices.reduce(function(sum, i) { return sum + VOCAB[i].words.length; }, 0);
+    var el  = document.getElementById('selectCount');
+    var btn = document.getElementById('btnStartCustom');
+    if (selectedIndices.length === 0) {
+        el.textContent = 'לא נבחרו כרטיסיות';
+        btn.disabled = true;
+    } else {
+        el.textContent = selectedIndices.length + ' כרטיסיות · ' + totalWords + ' מילים';
+        btn.disabled = false;
+    }
+}
+
+function startLearnedQuiz() {
+    var hasUser = typeof getUser === 'function';
+    var u = hasUser ? getUser() : null;
+    var vocabP = (hasUser && typeof getProgress === 'function') ? (getProgress()['vocabulary'] || {}) : {};
+    var all = [];
+    VOCAB.forEach(function(s, i) {
+        if ((s.level||1)===curLevel && u && vocabP[i] && vocabP[i].vocabBest !== undefined) all = all.concat(s.words);
+    });
+    if (!all.length) return;
+    isFullQuiz = true;
+    quizWords = shuffleArr(all);
+    quizIdx = 0; quizScore = 0; quizAnswersMap = {};
+    document.getElementById('quizLabel').textContent = 'בוחן על הנלמד';
+    showView('viewQuiz');
+    renderQuizWord();
+}
+
+function startCustomQuiz() {
+    if (!selectedIndices.length) return;
+    var all = [];
+    selectedIndices.forEach(function(i) { all = all.concat(VOCAB[i].words); });
+    isFullQuiz = true;
+    quizWords = shuffleArr(all);
+    quizIdx = 0; quizScore = 0; quizAnswersMap = {};
+    document.getElementById('quizLabel').textContent = 'בוחן — ' + selectedIndices.length + ' נושאים';
+    selectMode = false; selectedIndices = [];
+    document.getElementById('selectActionBar').style.display = 'none';
+    document.getElementById('quizMenuWrap').style.display = 'inline-block';
+    showView('viewQuiz');
+    renderQuizWord();
+}
+
+// ════════════════════════════════════════════════════════════════
+// לימוד מילים
+// ════════════════════════════════════════════════════════════════
+var curStageIdx = 0;
+
+function selectStage(i) {
+    curStageIdx = i;
+    var s = VOCAB[i];
+    if (s.intro) {
+        document.getElementById('introLabel').textContent = s.title;
+        document.getElementById('introContent').innerHTML = s.intro;
+        showView('viewIntro');
+    } else {
+        showVocabWords();
+    }
+}
+
+function showVocabWords() {
+    var s = VOCAB[curStageIdx];
+    document.getElementById('learnLabel').textContent = s.title;
+    document.getElementById('combosBtn').style.display = s.combos ? 'inline' : 'none';
+    var grid = document.getElementById('vocabGrid');
+    grid.style.gridTemplateColumns = s.cols ? 'repeat(' + s.cols + ', 1fr)' : '';
+    grid.innerHTML = s.words.map(function(w) {
+        return '<div class="vocab-card" onclick="speak(\'' + w.en.replace(/'/g,"\\'") + '\')">' +
+            '<div class="vocab-en" dir="ltr">' + w.en + '</div>' +
+            '<div class="vocab-he">' + w.he + '</div>' +
+            '<div class="play-btn"></div>' +
+        '</div>';
+    }).join('');
+    showView('viewLearn');
+}
+
+// ════════════════════════════════════════════════════════════════
+// תרגול צירופי מילים
+// ════════════════════════════════════════════════════════════════
+var combosWords = [];
+var combosIdx   = 0;
+var combosScore = 0;
+var combosChecked = false;
+
+function startCombos() {
+    var s = VOCAB[curStageIdx];
+    combosWords   = shuffleArr(s.combos.slice());
+    combosIdx     = 0;
+    combosScore   = 0;
+    document.getElementById('combosLabel').textContent = 'צירופי מילים — ' + s.title;
+    showView('viewCombos');
+    renderCombo();
+}
+
+function renderCombo() {
+    combosChecked = false;
+    var w = combosWords[combosIdx];
+    document.getElementById('combosPhrase').textContent = w.en;
+    document.getElementById('combosProg').textContent = (combosIdx + 1) + ' / ' + combosWords.length;
+    var inp = document.getElementById('combosInput');
+    inp.value = '';
+    inp.className = 'quiz-input';
+    inp.disabled = false;
+    document.getElementById('combosFeedback').innerHTML = '';
+    document.getElementById('combosBtnCheck').style.visibility = 'visible';
+    document.getElementById('combosBtnNext').style.visibility  = 'hidden';
+    setTimeout(function(){ inp.focus(); }, 80);
+}
+
+function checkCombo() {
+    if (combosChecked) return;
+    combosChecked = true;
+    var w   = combosWords[combosIdx];
+    var inp = document.getElementById('combosInput');
+    var u   = normAns(inp.value);
+    var accepted = [normAns(w.he)];
+    if (w.alts) w.alts.forEach(function(a){ accepted.push(normAns(a)); });
+    var correct = accepted.indexOf(u) !== -1;
+    if (correct) combosScore++;
+    inp.className = 'quiz-input ' + (correct ? 'input-correct' : 'input-wrong');
+    inp.disabled  = true;
+    document.getElementById('combosFeedback').innerHTML = correct
+        ? '<div class="quiz-result correct">✓ נכון!</div>'
+        : '<div class="quiz-result wrong">✗ &nbsp;' + w.he + '</div>';
+    document.getElementById('combosBtnCheck').style.visibility = 'hidden';
+    document.getElementById('combosBtnNext').style.visibility  = 'visible';
+}
+
+function nextCombo() {
+    combosIdx++;
+    if (combosIdx >= combosWords.length) {
+        var pct = Math.round(combosScore / combosWords.length * 100);
+        var cls = pct >= 80 ? 'score-great' : pct >= 60 ? 'score-ok' : 'score-low';
+        document.getElementById('combosFeedback').innerHTML = '';
+        document.getElementById('combosPhrase').innerHTML =
+            '<div class="' + cls + '" style="font-size:2rem;font-weight:800">' + pct + '%</div>' +
+            '<div style="font-size:1rem;color:var(--text-muted)">' + combosScore + ' מתוך ' + combosWords.length + ' נכון</div>';
+        document.getElementById('combosProg').textContent = '';
+        document.getElementById('combosInput').style.display = 'none';
+        document.getElementById('combosBtnCheck').style.visibility = 'hidden';
+        document.getElementById('combosBtnNext').innerHTML = 'נסה שוב';
+        document.getElementById('combosBtnNext').onclick = function(){ document.getElementById('combosInput').style.display=''; startCombos(); };
+        document.getElementById('combosBtnNext').style.visibility = 'visible';
+        return;
+    }
+    renderCombo();
+}
+
+document.addEventListener('keydown', function(e){
+    if (document.getElementById('viewCombos').style.display === 'none') return;
+    if (e.key === 'Enter') {
+        if (!combosChecked) checkCombo();
+        else if (combosIdx < combosWords.length) nextCombo();
+    }
+});
+
+function startQuiz() {
+    isFullQuiz = false;
+    var s = VOCAB[curStageIdx];
+    quizWords      = shuffleArr(s.words.slice());
+    quizIdx        = 0;
+    quizScore      = 0;
+    quizAnswersMap = {};
+    document.getElementById('quizLabel').textContent = 'בוחן — ' + s.title;
+    showView('viewQuiz');
+    renderQuizWord();
+}
+
+function startFullQuiz() {
+    isFullQuiz = true;
+    var all = [];
+    VOCAB.forEach(function(s) { if ((s.level||1)===curLevel) all = all.concat(s.words); });
+    quizWords      = shuffleArr(all);
+    quizIdx        = 0;
+    quizScore      = 0;
+    quizAnswersMap = {};
+    document.getElementById('quizLabel').textContent = 'בוחן כללי — כל המילים';
+    showView('viewQuiz');
+    renderQuizWord();
+}
+
+function renderQuizWord() {
+    var w = quizWords[quizIdx];
+    quizChecked = false;
+    document.getElementById('quizWord').textContent = w.en;
+    document.getElementById('quizProg').textContent = quizWords.length + ' / ' + (quizIdx+1);
+    var inp = document.getElementById('quizInput');
+    inp.value = '';
+    inp.className = 'quiz-input';
+    inp.disabled = false;
+    document.getElementById('quizFeedback').innerHTML = '';
+    document.getElementById('btnCheck').style.visibility = 'visible';
+    document.getElementById('btnNext').style.visibility  = 'hidden';
+    setTimeout(function(){ inp.focus(); }, 80);
+}
+
+function speakQuizWord() {
+    speak(quizWords[quizIdx].en);
+}
+
+function normAns(s) { return s.replace(/\s+/g,' ').trim(); }
+function isCorrectAnswer(userInput, word) {
+    var u = normAns(userInput);
+    if (u === normAns(word.he)) return true;
+    if (word.alts) {
+        for (var i=0; i<word.alts.length; i++) {
+            if (u === normAns(word.alts[i])) return true;
+        }
+    }
+    return false;
+}
+
+function checkAnswer() {
+    if (quizChecked) return;
+    var w   = quizWords[quizIdx];
+    var inp = document.getElementById('quizInput');
+    var val = inp.value;
+    var fb  = document.getElementById('quizFeedback');
+
+    if (!val.trim()) {
+        fb.innerHTML = '<span style="color:var(--gray-txt)">נא להקליד תשובה</span>';
+        inp.focus();
+        return;
+    }
+
+    quizChecked = true;
+    inp.disabled = true;
+
+    var correct = isCorrectAnswer(val, w);
+    // עדכון המפה לפי אינדקס — מבטיח שכל מילה נספרת פעם אחת בלבד
+    var prev = quizAnswersMap[quizIdx];
+    if (prev !== undefined && prev.correct) quizScore--;
+    quizAnswersMap[quizIdx] = { correct: correct, typed: val };
+    if (correct) quizScore++;
+
+    if (correct) {
+        inp.classList.add('correct');
+        fb.innerHTML = '<span class="fb-correct">נכון!</span>';
+    } else {
+        inp.classList.add('wrong');
+        fb.innerHTML = '<span class="fb-wrong">לא נכון —</span> ' +
+            'התשובה הנכונה: <strong dir="rtl">' + w.he + '</strong>';
+    }
+
+    document.getElementById('btnCheck').style.visibility = 'hidden';
+    if (quizIdx < quizWords.length - 1) {
+        document.getElementById('btnNext').style.visibility = 'visible';
+        setTimeout(function(){ document.getElementById('btnNext').focus(); }, 100);
+    } else {
+        setTimeout(showScore, 800);
+    }
+}
+
+function submitOrNext() {
+    if (!quizChecked) checkAnswer();
+    else if (quizIdx < quizWords.length - 1) nextQuizWord();
+}
+
+function nextQuizWord() {
+    quizIdx++;
+    renderQuizWord();
+}
+
+function prevQuizWord() {
+    if (quizIdx === 0) return;
+    quizIdx--;
+    renderQuizWord();
+}
+
+function showScore() {
+    var total  = quizWords.length;
+    var pct    = Math.min(100, Math.round(quizScore / total * 100));
+    var medal  = pct === 100 ? '★' : pct >= 80 ? '✓' : pct >= 60 ? '~' : '✗';
+    var medalCls = pct >= 80 ? 'gold' : pct >= 60 ? 'silver' : 'bronze';
+    var title  = pct === 100 ? 'מושלם!' : pct >= 80 ? 'כל הכבוד!' : pct >= 60 ? 'לא רע!' : 'כדאי לחזור';
+    var scoreDisplay = Math.min(quizScore, total);
+    var msg    = 'ענית נכון על ' + scoreDisplay + ' מתוך ' + total + ' שאלות (' + pct + '%)';
+
+    var imgSrc = pct > 90 ? 'images/vocabulary/בוחן 1.png' : pct >= 70 ? 'images/vocabulary/בוחן 2.png' : 'images/vocabulary/בוחן 3.png';
+    document.getElementById('scoreImg').src = imgSrc;
+    document.getElementById('scoreCheck').style.display = pct > 90 ? 'flex' : 'none';
+    document.getElementById('scoreTitle').textContent  = title;
+    document.getElementById('scoreFraction').textContent = scoreDisplay + ' / ' + total;
+    document.getElementById('scoreMsg').textContent    = msg;
+
+    // בנה רשימת טעויות מהמפה — כל מילה מופיעה פעם אחת (התשובה האחרונה)
+    var mistakes = [];
+    for (var i = 0; i < quizWords.length; i++) {
+        var ans = quizAnswersMap[i];
+        if (ans && !ans.correct) mistakes.push({ word: quizWords[i], typed: ans.typed });
+    }
+
+    var mistakesEl = document.getElementById('scoreMistakes');
+    if (mistakes.length > 0) {
+        mistakesEl.innerHTML =
+            '<div class="mistakes-title">מה לחזור עליו:</div>' +
+            mistakes.map(function(m) {
+                return '<div class="mistake-row">' +
+                    '<span class="mistake-en" dir="ltr">' + m.word.en + '</span>' +
+                    '<span class="mistake-arrow">→</span>' +
+                    '<span class="mistake-he">' + m.word.he + '</span>' +
+                    '<span class="mistake-typed">(הקלדת: ' + m.typed + ')</span>' +
+                '</div>';
+            }).join('');
+    } else {
+        mistakesEl.innerHTML = '';
+    }
+
+    if (!isFullQuiz && typeof logProgress === 'function') {
+        logProgress('vocabulary', curStageIdx, 'vocabQuiz', pct);
+    }
+    showView('viewScore');
+}
+
+function retryQuiz() {
+    if (isFullQuiz) {
+        var all = [];
+        VOCAB.forEach(function(s) { all = all.concat(s.words); });
+        quizWords = shuffleArr(all);
+    } else {
+        quizWords = shuffleArr(VOCAB[curStageIdx].words.slice());
+    }
+    quizIdx        = 0;
+    quizScore      = 0;
+    quizAnswersMap = {};
+    showView('viewQuiz');
+    renderQuizWord();
+}
+
+// ════════════════════════════════════════════════════════════════
+// עזר
+// ════════════════════════════════════════════════════════════════
+function shuffleArr(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    return arr;
+}
+
+// ════════════════════════════════════════════════════════════════
+// Enter — בדוק / הבא
+// ════════════════════════════════════════════════════════════════
+document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    if (document.getElementById('viewQuiz').style.display === 'none') return;
+    // כשה-btnNext ממוקד, הדפדפן יטפל בלחיצה בעצמו — לא נפעיל גם את submitOrNext
+    if (document.activeElement && document.activeElement.id === 'btnNext') return;
+    submitOrNext();
+});
+
+// ════════════════════════════════════════════════════════════════
+initStageCards();
+var totalWords = VOCAB.reduce(function(sum,s){ return sum + s.words.length; }, 0);
+document.getElementById('fullQuizCount').textContent = totalWords + ' מילים';
+openLevel(1);
+
+window.onBackspace = function() {
+    var cur = VIEWS.find(function(v) {
+        var el = document.getElementById(v);
+        return el && el.style.display !== 'none';
+    });
+    if (!cur) return;
+    if (cur === 'viewTopics') {
+        window.location.href = 'index.html?level=elementary';
+    } else if (cur === 'viewLearn' || cur === 'viewIntro' || cur === 'viewQuiz') {
+        backToSelect();
+    } else if (cur === 'viewScore') {
+        backToSelect();
+    }
+};
+</script>
+<script src="user.js"></script>
+</body>
+</html>

@@ -1,0 +1,486 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>קריאה — לימוד אנגלית</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="toolbar">
+    <a href="index.html" class="toolbar-brand"><span class="accent">Learn</span>English</a>
+    <div class="toolbar-nav">
+        <div class="nav-menu-wrap">
+            <button class="nav-icon-btn" id="navMenuBtn" onclick="toggleNavMenu()">
+                <img src="images/ui/menu.png" class="nav-icon-img" alt="תפריט">
+            </button>
+            <div class="nav-menu-panel" id="navMenuPanel">
+                <a href="index.html" class="nav-menu-item">דף הבית</a>
+                <a href="אודות.html" class="nav-menu-item">אודות</a>
+                <a href="צור קשר.html" class="nav-menu-item">צור קשר</a>
+            </div>
+        </div>
+        <a href="index.html" class="nav-icon-btn">
+            <img src="images/ui/home.png" class="nav-icon-img" alt="בית">
+        </a>
+        <div id="userNavArea" style="position:relative"></div>
+    </div>
+</nav>
+
+<!-- ═══ 0. בחירת שלב ══════════════════════════════════════════════ -->
+<div id="viewSelect" class="reading-wrap">
+    <div class="breadcrumb">
+        <a href="index.html">בית</a>
+        <span class="bc-sep">‹</span>
+        <span>קריאה</span>
+    </div>
+    <h1 class="section-title">שלב הקריאה</h1>
+    <p class="section-subtitle">A1 · בסיס — בחר שלב</p>
+    <div class="reading-stages">
+        <div class="r-stage-card" onclick="showStage(1)">
+            <div class="r-stage-num">1</div>
+            <div class="r-stage-info">
+                <h3>האלפבית</h3>
+                <p>שמות 26 האותיות האנגליות</p>
+            </div>
+            <span class="r-stage-arrow">←</span>
+        </div>
+        <div class="r-stage-card" onclick="showStage(2)">
+            <div class="r-stage-num">2</div>
+            <div class="r-stage-info">
+                <h3>צלילי האותיות</h3>
+                <p>הצליל שכל אות מפיקה בתוך מילה</p>
+            </div>
+            <span class="r-stage-arrow">←</span>
+        </div>
+        <div class="r-stage-card" onclick="showStage(3)">
+            <div class="r-stage-num">3</div>
+            <div class="r-stage-info">
+                <h3>התנועות</h3>
+                <p>צלילי A E I O U — קצר וארוך</p>
+            </div>
+            <span class="r-stage-arrow">←</span>
+        </div>
+        <div class="r-stage-card" onclick="showStage(4)">
+            <div class="r-stage-num">4</div>
+            <div class="r-stage-info">
+                <h3>צירוף אותיות</h3>
+                <p>חיבור אותיות למילים פשוטות (CVC)</p>
+            </div>
+            <span class="r-stage-arrow">←</span>
+        </div>
+        <div class="r-stage-card" onclick="showStage(5)">
+            <div class="r-stage-num">5</div>
+            <div class="r-stage-info">
+                <h3>קריאת מילים</h3>
+                <p>מילים נפוצות — לחץ לשמוע</p>
+            </div>
+            <span class="r-stage-arrow">←</span>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ 1. האלפבית ═══════════════════════════════════════════════ -->
+<div id="viewAlphabet" class="reading-wrap" style="display:none">
+    <button class="back-link" onclick="backToSelect()">→ חזור לשלבים</button>
+    <div class="stage-label">שלב 1 — האלפבית</div>
+    <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" id="a1Progress"></div></div>
+        <span class="progress-txt" id="a1Txt"></span>
+    </div>
+    <div class="alpha-nav" id="a1Nav"></div>
+    <div class="letter-card">
+        <div class="letter-main" id="a1Display"></div>
+        <div class="letter-phonetic" id="a1Phonetic"></div>
+        <div class="letter-actions">
+            <button class="play-btn" onclick="speakA1()"></button>
+            <button class="btn-secondary" onclick="speakA1Slow()">▶ לאט</button>
+        </div>
+        <div class="divider"></div>
+        <div class="words-section">
+            <div class="section-label">מילות דוגמה</div>
+            <div id="a1Words"></div>
+        </div>
+    </div>
+    <div class="nav-bar">
+        <button class="btn-nav btn-nav-prev" id="a1Prev" onclick="a1Prev()">→ הקודם</button>
+        <button class="btn-nav btn-nav-next" id="a1Next" onclick="a1Next()">הבא ←</button>
+    </div>
+</div>
+
+<!-- ═══ 2. צלילי אותיות ══════════════════════════════════════════ -->
+<div id="viewPhonics" class="reading-wrap" style="display:none">
+    <button class="back-link" onclick="backToSelect()">→ חזור לשלבים</button>
+    <div class="stage-label">שלב 2 — צלילי האותיות</div>
+    <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" id="phProgress"></div></div>
+        <span class="progress-txt" id="phTxt"></span>
+    </div>
+    <div class="alpha-nav" id="phNav"></div>
+    <div class="letter-card">
+        <div class="letter-main" id="phDisplay"></div>
+        <div class="letter-phonetic" id="phIPA"></div>
+        <div class="ph-desc" id="phDesc"></div>
+        <div class="letter-actions">
+            <button class="btn-primary" onclick="speakPhKeyword()">▶ שמע את הצליל</button>
+        </div>
+        <div class="divider"></div>
+        <div class="words-section">
+            <div class="section-label">דוגמה במילה</div>
+            <div id="phExample"></div>
+        </div>
+    </div>
+    <div class="nav-bar">
+        <button class="btn-nav btn-nav-prev" id="phPrev" onclick="phPrev()">→ הקודם</button>
+        <button class="btn-nav btn-nav-next" id="phNext" onclick="phNext()">הבא ←</button>
+    </div>
+</div>
+
+<!-- ═══ 3. תנועות ════════════════════════════════════════════════ -->
+<div id="viewVowels" class="reading-wrap" style="display:none">
+    <button class="back-link" onclick="backToSelect()">→ חזור לשלבים</button>
+    <div class="stage-label">שלב 3 — התנועות</div>
+    <p style="color:var(--gray-txt);font-size:0.875rem;margin-bottom:1.25rem">לחץ על תנועה ללמוד את שני צליליה</p>
+    <div class="vowel-nav" id="vowelNav"></div>
+    <div id="vowelCard" class="vowel-card"></div>
+</div>
+
+<!-- ═══ 4. צירוף אותיות ══════════════════════════════════════════ -->
+<div id="viewBlending" class="reading-wrap" style="display:none">
+    <button class="back-link" onclick="backToSelect()">→ חזור לשלבים</button>
+    <div class="stage-label">שלב 4 — צירוף אותיות</div>
+    <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" id="blProgress"></div></div>
+        <span class="progress-txt" id="blTxt"></span>
+    </div>
+    <div class="blend-card">
+        <p style="color:var(--gray-txt);font-size:0.875rem;margin-bottom:1.5rem;text-align:right">
+            לחץ על כל אות לשמוע את צלילה — ואז לחץ "קרא יחד"
+        </p>
+        <div class="blend-parts" id="blParts"></div>
+        <div class="blend-result">
+            <button class="btn-primary" onclick="speakBlend()">▶ קרא יחד</button>
+            <div class="blend-word" id="blWord"></div>
+        </div>
+    </div>
+    <div class="nav-bar">
+        <button class="btn-nav btn-nav-prev" id="blPrev" onclick="blPrev()">→ הקודם</button>
+        <button class="btn-nav btn-nav-next" id="blNext" onclick="blNext()">הבא ←</button>
+    </div>
+</div>
+
+<!-- ═══ 5. קריאת מילים ════════════════════════════════════════════ -->
+<div id="viewWords" class="reading-wrap" style="display:none">
+    <button class="back-link" onclick="backToSelect()">→ חזור לשלבים</button>
+    <div class="stage-label">שלב 5 — קריאת מילים</div>
+    <p style="color:var(--gray-txt);font-size:0.875rem;margin-bottom:1.25rem">לחץ על כל מילה לשמוע כיצד היא נקראת</p>
+    <div class="word-tab-bar" id="wordTabs"></div>
+    <div class="word-grid" id="wordGrid"></div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// קול
+// ════════════════════════════════════════════════════════════════
+var preferredVoice = null;
+
+function initVoices() {
+    var voices = speechSynthesis.getVoices();
+    preferredVoice =
+        voices.find(function(v) { return v.name.includes('Zira'); }) ||
+        voices.find(function(v) { return v.lang === 'en-US'; }) ||
+        voices.find(function(v) { return v.lang.startsWith('en'); }) ||
+        null;
+}
+speechSynthesis.onvoiceschanged = initVoices;
+initVoices();
+
+function speak(text, rate) {
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = rate || 1;
+    if (preferredVoice) u.voice = preferredVoice;
+    speechSynthesis.speak(u);
+}
+
+// ════════════════════════════════════════════════════════════════
+// ניווט בין תצוגות
+// ════════════════════════════════════════════════════════════════
+var ALL_VIEWS = ['viewSelect','viewAlphabet','viewPhonics','viewVowels','viewBlending','viewWords'];
+
+function showView(id) {
+    ALL_VIEWS.forEach(function(v) { document.getElementById(v).style.display = 'none'; });
+    document.getElementById(id).style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showStage(n) {
+    switch(n) {
+        case 1: showView('viewAlphabet'); renderA1();       break;
+        case 2: showView('viewPhonics');  renderPhonics();  break;
+        case 3: showView('viewVowels');   renderVowels();   break;
+        case 4: showView('viewBlending'); renderBlending(); break;
+        case 5: showView('viewWords');    renderWords();    break;
+    }
+}
+
+function backToSelect() { showView('viewSelect'); }
+
+// ════════════════════════════════════════════════════════════════
+// שלב 1 — האלפבית
+// ════════════════════════════════════════════════════════════════
+var ALPHA = [
+    { letter:'A', name:'ay',         ph:'/eɪ/',      words:['apple','arm','ask']   },
+    { letter:'B', name:'bee',        ph:'/biː/',      words:['book','ball','bird']  },
+    { letter:'C', name:'see',        ph:'/siː/',      words:['cat','car','cold']    },
+    { letter:'D', name:'dee',        ph:'/diː/',      words:['dog','day','door']    },
+    { letter:'E', name:'ee',         ph:'/iː/',       words:['egg','end','eat']     },
+    { letter:'F', name:'ef',         ph:'/ɛf/',       words:['fish','fire','far']   },
+    { letter:'G', name:'gee',        ph:'/dʒiː/',     words:['girl','go','good']    },
+    { letter:'H', name:'aitch',      ph:'/eɪtʃ/',     words:['hat','help','here']   },
+    { letter:'I', name:'eye',        ph:'/aɪ/',       words:['ice','in','idea']     },
+    { letter:'J', name:'jay',        ph:'/dʒeɪ/',     words:['job','jump','just']   },
+    { letter:'K', name:'kay',        ph:'/keɪ/',      words:['key','kind','keep']   },
+    { letter:'L', name:'el',         ph:'/ɛl/',       words:['lake','leg','like']   },
+    { letter:'M', name:'em',         ph:'/ɛm/',       words:['man','map','more']    },
+    { letter:'N', name:'en',         ph:'/ɛn/',       words:['name','net','now']    },
+    { letter:'O', name:'oh',         ph:'/oʊ/',       words:['open','old','on']     },
+    { letter:'P', name:'pee',        ph:'/piː/',      words:['pen','put','play']    },
+    { letter:'Q', name:'cue',        ph:'/kjuː/',     words:['queen','quick','quiet']},
+    { letter:'R', name:'ar',         ph:'/ɑːr/',      words:['run','red','road']    },
+    { letter:'S', name:'ess',        ph:'/ɛs/',       words:['sun','see','say']     },
+    { letter:'T', name:'tee',        ph:'/tiː/',      words:['top','time','tell']   },
+    { letter:'U', name:'you',        ph:'/juː/',      words:['use','up','under']    },
+    { letter:'V', name:'vee',        ph:'/viː/',      words:['very','van','voice']  },
+    { letter:'W', name:'double you', ph:'/dʌbljuː/', words:['way','word','work']   },
+    { letter:'X', name:'ex',         ph:'/ɛks/',      words:['x-ray','box','fox']   },
+    { letter:'Y', name:'why',        ph:'/waɪ/',      words:['yes','year','you']    },
+    { letter:'Z', name:'zee',        ph:'/ziː/',      words:['zoo','zero','zone']   },
+];
+
+var a1Cur = 0, a1Done = new Set();
+
+function speakA1()     { speak(ALPHA[a1Cur].name); }
+function speakA1Slow() { speak(ALPHA[a1Cur].name, 0.5); }
+
+function hlLetter(word, letter) {
+    return word.replace(new RegExp('(' + letter + ')', 'i'), '<span class="hl">$1</span>');
+}
+
+function renderA1() {
+    var d = ALPHA[a1Cur];
+    document.getElementById('a1Display').innerHTML =
+        '<span class="ltr-up">' + d.letter + '</span> <span class="ltr-lo">' + d.letter.toLowerCase() + '</span>';
+    document.getElementById('a1Phonetic').textContent = d.ph;
+    document.getElementById('a1Progress').style.width = ((a1Cur+1)/ALPHA.length*100) + '%';
+    document.getElementById('a1Txt').textContent = (a1Cur+1) + ' / ' + ALPHA.length;
+    document.getElementById('a1Words').innerHTML = d.words.map(function(w) {
+        return '<div class="word-row">' +
+            '<span class="word-text">' + hlLetter(w, d.letter) + '</span>' +
+            '<div class="word-btns">' +
+                '<button class="play-btn" onclick="speak(\'' + w + '\')"></button>' +
+                '<button class="btn-word" onclick="speak(\'' + w + '\',0.6)">▶ לאט</button>' +
+            '</div></div>';
+    }).join('');
+    document.getElementById('a1Nav').innerHTML = ALPHA.map(function(a,i) {
+        var c = 'ab' + (i===a1Cur?' ab-active':a1Done.has(i)?' ab-done':'');
+        return '<button class="' + c + '" onclick="a1GoTo(' + i + ')">' + a.letter + '</button>';
+    }).join('');
+    document.getElementById('a1Prev').style.visibility = a1Cur===0 ? 'hidden' : 'visible';
+    document.getElementById('a1Next').textContent = a1Cur===ALPHA.length-1 ? 'סיום ✓' : 'הבא ←';
+}
+
+function a1GoTo(i) { a1Done.add(a1Cur); a1Cur=i; renderA1(); window.scrollTo({top:0}); }
+function a1Next()  { a1Done.add(a1Cur); if(a1Cur<ALPHA.length-1){a1Cur++;renderA1();window.scrollTo({top:0});}else backToSelect(); }
+function a1Prev()  { if(a1Cur>0){a1Cur--;renderA1();window.scrollTo({top:0});} }
+
+// ════════════════════════════════════════════════════════════════
+// שלב 2 — צלילי האותיות
+// ════════════════════════════════════════════════════════════════
+var PHONICS = [
+    { letter:'A', ipa:'/æ/',  desc:'צליל קצר של A — כמו "אַ"',   keyword:'apple' },
+    { letter:'B', ipa:'/b/',  desc:'הצליל ב — כמו ב "ball"',      keyword:'ball'  },
+    { letter:'C', ipa:'/k/',  desc:'הצליל ק — כמו ב "cat"',       keyword:'cat'   },
+    { letter:'D', ipa:'/d/',  desc:'הצליל ד — כמו ב "dog"',       keyword:'dog'   },
+    { letter:'E', ipa:'/ɛ/',  desc:'צליל קצר של E — כמו "אֶ"',   keyword:'egg'   },
+    { letter:'F', ipa:'/f/',  desc:'הצליל פ — כמו ב "fish"',      keyword:'fish'  },
+    { letter:'G', ipa:'/g/',  desc:'הצליל ג — כמו ב "girl"',      keyword:'girl'  },
+    { letter:'H', ipa:'/h/',  desc:'הצליל ה — כמו ב "hat"',       keyword:'hat'   },
+    { letter:'I', ipa:'/ɪ/',  desc:'צליל קצר של I — כמו "אִ"',   keyword:'in'    },
+    { letter:'J', ipa:'/dʒ/', desc:'הצליל ג׳ — כמו ב "job"',     keyword:'job'   },
+    { letter:'K', ipa:'/k/',  desc:'הצליל ק — כמו ב "key"',       keyword:'key'   },
+    { letter:'L', ipa:'/l/',  desc:'הצליל ל — כמו ב "lake"',      keyword:'lake'  },
+    { letter:'M', ipa:'/m/',  desc:'הצליל מ — כמו ב "man"',       keyword:'man'   },
+    { letter:'N', ipa:'/n/',  desc:'הצליל נ — כמו ב "name"',      keyword:'name'  },
+    { letter:'O', ipa:'/ɒ/',  desc:'צליל קצר של O — כמו "אוֹ"',  keyword:'on'    },
+    { letter:'P', ipa:'/p/',  desc:'הצליל פּ — כמו ב "pen"',      keyword:'pen'   },
+    { letter:'Q', ipa:'/kw/', desc:'הצליל קוו — כמו ב "queen"',   keyword:'queen' },
+    { letter:'R', ipa:'/r/',  desc:'הצליל ר — כמו ב "run"',       keyword:'run'   },
+    { letter:'S', ipa:'/s/',  desc:'הצליל ס — כמו ב "sun"',       keyword:'sun'   },
+    { letter:'T', ipa:'/t/',  desc:'הצליל ת — כמו ב "top"',       keyword:'top'   },
+    { letter:'U', ipa:'/ʌ/',  desc:'צליל קצר של U — כמו "אַ"',   keyword:'up'    },
+    { letter:'V', ipa:'/v/',  desc:'הצליל ו — כמו ב "van"',       keyword:'van'   },
+    { letter:'W', ipa:'/w/',  desc:'הצליל וו — כמו ב "way"',      keyword:'way'   },
+    { letter:'X', ipa:'/ks/', desc:'הצליל קס — כמו ב "box"',      keyword:'box'   },
+    { letter:'Y', ipa:'/j/',  desc:'הצליל י — כמו ב "yes"',       keyword:'yes'   },
+    { letter:'Z', ipa:'/z/',  desc:'הצליל ז — כמו ב "zoo"',       keyword:'zoo'   },
+];
+
+var phCur = 0, phDone = new Set();
+
+function speakPhKeyword() { speak(PHONICS[phCur].keyword); }
+
+function renderPhonics() {
+    var d = PHONICS[phCur];
+    document.getElementById('phDisplay').innerHTML =
+        '<span class="ltr-up">' + d.letter + '</span> <span class="ltr-lo">' + d.letter.toLowerCase() + '</span>';
+    document.getElementById('phIPA').textContent = d.ipa;
+    document.getElementById('phDesc').textContent = d.desc;
+    document.getElementById('phProgress').style.width = ((phCur+1)/PHONICS.length*100) + '%';
+    document.getElementById('phTxt').textContent = (phCur+1) + ' / ' + PHONICS.length;
+    document.getElementById('phExample').innerHTML =
+        '<div class="word-row">' +
+            '<span class="word-text">' + hlLetter(d.keyword, d.letter) + '</span>' +
+            '<button class="play-btn" onclick="speak(\'' + d.keyword + '\')"></button>' +
+        '</div>';
+    document.getElementById('phNav').innerHTML = PHONICS.map(function(p,i) {
+        var c = 'ab' + (i===phCur?' ab-active':phDone.has(i)?' ab-done':'');
+        return '<button class="' + c + '" onclick="phGoTo(' + i + ')">' + p.letter + '</button>';
+    }).join('');
+    document.getElementById('phPrev').style.visibility = phCur===0 ? 'hidden' : 'visible';
+    document.getElementById('phNext').textContent = phCur===PHONICS.length-1 ? 'סיום ✓' : 'הבא ←';
+}
+
+function phGoTo(i) { phDone.add(phCur); phCur=i; renderPhonics(); window.scrollTo({top:0}); }
+function phNext()  { phDone.add(phCur); if(phCur<PHONICS.length-1){phCur++;renderPhonics();window.scrollTo({top:0});}else backToSelect(); }
+function phPrev()  { if(phCur>0){phCur--;renderPhonics();window.scrollTo({top:0});} }
+
+// ════════════════════════════════════════════════════════════════
+// שלב 3 — התנועות
+// ════════════════════════════════════════════════════════════════
+var VOWELS = [
+    { letter:'A',
+      short:{ ipa:'/æ/',  label:'צליל קצר', desc:'כמו "אַ" — apple, cat',  words:['apple','cat','bad','map']  },
+      long: { ipa:'/eɪ/', label:'צליל ארוך', desc:'כמו "איי" — cake, name', words:['cake','name','game','day'] } },
+    { letter:'E',
+      short:{ ipa:'/ɛ/',  label:'צליל קצר', desc:'כמו "אֶ" — egg, bed',   words:['egg','bed','ten','red']    },
+      long: { ipa:'/iː/', label:'צליל ארוך', desc:'כמו "אי" — see, tree',  words:['see','tree','these','we']  } },
+    { letter:'I',
+      short:{ ipa:'/ɪ/',  label:'צליל קצר', desc:'כמו "אִ" — in, sit',    words:['in','sit','big','him']     },
+      long: { ipa:'/aɪ/', label:'צליל ארוך', desc:'כמו "איי" — ice, time', words:['ice','time','nice','ride'] } },
+    { letter:'O',
+      short:{ ipa:'/ɒ/',  label:'צליל קצר', desc:'כמו "אוֹ" — on, hot',   words:['on','hot','dog','top']     },
+      long: { ipa:'/oʊ/', label:'צליל ארוך', desc:'כמו "אוֹ" — home, go',  words:['home','note','go','so']    } },
+    { letter:'U',
+      short:{ ipa:'/ʌ/',  label:'צליל קצר', desc:'כמו "אַ" — up, cup',    words:['up','cup','but','sun']     },
+      long: { ipa:'/juː/',label:'צליל ארוך', desc:'כמו "יוּ" — use, cute', words:['use','cute','blue','you']  } },
+];
+
+var vCur = 0;
+
+function renderVowels() {
+    document.getElementById('vowelNav').innerHTML = VOWELS.map(function(v,i) {
+        return '<button class="vowel-btn' + (i===vCur?' active':'') + '" onclick="vGoTo(' + i + ')">' + v.letter + '</button>';
+    }).join('');
+    var d = VOWELS[vCur];
+    document.getElementById('vowelCard').innerHTML =
+        '<div class="letter-main" style="text-align:center;margin-bottom:1.5rem">' +
+            '<span class="ltr-up">' + d.letter + '</span> <span class="ltr-lo">' + d.letter.toLowerCase() + '</span>' +
+        '</div>' +
+        makeVowelHalf(d.short, 'short') +
+        makeVowelHalf(d.long,  'long');
+}
+
+function makeVowelHalf(h, cls) {
+    var btns = h.words.map(function(w) {
+        return '<button class="vowel-word-btn" onclick="speak(\'' + w + '\')">' + w + ' ▶</button>';
+    }).join('');
+    return '<div class="vowel-half ' + cls + '">' +
+        '<div class="vowel-half-title">' + h.label + ' &nbsp; <span class="vowel-ipa">' + h.ipa + '</span></div>' +
+        '<div class="vowel-desc">' + h.desc + '</div>' +
+        '<div class="vowel-words">' + btns + '</div>' +
+    '</div>';
+}
+
+function vGoTo(i) { vCur=i; renderVowels(); }
+
+// ════════════════════════════════════════════════════════════════
+// שלב 4 — צירוף אותיות
+// ════════════════════════════════════════════════════════════════
+var BLENDING = [
+    {parts:['c','a','t'], word:'cat', vi:1}, {parts:['d','o','g'], word:'dog', vi:1},
+    {parts:['s','i','t'], word:'sit', vi:1}, {parts:['h','o','t'], word:'hot', vi:1},
+    {parts:['c','u','p'], word:'cup', vi:1}, {parts:['b','e','d'], word:'bed', vi:1},
+    {parts:['r','u','n'], word:'run', vi:1}, {parts:['b','i','g'], word:'big', vi:1},
+    {parts:['f','u','n'], word:'fun', vi:1}, {parts:['t','e','n'], word:'ten', vi:1},
+    {parts:['m','a','p'], word:'map', vi:1}, {parts:['l','e','g'], word:'leg', vi:1},
+    {parts:['w','i','n'], word:'win', vi:1}, {parts:['j','a','m'], word:'jam', vi:1},
+    {parts:['p','i','g'], word:'pig', vi:1},
+];
+
+var blCur = 0;
+
+function speakBlend() {
+    speak(BLENDING[blCur].word);
+    document.getElementById('blWord').classList.add('visible');
+}
+
+function renderBlending() {
+    var d = BLENDING[blCur];
+    document.getElementById('blProgress').style.width = ((blCur+1)/BLENDING.length*100) + '%';
+    document.getElementById('blTxt').textContent = (blCur+1) + ' / ' + BLENDING.length;
+    document.getElementById('blWord').textContent = d.word;
+    document.getElementById('blWord').classList.remove('visible');
+    document.getElementById('blParts').innerHTML = d.parts.map(function(p,i) {
+        var isV = (i===d.vi);
+        return (i>0?'<span class="blend-plus">+</span>':'') +
+            '<div class="blend-box' + (isV?' vowel-box':'') + '" onclick="speak(\'' + p + '\')">' +
+                '<span class="blend-letter">' + p + '</span>' +
+                '<span class="blend-tap">▶</span>' +
+            '</div>';
+    }).join('');
+    document.getElementById('blPrev').style.visibility = blCur===0 ? 'hidden' : 'visible';
+    document.getElementById('blNext').textContent = blCur===BLENDING.length-1 ? 'סיום ✓' : 'הבא ←';
+}
+
+function blNext() { if(blCur<BLENDING.length-1){blCur++;renderBlending();window.scrollTo({top:0});}else backToSelect(); }
+function blPrev() { if(blCur>0){blCur--;renderBlending();window.scrollTo({top:0});} }
+
+// ════════════════════════════════════════════════════════════════
+// שלב 5 — קריאת מילים
+// ════════════════════════════════════════════════════════════════
+var WORD_CATS = [
+    { name:'מילות יחס',   words:['in','on','at','to','for','of','by','up','out','from','with','into'] },
+    { name:'פעלים',       words:['is','are','be','do','go','see','get','say','run','sit','come','have'] },
+    { name:'כינויים',     words:['I','you','he','she','we','it','my','your','his','her','our','their'] },
+    { name:'מילים שכיחות',words:['the','a','and','or','not','yes','no','this','that','what','who','how'] },
+    { name:'גוף וטבע',    words:['hand','eye','sun','sky','dog','cat','fish','bird','tree','water','fire','rock'] },
+];
+
+var wCat = 0;
+
+function renderWords() {
+    document.getElementById('wordTabs').innerHTML = WORD_CATS.map(function(c,i) {
+        return '<button class="word-tab' + (i===wCat?' active':'') + '" onclick="wTabGo(' + i + ')">' + c.name + '</button>';
+    }).join('');
+    document.getElementById('wordGrid').innerHTML = WORD_CATS[wCat].words.map(function(w) {
+        return '<div class="word-card" onclick="speak(\'' + w + '\')">' +
+            '<span class="w-text">' + w + '</span>' +
+            '<span class="play-btn"></span>' +
+        '</div>';
+    }).join('');
+}
+
+function wTabGo(i) { wCat=i; renderWords(); }
+
+// ════════════════════════════════════════════════════════════════
+showView('viewSelect');
+</script>
+<script src="user.js"></script>
+</body>
+</html>

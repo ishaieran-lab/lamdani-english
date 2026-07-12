@@ -1,0 +1,241 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>למדני אנגלית | Lamdani English</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Analytics — הירשם ב-analytics.google.com, צור נכס, והחלף G-XXXXXXXXXX במזהה שלך -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+</head>
+<body>
+
+<nav class="toolbar">
+    <a href="index.html" class="toolbar-brand">
+        <span class="accent">Lamdani</span> English
+    </a>
+    <div class="toolbar-nav">
+        <div class="nav-menu-wrap">
+            <button class="nav-icon-btn" id="navMenuBtn" onclick="toggleNavMenu()">
+                <img src="images/ui/menu.png" class="nav-icon-img" alt="תפריט">
+            </button>
+            <div class="nav-menu-panel" id="navMenuPanel">
+                <a href="index.html" class="nav-menu-item">דף הבית</a>
+                <a href="אודות.html" class="nav-menu-item">אודות</a>
+                <a href="צור קשר.html" class="nav-menu-item">צור קשר</a>
+            </div>
+        </div>
+        <a href="index.html" class="nav-icon-btn">
+            <img src="images/ui/home.png" class="nav-icon-img" alt="בית">
+        </a>
+        <div id="userNavArea" style="position:relative"></div>
+    </div>
+</nav>
+
+<main class="home">
+    <div class="home-hero">
+        <h1><span class="accent">Lamdani</span> English <span class="home-he-tag">· לומדים אנגלית ובכייף ובקלות</span></h1>
+        <p class="home-desc">מגלים מילים חדשות, שולטים בדקדוק ומבינים כל טקסט – צעד אחר צעד, בקצב שלכם.</p>
+        <p id="homeTitle" class="home-greeting">בחר רמה</p>
+    </div>
+
+    <!-- מסך בחירת רמה -->
+    <div id="viewLevelSelect" class="stages-grid">
+
+        <div class="stage-slot">
+            <div class="stage-card available" onclick="showLevelContent()" style="cursor:pointer">
+                <h2>בי"ס יסודי</h2>
+                <img src="images/home/אוצר מילים שלב 1.jpg" class="stage-img" alt="בי&quot;ס יסודי">
+                <p>אוצר מילים, דקדוק ושיחון לרמת בית הספר היסודי.</p>
+            </div>
+        </div>
+
+        <div class="stage-slot">
+            <div class="stage-card" style="opacity:0.55;cursor:default">
+                <h2>חטיבת ביניים</h2>
+                <p>בקרוב</p>
+            </div>
+        </div>
+
+        <div class="stage-slot">
+            <div class="stage-card" style="opacity:0.55;cursor:default">
+                <h2>תיכון</h2>
+                <p>בקרוב</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- תוכן בי"ס יסודי (המסך הקיים) -->
+    <div id="viewElementary" style="display:none">
+        <button class="back-link" onclick="showLevelSelect()" style="margin-bottom:1rem">→ חזור לבחירת רמה</button>
+
+        <div class="stages-grid">
+
+            <div class="stage-slot">
+                <a href="vocabulary.html?direct=1" class="stage-card available">
+                    <h2>אוצר מילים</h2>
+                    <img src="images/home/אוצר מילים.jpg" class="stage-img" alt="אוצר מילים">
+                    <p>מילים יומיומיות לפי נושאים — משפחה, אוכל, ספורט, טבע ועוד.</p>
+                </a>
+                <div class="card-prog" id="prog-vocabulary" style="display:none"></div>
+            </div>
+
+            <div class="stage-slot">
+                <a href="grammar.html?direct=1" class="stage-card available">
+                    <h2>דקדוק</h2>
+                    <img src="images/home/דקדוק.jpg" class="stage-img" alt="דקדוק">
+                    <p>שלוט במבנה המשפט, בזמנים ובחוקים הדקדוקיים.</p>
+                </a>
+                <div class="card-prog" id="prog-grammar" style="display:none"></div>
+            </div>
+
+            <div class="stage-slot">
+                <a href="הבנת הנקרא.html?direct=1" class="stage-card available">
+                    <h2>הבנת הנקרא</h2>
+                    <img src="images/home/הבנת הנקרא.jpg" class="stage-img" alt="הבנת הנקרא">
+                    <p>קטעי קריאה באנגלית עם שאלות הבנה — 10 שלבים לפי סדר עולה.</p>
+                </a>
+                <div class="card-prog" id="prog-reading" style="display:none"></div>
+            </div>
+
+            <div class="stage-slot">
+                <a href="שיחון.html?direct=1" class="stage-card available">
+                    <h2>שיחון</h2>
+                    <img src="images/home/שיחון.jpg" class="stage-img" alt="שיחון">
+                    <p>משפטים שימושיים לשיחה יומיומית — ברכות, בקשות, שאלות ותשובות נפוצות.</p>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<script src="user.js"></script>
+<script>
+var MODULES = [
+    { key: 'vocabulary', id: 'prog-vocabulary',  total: 50 },
+    { key: 'grammar',    id: 'prog-grammar',     total: 6  },
+    { key: 'reading',    id: 'prog-reading',     total: 10 },
+];
+
+if (location.search.indexOf('level=elementary') !== -1) { showLevelContent(); }
+
+function showLevelSelect() {
+    document.getElementById('viewLevelSelect').style.display = '';
+    document.getElementById('viewElementary').style.display = 'none';
+    document.getElementById('homeTitle').textContent = 'בחר רמה';
+}
+
+function showLevelContent() {
+    document.getElementById('viewLevelSelect').style.display = 'none';
+    document.getElementById('viewElementary').style.display = 'block';
+    document.getElementById('homeTitle').textContent = 'בי"ס יסודי';
+    renderProgress();
+}
+
+function onProgressUpdated() {
+    var u = getUser();
+    var hero = document.getElementById('homeTitle');
+    if (u) {
+        hero.textContent = 'שלום, ' + u.username + ' 👋';
+    } else {
+        hero.textContent = 'בחר רמה';
+    }
+    renderProgress();
+}
+
+window.onUserLogin = onProgressUpdated;
+
+function renderProgress() {
+    var u = getUser();
+    var p = getProgress();
+
+    MODULES.forEach(function(m) {
+        var el = document.getElementById(m.id);
+        if (!el) return;
+
+        if (!u) {
+            el.style.display = 'none';
+            el.parentElement.classList.remove('has-prog');
+            return;
+        }
+
+        var mod = p[m.key] || {};
+        var completed = 0, started = 0;
+        var gramScores = [], vocabScores = [], matchScores = [], readingScores = [];
+
+        for (var i = 0; i < m.total; i++) {
+            var s = mod[i] || {};
+            if (m.key === 'vocabulary') {
+                if (s.vocabBest !== undefined) completed++;
+            } else if (m.key === 'reading') {
+                if (s.best !== undefined) completed++;
+            } else {
+                var st = getStageStatus(m.key, i);
+                if (st === 'complete') completed++;
+                else if (st === 'started') started++;
+            }
+            if (s.grammarBest !== undefined) gramScores.push({ idx: i + 1, sc: Math.min(100, s.grammarBest) });
+            if (s.vocabBest   !== undefined) vocabScores.push({ idx: i + 1, sc: Math.min(100, s.vocabBest) });
+            if (s.matchBest   !== undefined) matchScores.push({ idx: i + 1, sc: Math.min(100, s.matchBest) });
+            if (s.best        !== undefined) readingScores.push({ idx: i + 1, sc: Math.min(100, s.best) });
+        }
+
+        if (!completed && !started) {
+            el.style.display = 'none';
+            el.parentElement.classList.remove('has-prog');
+            return;
+        }
+
+        // ── טקסט שלבים ──────────────────────────────────────────
+        var isVocab   = m.key === 'vocabulary';
+        var stageWord = isVocab
+            ? (completed === 1 ? 'נושא 1' : completed + ' נושאים')
+            : (completed === 1 ? 'שלב 1'  : completed + ' שלבים');
+        var mainText  = 'ביצע ' + stageWord + ' מתוך ' + m.total;
+        if (!isVocab && started > 0) mainText += ' · ' + started + ' בתהליך';
+
+        // ── ציון ─────────────────────────────────────────────────
+        var allScores = gramScores.concat(vocabScores).concat(matchScores).concat(readingScores);
+        var scoreHtml = '';
+        if (allScores.length) {
+            var avg = Math.round(allScores.reduce(function(a, b) { return a + b.sc; }, 0) / allScores.length);
+            var cls = avg >= 80 ? 'cp-chip-green' : avg >= 60 ? 'cp-chip-ok' : 'cp-chip';
+
+            if (completed === 1 && allScores.length === 1) {
+                var lbl = isVocab ? 'נושא' : 'שלב';
+                scoreHtml = '<span class="' + cls + '">' + lbl + ' ' + allScores[0].idx + ' · ציון ' + allScores[0].sc + '%</span>';
+            } else {
+                scoreHtml = '<span class="' + cls + '">ממוצע ' + avg + '%</span>';
+            }
+        }
+
+        // ── פס התקדמות ───────────────────────────────────────────
+        var pct  = Math.round((completed + started * 0.5) / m.total * 100);
+        var barC = pct === 100 ? 'cp-bar-fill done' : 'cp-bar-fill';
+
+        el.style.display = 'block';
+        el.parentElement.classList.add('has-prog');
+        el.innerHTML =
+            '<div class="cp-row">' +
+                '<span class="cp-text">✅ ' + mainText + '</span>' +
+                scoreHtml +
+            '</div>' +
+            '<div class="cp-bar-track"><div class="' + barC + '" style="width:' + pct + '%"></div></div>';
+    });
+}
+
+window.onBackspace = function() {
+    var elementary = document.getElementById('viewElementary');
+    if (elementary && elementary.style.display !== 'none') {
+        showLevelSelect();
+    }
+};
+</script>
+</body>
+</html>
