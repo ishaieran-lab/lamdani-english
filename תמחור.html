@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -240,51 +240,20 @@
         <h1>מנוי פשוט, ערך אמיתי</h1>
         <p>גישה מלאה לכל התכנים — אוצר מילים, דקדוק, הבנת הנקרא ושיחון</p>
 
-        <div class="pricing-toggle">
-            <span class="toggle-label">חודשי</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="billingToggle" onchange="toggleBilling()">
-                <span class="toggle-slider"></span>
-            </label>
-            <span class="toggle-label">שנתי</span>
-            <span class="toggle-badge">חסוך 30%</span>
-        </div>
     </div>
 
-    <div class="plans-grid">
-
-        <!-- חינמי -->
-        <div class="plan-card">
-            <div class="plan-name">חינמי</div>
-            <div class="plan-desc">להתנסות ולהכיר את הפלטפורמה</div>
-            <div class="plan-price">
-                <span class="price-amount">₪0</span>
-            </div>
-            <div class="plan-saving">&nbsp;</div>
-            <ul class="plan-features">
-                <li>5 נושאי אוצר מילים</li>
-                <li>2 שלבי דקדוק</li>
-                <li>2 קטעי הבנת הנקרא</li>
-                <li>מעקב התקדמות בסיסי</li>
-                <li class="disabled">כל נושאי אוצר המילים (50)</li>
-                <li class="disabled">כל שלבי הדקדוק</li>
-                <li class="disabled">תרגול צירופי מילים</li>
-                <li class="disabled">שיחון מלא</li>
-            </ul>
-            <a href="index.html" class="plan-cta secondary">התחל בחינם</a>
-        </div>
+    <div class="plans-grid" style="max-width:420px;margin:0 auto;">
 
         <!-- מנוי מלא -->
         <div class="plan-card featured">
-            <div class="plan-badge">הכי פופולרי</div>
             <div class="plan-name">מנוי מלא</div>
             <div class="plan-desc">גישה לכל התכנים ללא הגבלה</div>
-            <div class="plan-price" id="priceDisplay">
+            <div class="plan-price">
                 <span class="price-currency">₪</span>
-                <span class="price-amount" id="priceAmount">29</span>
-                <span class="price-period" id="pricePeriod">לחודש</span>
+                <span class="price-amount">29</span>
+                <span class="price-period">לחודש</span>
             </div>
-            <div class="plan-saving" id="priceSaving">&nbsp;</div>
+            <div class="plan-saving">&nbsp;</div>
             <ul class="plan-features">
                 <li>כל 50 נושאי אוצר המילים</li>
                 <li>כל שלבי הדקדוק</li>
@@ -294,13 +263,13 @@
                 <li>מעקב התקדמות מפורט</li>
                 <li>עדכוני תוכן שוטפים</li>
             </ul>
-            <a href="index.html" class="plan-cta primary" id="ctaBtn">התחל עכשיו — ניסיון חינם 7 ימים</a>
+            <a href="app.html" class="plan-cta primary">הרשמה והתחלה</a>
         </div>
 
     </div>
 
     <p class="pricing-note">
-        ניסיון חינמי של 7 ימים — ללא כרטיס אשראי. ביטול בכל עת. <br>
+        ביטול בכל עת. <br>
         יש שאלות? <a href="צור קשר.html">צרו קשר</a> · <a href="תנאי שימוש.html">תנאי שימוש</a> · <a href="מדיניות פרטיות.html">מדיניות פרטיות</a>
     </p>
 
@@ -322,10 +291,6 @@
         <div class="faq-item">
             <div class="faq-q" onclick="toggleFaq(this)">האם ניתן לגשת מכל מכשיר?</div>
             <div class="faq-a">בהחלט. האתר מותאם למחשב, טאבלט וסמארטפון. ההתקדמות נשמרת ומסונכרנת בין המכשירים.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-q" onclick="toggleFaq(this)">מה כלול בניסיון החינמי?</div>
-            <div class="faq-a">גישה מלאה לכל התכנים למשך 7 ימים, ללא צורך בכרטיס אשראי. לאחר 7 הימים תוכלו לבחור מנוי או לעבור לחשבון חינמי.</div>
         </div>
     </div>
 </div>
