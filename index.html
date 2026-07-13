@@ -89,7 +89,7 @@
         .hero-badge {
             display: inline-block;
             color: var(--navy);
-            font-size: 3.2rem;
+            font-size: clamp(1.4rem, 4vw, 3.2rem);
             font-weight: 700;
             margin-bottom: 0.4rem;
         }
@@ -165,7 +165,8 @@
         .modules-grid {
             display: flex;
             justify-content: center;
-            gap: 3rem;
+            gap: clamp(1rem, 3vw, 3rem);
+            flex-wrap: wrap;
         }
         .module-card {
             background: none;
@@ -173,10 +174,11 @@
             padding: 1rem;
             text-align: center;
             flex: 0 0 auto;
+            max-width: 200px;
         }
-        .module-icon { font-size: 3.6rem; margin-bottom: 0.75rem; }
-        .module-name { font-size: 1.94rem; font-weight: 700; color: var(--navy); margin-bottom: 0.4rem; }
-        .module-desc { font-size: 1.64rem; color: var(--muted); line-height: 1.55; }
+        .module-icon { font-size: clamp(2rem, 3vw, 3.6rem); margin-bottom: 0.75rem; }
+        .module-name { font-size: clamp(1rem, 2vw, 1.94rem); font-weight: 700; color: var(--navy); margin-bottom: 0.4rem; }
+        .module-desc { font-size: clamp(0.85rem, 1.5vw, 1.64rem); color: var(--muted); line-height: 1.55; }
 
         /* ── FEATURE ROWS ────────────────────── */
         .feature-section { padding: 5.5rem 2rem; }
@@ -302,16 +304,16 @@
         /* ── RESPONSIVE ──────────────────────── */
         @media (max-width: 768px) {
             .nav-links a:not(.nav-cta) { display: none; }
-            .modules-grid { grid-template-columns: 1fr 1fr; }
             .feature-wrap { grid-template-columns: 1fr; gap: 2rem; }
-            /* In mobile, always show image first */
             .feature-section.bg-soft .feature-wrap .feature-text { order: 2; }
             .feature-section.bg-soft .feature-wrap .feature-img  { order: 1; }
-            .hero { padding: 3.5rem 1.5rem 2rem; }
-            .feature-section { padding: 3.5rem 1.5rem; }
+            .hero { padding: 1.5rem 1rem 1rem; }
+            .feature-section { padding: 3rem 1rem; }
+            .module-card { max-width: 140px; }
         }
         @media (max-width: 480px) {
-            .modules-grid { grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+            .modules-grid { gap: 0.5rem; }
+            .module-card { max-width: 110px; padding: 0.5rem; }
         }
     </style>
 </head>
