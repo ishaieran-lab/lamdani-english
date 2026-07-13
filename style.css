@@ -32,6 +32,49 @@ body {
     min-height: 100vh;
 }
 
+/* ── Site Nav (לבן, משותף לכל הדפים) ────── */
+.nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #fff;
+    border-bottom: 1px solid var(--gray-bdr);
+    padding: 0.9rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.nav-brand {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--navy);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+}
+.nav-brand em { color: var(--blue); font-style: normal; }
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+}
+.nav-links a {
+    color: var(--gray-txt);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.15s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+    color: var(--blue) !important;
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+}
+.nav-cta:hover { color: var(--blue-dark) !important; text-decoration: underline; }
+@media (max-width: 768px) {
+    .nav-links a:not(.nav-cta) { display: none; }
+}
+
 /* ── Toolbar ────────────────────────────── */
 .toolbar {
     background: var(--navy);
