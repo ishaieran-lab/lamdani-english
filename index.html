@@ -1,617 +1,480 @@
-<title>למדני אנגלית | Lamdani English — לימוד אנגלית בעברית</title>
-<meta name="description" content="למדני אנגלית — פלטפורמת לימוד אנגלית אינטראקטיבית בעברית. אוצר מילים, דקדוק, הבנת הנקרא ושיחון לבית ספר יסודי.">
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>למדני אנגלית | Lamdani English — לימוד אנגלית בעברית</title>
+    <meta name="description" content="למדני אנגלית — פלטפורמת לימוד אנגלית אינטראקטיבית בעברית. אוצר מילים, דקדוק, הבנת הנקרא ושיחון לבית ספר יסודי.">
+    <!-- Google Analytics — החלף G-XXXXXXXXXX במזהה שלך -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --navy:   #0d2347;
+            --blue:   #2563eb;
+            --blue-h: #1d4ed8;
+            --blue-lt:#eff6ff;
+            --gold:   #f59e0b;
+            --text:   #1e2d3d;
+            --muted:  #637080;
+            --border: #e4eaf0;
+            --bg:     #ffffff;
+            --bg-soft:#f7f9fc;
+        }
 
-:root {
-  --navy:   #0e2a52;
-  --blue:   #2563eb;
-  --blue-h: #1d4ed8;
-  --gold:   #f59e0b;
-  --gold-l: #fef3c7;
-  --green:  #059669;
-  --bg:     #ffffff;
-  --bg-alt: #f4f7ff;
-  --text:   #1a2744;
-  --muted:  #5a708a;
-  --bdr:    #dde5f5;
-  --font: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --radius: 14px;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0b1729; --bg-alt: #0f1f38; --text: #d6e4f8;
-    --muted: #7a9ab5; --bdr: #1a3060; --navy: #c8daf8; --gold-l: #2a1f00;
-  }
-}
-:root[data-theme="light"] {
-  --bg: #ffffff; --bg-alt: #f4f7ff; --text: #1a2744; --muted: #5a708a;
-  --bdr: #dde5f5; --navy: #0e2a52; --gold-l: #fef3c7;
-}
-:root[data-theme="dark"] {
-  --bg: #0b1729; --bg-alt: #0f1f38; --text: #d6e4f8;
-  --muted: #7a9ab5; --bdr: #1a3060; --navy: #c8daf8; --gold-l: #2a1f00;
-}
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            direction: rtl;
+            line-height: 1.65;
+        }
 
-body { font-family: var(--font); color: var(--text); background: var(--bg); direction: rtl; line-height: 1.6; }
+        img { max-width: 100%; display: block; }
+        a { color: inherit; }
 
-/* ── NAV ── */
-.ln-nav {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(14,42,82,0.97); backdrop-filter: blur(8px);
-  padding: 0.9rem 2rem;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.ln-brand { font-size: 1.35rem; font-weight: 800; color: #fff; text-decoration: none; letter-spacing: -0.02em; }
-.ln-brand span { color: var(--gold); }
-.ln-nav-links { display: flex; align-items: center; gap: 1.5rem; }
-.ln-nav-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.15s; }
-.ln-nav-links a:hover { color: #fff; }
-.ln-nav-cta {
-  background: var(--gold); color: var(--navy) !important;
-  padding: 0.5rem 1.2rem; border-radius: 30px; font-weight: 700 !important;
-  font-size: 0.88rem !important; transition: opacity 0.15s !important;
-}
-.ln-nav-cta:hover { opacity: 0.9; color: var(--navy) !important; }
+        /* ── NAV ─────────────────────────────── */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            padding: 0.9rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-brand {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--navy);
+            text-decoration: none;
+            letter-spacing: -0.01em;
+        }
+        .nav-brand em { color: var(--blue); font-style: normal; }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+        }
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.15s;
+        }
+        .nav-links a:hover { color: var(--text); }
+        .nav-cta {
+            background: var(--blue) !important;
+            color: #fff !important;
+            padding: 0.55rem 1.3rem !important;
+            border-radius: 8px !important;
+            font-weight: 700 !important;
+            font-size: 0.88rem !important;
+            transition: background 0.15s !important;
+        }
+        .nav-cta:hover { background: var(--blue-h) !important; }
 
-/* ── HERO ── */
-.ln-hero {
-  background: linear-gradient(145deg, #0b1e3d 0%, #0e2a52 55%, #103569 100%);
-  padding: 5rem 2rem 4rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-.ln-hero-text {}
-.ln-eyebrow {
-  display: inline-block;
-  background: rgba(245,158,11,0.2);
-  color: var(--gold);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  padding: 0.3rem 0.85rem;
-  border-radius: 20px;
-  margin-bottom: 1.2rem;
-  text-transform: uppercase;
-}
-.ln-hero h1 {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 800;
-  color: #fff;
-  line-height: 1.2;
-  text-wrap: balance;
-  margin-bottom: 1rem;
-}
-.ln-hero h1 em { color: var(--gold); font-style: normal; }
-.ln-hero-sub {
-  color: rgba(255,255,255,0.72);
-  font-size: 1.05rem;
-  line-height: 1.75;
-  margin-bottom: 2rem;
-  max-width: 420px;
-}
-.ln-hero-btns { display: flex; gap: 0.9rem; flex-wrap: wrap; }
-.btn-primary {
-  background: var(--blue); color: #fff;
-  padding: 0.85rem 1.8rem; border-radius: 10px;
-  font-size: 1rem; font-weight: 700; text-decoration: none;
-  border: none; cursor: pointer; font-family: var(--font);
-  transition: background 0.15s;
-}
-.btn-primary:hover { background: var(--blue-h); }
-.btn-outline {
-  background: transparent; color: rgba(255,255,255,0.85);
-  padding: 0.85rem 1.8rem; border-radius: 10px;
-  font-size: 1rem; font-weight: 600; text-decoration: none;
-  border: 1.5px solid rgba(255,255,255,0.3); cursor: pointer;
-  font-family: var(--font); transition: border-color 0.15s, color 0.15s;
-}
-.btn-outline:hover { border-color: rgba(255,255,255,0.7); color: #fff; }
-.ln-hero-trial { color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.75rem; }
+        /* ── HERO ─────────────────────────────── */
+        .hero {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 5rem 2rem 2rem;
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: var(--blue-lt);
+            color: var(--blue);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.3rem 0.9rem;
+            border-radius: 20px;
+            margin-bottom: 1.4rem;
+        }
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            color: var(--navy);
+            line-height: 1.22;
+            text-wrap: balance;
+            margin-bottom: 1rem;
+        }
+        .hero h1 em { color: var(--blue); font-style: normal; }
+        .hero-sub {
+            font-size: 1.1rem;
+            color: var(--muted);
+            max-width: 480px;
+            margin: 0 auto 2.25rem;
+            line-height: 1.75;
+        }
+        .hero-btns {
+            display: flex;
+            gap: 0.85rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+        .btn-primary {
+            background: var(--blue);
+            color: #fff;
+            padding: 0.85rem 2rem;
+            border-radius: 9px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .btn-primary:hover { background: var(--blue-h); }
+        .btn-outline {
+            color: var(--navy);
+            border: 1.5px solid var(--border);
+            padding: 0.85rem 2rem;
+            border-radius: 9px;
+            font-size: 0.97rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: border-color 0.15s, color 0.15s;
+        }
+        .btn-outline:hover { border-color: var(--blue); color: var(--blue); }
+        .hero-note { font-size: 0.8rem; color: #aab4be; margin-top: 0.75rem; }
 
-/* ── APP PREVIEW ── */
-.ln-app-preview {
-  background: #132040;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.1);
-  overflow: hidden;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
-}
-.preview-bar {
-  background: #0e1a30;
-  padding: 0.65rem 1rem;
-  display: flex; align-items: center; gap: 0.5rem;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-}
-.preview-dot { width: 9px; height: 9px; border-radius: 50%; }
-.preview-bar-title { color: rgba(255,255,255,0.4); font-size: 0.75rem; flex: 1; text-align: center; }
-.preview-body { padding: 1.25rem; }
-.preview-topic-title {
-  color: rgba(255,255,255,0.9); font-weight: 700; font-size: 1rem; margin-bottom: 1rem; text-align: center;
-}
-.preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 1rem; }
-.preview-card {
-  background: rgba(255,255,255,0.07);
-  border-radius: 10px; padding: 0.75rem;
-  text-align: center; border: 1px solid rgba(255,255,255,0.08);
-}
-.preview-en { color: #93c5fd; font-weight: 700; font-size: 0.95rem; direction: ltr; }
-.preview-he { color: rgba(255,255,255,0.65); font-size: 0.82rem; margin-top: 0.2rem; }
-.preview-quiz {
-  background: rgba(37,99,235,0.2);
-  border: 1px solid rgba(37,99,235,0.3);
-  border-radius: 10px; padding: 0.85rem;
-  text-align: center;
-}
-.preview-quiz-q { color: rgba(255,255,255,0.55); font-size: 0.78rem; margin-bottom: 0.4rem; }
-.preview-quiz-word { color: #93c5fd; font-weight: 800; font-size: 1.3rem; direction: ltr; margin-bottom: 0.5rem; }
-.preview-input-fake {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 7px; padding: 0.45rem 0.75rem;
-  color: rgba(255,255,255,0.4); font-size: 0.85rem;
-  text-align: right; width: 100%;
-}
-.preview-check-btn {
-  background: var(--blue); color: #fff;
-  border: none; border-radius: 7px; padding: 0.45rem 1.25rem;
-  font-size: 0.85rem; font-weight: 700; margin-top: 0.5rem; cursor: pointer;
-}
+        /* Hero image */
+        .hero-img-wrap {
+            max-width: 700px;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 16px 48px rgba(13,35,71,0.1);
+        }
+        .hero-img-wrap img { width: 100%; }
 
-/* ── HERO OUTER WRAP ── */
-.ln-hero-outer {
-  background: linear-gradient(145deg, #0b1e3d 0%, #0e2a52 55%, #103569 100%);
-}
+        /* ── MODULES STRIP ────────────────────── */
+        .modules {
+            background: var(--bg-soft);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 3.5rem 2rem;
+            margin-top: 4rem;
+        }
+        .modules-inner { max-width: 900px; margin: 0 auto; }
+        .modules-header { text-align: center; margin-bottom: 2rem; }
+        .modules-header h2 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 0.35rem;
+        }
+        .modules-header p { color: var(--muted); font-size: 0.95rem; }
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        .module-card {
+            background: #fff;
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            padding: 1.4rem 1rem;
+            text-align: center;
+            transition: box-shadow 0.2s;
+        }
+        .module-card:hover { box-shadow: 0 6px 20px rgba(37,99,235,0.09); }
+        .module-icon { font-size: 1.8rem; margin-bottom: 0.6rem; }
+        .module-name { font-size: 0.97rem; font-weight: 700; color: var(--navy); margin-bottom: 0.25rem; }
+        .module-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.55; }
 
-/* ── STATS ── */
-.ln-stats {
-  background: var(--navy);
-  padding: 2rem;
-  display: flex; justify-content: center; gap: 0;
-  flex-wrap: wrap;
-}
-.stat-item {
-  flex: 1; min-width: 140px;
-  text-align: center; padding: 1rem 1.5rem;
-  border-left: 1px solid rgba(255,255,255,0.1);
-}
-.stat-item:last-child { border-left: none; }
-.stat-num { font-size: 2.2rem; font-weight: 800; color: var(--gold); line-height: 1; }
-.stat-label { color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-top: 0.3rem; }
+        /* ── FEATURE ROWS ────────────────────── */
+        .feature-section { padding: 5.5rem 2rem; }
+        .feature-section.bg-soft { background: var(--bg-soft); }
+        .feature-wrap {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4.5rem;
+            align-items: center;
+        }
+        .feature-img img {
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 12px 36px rgba(13,35,71,0.1);
+        }
+        .feature-tag {
+            color: var(--blue);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            margin-bottom: 0.65rem;
+        }
+        .feature-h {
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: var(--navy);
+            line-height: 1.3;
+            margin-bottom: 0.75rem;
+        }
+        .feature-p {
+            color: var(--muted);
+            line-height: 1.8;
+            margin-bottom: 1.1rem;
+        }
+        .check-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .check-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.92rem;
+        }
+        .check-list li::before {
+            content: '✓';
+            color: var(--blue);
+            font-weight: 800;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
 
-/* ── SECTIONS ── */
-.ln-section { padding: 5rem 2rem; }
-.ln-section.alt { background: var(--bg-alt); }
-.section-inner { max-width: 1100px; margin: 0 auto; }
-.section-eyebrow {
-  color: var(--blue); font-size: 0.78rem; font-weight: 700;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  margin-bottom: 0.6rem;
-}
-.section-title {
-  font-size: clamp(1.5rem, 3vw, 2.1rem);
-  font-weight: 800; color: var(--text);
-  text-wrap: balance; margin-bottom: 0.75rem;
-}
-.section-sub { color: var(--muted); font-size: 1rem; max-width: 520px; line-height: 1.75; margin-bottom: 3rem; }
+        /* ── CTA SECTION ─────────────────────── */
+        .cta-section {
+            background: var(--blue-lt);
+            border-top: 1px solid #d1e3ff;
+            padding: 5rem 2rem;
+            text-align: center;
+        }
+        .cta-inner { max-width: 560px; margin: 0 auto; }
+        .cta-h {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 0.7rem;
+        }
+        .cta-p { color: var(--muted); margin-bottom: 2rem; line-height: 1.7; }
+        .cta-note { color: #8da5b8; font-size: 0.82rem; margin-top: 1rem; }
 
-/* ── FEATURES ── */
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 1.25rem;
-}
-.feature-card {
-  background: var(--bg);
-  border: 1.5px solid var(--bdr);
-  border-radius: var(--radius);
-  padding: 1.75rem 1.5rem;
-  transition: box-shadow 0.2s, transform 0.2s;
-}
-.feature-card:hover { box-shadow: 0 8px 28px rgba(37,99,235,0.1); transform: translateY(-3px); }
-.feature-icon {
-  width: 48px; height: 48px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem; margin-bottom: 1rem;
-}
-.icon-blue { background: #eff6ff; }
-.icon-gold { background: #fef3c7; }
-.icon-green { background: #d1fae5; }
-.icon-purple { background: #ede9fe; }
-.feature-title { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.4rem; }
-.feature-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
-.feature-count {
-  display: inline-block; margin-top: 0.75rem;
-  font-size: 0.78rem; font-weight: 700; color: var(--blue);
-  background: #eff6ff; padding: 0.15rem 0.6rem; border-radius: 20px;
-}
+        /* ── FOOTER ──────────────────────────── */
+        .footer {
+            background: var(--navy);
+            padding: 3rem 2rem 1.5rem;
+        }
+        .footer-top {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .footer-brand-name {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 0.35rem;
+        }
+        .footer-brand-name em { color: var(--gold); font-style: normal; }
+        .footer-tagline { color: rgba(255,255,255,0.38); font-size: 0.82rem; }
+        .footer-col h4 {
+            color: rgba(255,255,255,0.45);
+            font-size: 0.76rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-bottom: 0.75rem;
+        }
+        .footer-col a {
+            display: block;
+            color: rgba(255,255,255,0.45);
+            text-decoration: none;
+            font-size: 0.86rem;
+            margin-bottom: 0.4rem;
+            transition: color 0.15s;
+        }
+        .footer-col a:hover { color: rgba(255,255,255,0.82); }
+        .footer-bottom {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.25);
+            font-size: 0.79rem;
+            text-align: center;
+        }
 
-/* ── HOW IT WORKS ── */
-.steps-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; position: relative; }
-.steps-row::before {
-  content: '';
-  position: absolute;
-  top: 28px; right: calc(100%/6); left: calc(100%/6);
-  height: 2px;
-  background: repeating-linear-gradient(90deg, var(--blue) 0 8px, transparent 8px 16px);
-  z-index: 0;
-}
-.step { text-align: center; position: relative; z-index: 1; }
-.step-num {
-  width: 56px; height: 56px; border-radius: 50%;
-  background: var(--blue); color: #fff;
-  font-size: 1.3rem; font-weight: 800;
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 1rem;
-  box-shadow: 0 0 0 6px #eff6ff;
-}
-.step-title { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.4rem; }
-.step-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
-
-/* ── SAMPLE WORDS ── */
-.words-showcase {
-  display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-top: 2.5rem;
-}
-.word-chip {
-  background: var(--bg); border: 1.5px solid var(--bdr);
-  border-radius: 50px; padding: 0.5rem 1.1rem;
-  display: flex; align-items: center; gap: 0.6rem;
-  font-size: 0.9rem; transition: border-color 0.15s, box-shadow 0.15s;
-}
-.word-chip:hover { border-color: var(--blue); box-shadow: 0 2px 12px rgba(37,99,235,0.12); }
-.chip-en { font-weight: 700; color: var(--blue); direction: ltr; }
-.chip-arrow { color: var(--muted); font-size: 0.8rem; }
-.chip-he { color: var(--text); }
-
-/* ── TESTIMONIALS ── */
-.testi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
-.testi-card {
-  background: var(--bg); border: 1.5px solid var(--bdr);
-  border-radius: var(--radius); padding: 1.75rem;
-}
-.testi-stars { color: var(--gold); font-size: 1rem; margin-bottom: 0.85rem; letter-spacing: 0.1em; }
-.testi-text { color: var(--text); font-size: 0.92rem; line-height: 1.75; margin-bottom: 1.25rem; }
-.testi-author { display: flex; align-items: center; gap: 0.75rem; }
-.testi-avatar {
-  width: 38px; height: 38px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem; flex-shrink: 0;
-}
-.testi-name { font-weight: 700; font-size: 0.88rem; color: var(--text); }
-.testi-role { font-size: 0.8rem; color: var(--muted); }
-
-/* ── PRICING CTA ── */
-.pricing-cta-block {
-  background: linear-gradient(135deg, #0e2a52 0%, #1a4090 100%);
-  border-radius: 24px;
-  padding: 3.5rem 2rem;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.pricing-cta-block::before {
-  content: '';
-  position: absolute;
-  top: -60px; left: -60px;
-  width: 200px; height: 200px;
-  background: rgba(245,158,11,0.12);
-  border-radius: 50%;
-}
-.pricing-cta-block::after {
-  content: '';
-  position: absolute;
-  bottom: -40px; right: -40px;
-  width: 160px; height: 160px;
-  background: rgba(37,99,235,0.15);
-  border-radius: 50%;
-}
-.cta-title { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 800; color: #fff; margin-bottom: 0.75rem; text-wrap: balance; }
-.cta-sub { color: rgba(255,255,255,0.65); font-size: 0.97rem; margin-bottom: 2rem; }
-.cta-price { font-size: 1.1rem; color: rgba(255,255,255,0.55); margin-top: 1rem; }
-.cta-price strong { color: var(--gold); }
-
-/* ── FOOTER ── */
-.ln-footer {
-  background: #090f1d;
-  padding: 3rem 2rem 1.5rem;
-  color: rgba(255,255,255,0.5);
-}
-.footer-inner { max-width: 1100px; margin: 0 auto; }
-.footer-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem; margin-bottom: 2.5rem; }
-.footer-brand { font-size: 1.3rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; }
-.footer-brand span { color: var(--gold); }
-.footer-tagline { font-size: 0.85rem; color: rgba(255,255,255,0.4); }
-.footer-links h4 { color: rgba(255,255,255,0.7); font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.9rem; }
-.footer-links a { display: block; color: rgba(255,255,255,0.45); text-decoration: none; font-size: 0.88rem; margin-bottom: 0.5rem; transition: color 0.15s; }
-.footer-links a:hover { color: rgba(255,255,255,0.85); }
-.footer-divider { border: none; border-top: 1px solid rgba(255,255,255,0.07); margin-bottom: 1.25rem; }
-.footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; font-size: 0.8rem; }
-.footer-bottom a { color: rgba(255,255,255,0.35); text-decoration: none; }
-.footer-bottom a:hover { color: rgba(255,255,255,0.65); }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 768px) {
-  .ln-hero { grid-template-columns: 1fr; padding: 3rem 1.25rem 2.5rem; gap: 2rem; }
-  .ln-hero-sub { max-width: 100%; }
-  .ln-app-preview { max-width: 400px; margin: 0 auto; }
-  .steps-row { grid-template-columns: 1fr; }
-  .steps-row::before { display: none; }
-  .ln-nav-links a:not(.ln-nav-cta) { display: none; }
-  .stat-item { min-width: 120px; }
-  .footer-top { flex-direction: column; }
-  .footer-bottom { flex-direction: column; text-align: center; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .feature-card { transition: none; }
-}
-</style>
+        /* ── RESPONSIVE ──────────────────────── */
+        @media (max-width: 768px) {
+            .nav-links a:not(.nav-cta) { display: none; }
+            .modules-grid { grid-template-columns: 1fr 1fr; }
+            .feature-wrap { grid-template-columns: 1fr; gap: 2rem; }
+            /* In mobile, always show image first */
+            .feature-section.bg-soft .feature-wrap .feature-text { order: 2; }
+            .feature-section.bg-soft .feature-wrap .feature-img  { order: 1; }
+            .hero { padding: 3.5rem 1.5rem 2rem; }
+            .feature-section { padding: 3.5rem 1.5rem; }
+        }
+        @media (max-width: 480px) {
+            .modules-grid { grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
 
 <!-- NAV -->
-<nav class="ln-nav">
-  <a href="index.html" class="ln-brand"><span>Lamdani</span> English</a>
-  <div class="ln-nav-links">
-    <a href="אודות.html">אודות</a>
-    <a href="תמחור.html">מחירים</a>
-    <a href="צור קשר.html">צור קשר</a>
-    <a href="app.html" class="ln-nav-cta">התחל בחינם</a>
-  </div>
+<nav class="nav">
+    <a href="index.html" class="nav-brand"><em>Lamdani</em> English</a>
+    <div class="nav-links">
+        <a href="אודות.html">אודות</a>
+        <a href="תמחור.html">מחירים</a>
+        <a href="צור קשר.html">צור קשר</a>
+        <a href="app.html" class="nav-cta">התחל עכשיו</a>
+    </div>
 </nav>
 
 <!-- HERO -->
-<div class="ln-hero-outer">
-  <div class="ln-hero">
-    <div class="ln-hero-text">
-      <div class="ln-eyebrow">חינוכי · אינטראקטיבי · בעברית</div>
-      <h1>לומדים אנגלית —<br><em>בשפה שלנו</em></h1>
-      <p class="ln-hero-sub">
-        אוצר מילים, דקדוק, הבנת הנקרא ושיחון — מותאם לתלמידי בית ספר יסודי, עם בוחנים, מעקב התקדמות ותרגול שממש כיף.
-      </p>
-      <div class="ln-hero-btns">
+<section class="hero">
+    <div class="hero-badge">לימוד אנגלית בעברית · לבית ספר יסודי</div>
+    <h1>ילדים שלומדים אנגלית —<br><em>ממש נהנים מזה</em></h1>
+    <p class="hero-sub">
+        אוצר מילים, דקדוק, הבנת הנקרא ושיחון — הכל בעברית, עם בוחנים כיפיים ומעקב התקדמות.
+    </p>
+    <div class="hero-btns">
         <a href="app.html" class="btn-primary">התחל ניסיון חינמי</a>
         <a href="תמחור.html" class="btn-outline">לצפייה במחירים</a>
-      </div>
-      <p class="ln-hero-trial">ניסיון חינמי 7 ימים · ללא כרטיס אשראי · ביטול בכל עת</p>
     </div>
+    <p class="hero-note">ניסיון חינמי 7 ימים · ללא כרטיס אשראי · ביטול בכל עת</p>
+    <br>
+    <div class="hero-img-wrap">
+        <img src="images/landing/classroom.jpg" alt="תלמידים לומדים אנגלית בכיתה">
+    </div>
+</section>
 
-    <div class="ln-app-preview">
-      <div class="preview-bar">
-        <div class="preview-dot" style="background:#ff5f57"></div>
-        <div class="preview-dot" style="background:#febc2e"></div>
-        <div class="preview-dot" style="background:#28c840"></div>
-        <div class="preview-bar-title">למדני אנגלית · בעלי חיים</div>
-      </div>
-      <div class="preview-body">
-        <div class="preview-topic-title">בעלי חיים — Animals</div>
-        <div class="preview-grid">
-          <div class="preview-card">
-            <div class="preview-en">dog</div>
-            <div class="preview-he">כלב</div>
-          </div>
-          <div class="preview-card">
-            <div class="preview-en">cat</div>
-            <div class="preview-he">חתול</div>
-          </div>
-          <div class="preview-card">
-            <div class="preview-en">bird</div>
-            <div class="preview-he">ציפור</div>
-          </div>
-          <div class="preview-card">
-            <div class="preview-en">fish</div>
-            <div class="preview-he">דג</div>
-          </div>
+<!-- MODULES -->
+<div class="modules">
+    <div class="modules-inner">
+        <div class="modules-header">
+            <h2>מה לומדים באתר?</h2>
+            <p>ארבעה מסלולים — כל מה שצריך לאנגלית יסודי</p>
         </div>
-        <div class="preview-quiz">
-          <div class="preview-quiz-q">תרגם לעברית:</div>
-          <div class="preview-quiz-word">elephant</div>
-          <input class="preview-input-fake" type="text" value="פיל" readonly>
-          <button class="preview-check-btn">✓ בדוק</button>
+        <div class="modules-grid">
+            <div class="module-card">
+                <div class="module-icon">📚</div>
+                <div class="module-name">אוצר מילים</div>
+                <div class="module-desc">50 נושאים עם כרטיסיות, השמעה ובוחנים</div>
+            </div>
+            <div class="module-card">
+                <div class="module-icon">✏️</div>
+                <div class="module-name">דקדוק</div>
+                <div class="module-desc">חוקי השפה עם הסבר בעברית ותרגול</div>
+            </div>
+            <div class="module-card">
+                <div class="module-icon">📖</div>
+                <div class="module-name">הבנת הנקרא</div>
+                <div class="module-desc">10 רמות קריאה עם שאלות הבנה</div>
+            </div>
+            <div class="module-card">
+                <div class="module-icon">💬</div>
+                <div class="module-name">שיחון</div>
+                <div class="module-desc">משפטים יומיומיים לשיחה פשוטה</div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
 
-<!-- STATS -->
-<div class="ln-stats" style="background:#0e2a52">
-  <div class="stat-item">
-    <div class="stat-num">50</div>
-    <div class="stat-label">נושאי אוצר מילים</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">600+</div>
-    <div class="stat-label">מילים ומשפטים</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">10</div>
-    <div class="stat-label">רמות הבנת הנקרא</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">100%</div>
-    <div class="stat-label">בעברית, בשביל עברים</div>
-  </div>
-</div>
-
-<!-- FEATURES -->
-<section class="ln-section">
-  <div class="section-inner">
-    <div class="section-eyebrow">מה לומדים</div>
-    <h2 class="section-title">ארבעה מסלולי לימוד — כל מה שצריך</h2>
-    <p class="section-sub">כל מסלול בנוי צעד אחר צעד, עם בוחנים אינטראקטיביים ומעקב התקדמות אישי.</p>
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon icon-blue">📚</div>
-        <div class="feature-title">אוצר מילים</div>
-        <div class="feature-desc">מילים לפי נושאים — משפחה, בעלי חיים, אוכל, ספורט ועוד. לכל מילה: השמעה, תרגול כתיבה ובוחן.</div>
-        <span class="feature-count">50 נושאים</span>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon icon-gold">✏️</div>
-        <div class="feature-title">דקדוק</div>
-        <div class="feature-desc">חוקי השפה בהסבר בעברית, תרגול מובנה, מבחנים עם ניקוד. מבנה המשפט, זמנים ועוד.</div>
-        <span class="feature-count">שלבים מ-A1 ועד B1</span>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon icon-green">📖</div>
-        <div class="feature-title">הבנת הנקרא</div>
-        <div class="feature-desc">קטעי קריאה באנגלית עם שאלות הבנה — 10 רמות בסדר עולה. מתחילים בפשוט ומתקדמים.</div>
-        <span class="feature-count">10 רמות קושי</span>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon icon-purple">💬</div>
-        <div class="feature-title">שיחון</div>
-        <div class="feature-desc">משפטים שימושיים לשיחה יומיומית — ברכות, בקשות, שאלות ותשובות. אנגלית של החיים.</div>
-        <span class="feature-count">משפטים מוכנים לשימוש</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section class="ln-section alt">
-  <div class="section-inner">
-    <div class="section-eyebrow">איך זה עובד</div>
-    <h2 class="section-title">שלושה צעדים פשוטים</h2>
-    <p class="section-sub">בלי אפליקציות להוריד, בלי התקנות. פותחים דפדפן ומתחילים ללמוד.</p>
-    <div class="steps-row">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-title">נרשמים</div>
-        <div class="step-desc">יוצרים חשבון בחינם תוך 30 שניות. ללא כרטיס אשראי לניסיון.</div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-title">בוחרים נושא</div>
-        <div class="step-desc">בוחרים מתוך 50 נושאים — ימי שבוע, צבעים, בעלי חיים, פעלים ועוד.</div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-title">לומדים ומתרגלים</div>
-        <div class="step-desc">קוראים, שומעים, כותבים ומקבלים ציון מיידי. ההתקדמות נשמרת אוטומטית.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- SAMPLE WORDS -->
-<section class="ln-section">
-  <div class="section-inner" style="text-align:center">
-    <div class="section-eyebrow">טעימה קטנה</div>
-    <h2 class="section-title">כמה מילים מהאתר</h2>
-    <div class="words-showcase">
-      <div class="word-chip"><span class="chip-en">dog</span><span class="chip-arrow">→</span><span class="chip-he">כלב</span></div>
-      <div class="word-chip"><span class="chip-en">happy</span><span class="chip-arrow">→</span><span class="chip-he">שמח</span></div>
-      <div class="word-chip"><span class="chip-en">teacher</span><span class="chip-arrow">→</span><span class="chip-he">מורה</span></div>
-      <div class="word-chip"><span class="chip-en">run</span><span class="chip-arrow">→</span><span class="chip-he">לרוץ</span></div>
-      <div class="word-chip"><span class="chip-en">tomorrow</span><span class="chip-arrow">→</span><span class="chip-he">מחר</span></div>
-      <div class="word-chip"><span class="chip-en">beautiful</span><span class="chip-arrow">→</span><span class="chip-he">יפה</span></div>
-      <div class="word-chip"><span class="chip-en">family</span><span class="chip-arrow">→</span><span class="chip-he">משפחה</span></div>
-      <div class="word-chip"><span class="chip-en">because</span><span class="chip-arrow">→</span><span class="chip-he">כי</span></div>
-      <div class="word-chip"><span class="chip-en">elephant</span><span class="chip-arrow">→</span><span class="chip-he">פיל</span></div>
-      <div class="word-chip"><span class="chip-en">where</span><span class="chip-arrow">→</span><span class="chip-he">איפה</span></div>
-      <div class="word-chip"><span class="chip-en">birthday</span><span class="chip-arrow">→</span><span class="chip-he">יום הולדת</span></div>
-      <div class="word-chip"><span class="chip-en">always</span><span class="chip-arrow">→</span><span class="chip-he">תמיד</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- TESTIMONIALS -->
-<section class="ln-section alt">
-  <div class="section-inner">
-    <div class="section-eyebrow">מה אומרים</div>
-    <h2 class="section-title">הורים ותלמידים מספרים</h2>
-    <p class="section-sub" style="margin-bottom:2rem">עשרות תלמידים כבר לומדים ומתקדמים.</p>
-    <div class="testi-grid">
-      <div class="testi-card">
-        <div class="testi-stars">★★★★★</div>
-        <p class="testi-text">הבן שלי כיתה ד' שנא אנגלית. אחרי שבועיים עם למדני הוא מבקש לפתוח את האתר מעצמו. הבוחנים עם הציונים מוטיבציה עצומה בשבילו.</p>
-        <div class="testi-author">
-          <div class="testi-avatar" style="background:#eff6ff">👩</div>
-          <div>
-            <div class="testi-name">מיכל ר.</div>
-            <div class="testi-role">אמא לתלמיד כיתה ד'</div>
-          </div>
+<!-- FEATURE 1: image on right (RTL default), text on left -->
+<section class="feature-section">
+    <div class="feature-wrap">
+        <div class="feature-img">
+            <img src="images/landing/reading.jpg" alt="ילדים קוראים ספר אנגלית">
         </div>
-      </div>
-      <div class="testi-card">
-        <div class="testi-stars">★★★★★</div>
-        <p class="testi-text">כמורה, אני ממליצה על הפלטפורמה לתלמידים שצריכים חיזוק. ההסברים בעברית ברורים, והתרגול עם הבוחנים אמיתי — לא רק לחיצה על כפתור.</p>
-        <div class="testi-author">
-          <div class="testi-avatar" style="background:#d1fae5">👨‍🏫</div>
-          <div>
-            <div class="testi-name">דני כ.</div>
-            <div class="testi-role">מורה לאנגלית, בית ספר יסודי</div>
-          </div>
+        <div class="feature-text">
+            <div class="feature-tag">ללמוד באהבה</div>
+            <h2 class="feature-h">ללמוד אנגלית —<br>בלי שיהיה משעמם</h2>
+            <p class="feature-p">
+                הכרטיסיות, הבוחנים והסיפורים מעוצבים כך שהילד ממש רוצה לפתוח את האתר שוב מחר.
+            </p>
+            <ul class="check-list">
+                <li>כרטיסיות מילים עם תמונות וצלילים</li>
+                <li>בוחן בסוף כל נושא עם ציון מיידי</li>
+                <li>קטעי קריאה ב-10 רמות קושי</li>
+                <li>שיחון — משפטים לחיי היומיום</li>
+            </ul>
         </div>
-      </div>
-      <div class="testi-card">
-        <div class="testi-stars">★★★★★</div>
-        <p class="testi-text">אני בכיתה ה' ואוהבת ללמוד עם הבוחנים. כשאני מקבלת 100 יש לי כיף! המילות חיבור הכי עזרו לי בגרמר.</p>
-        <div class="testi-author">
-          <div class="testi-avatar" style="background:#fef3c7">🧒</div>
-          <div>
-            <div class="testi-name">נועה ש.</div>
-            <div class="testi-role">תלמידה, כיתה ה'</div>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
 </section>
 
-<!-- PRICING CTA -->
-<section class="ln-section">
-  <div class="section-inner">
-    <div class="pricing-cta-block">
-      <h2 class="cta-title" style="position:relative;z-index:1">מוכנים להתחיל?</h2>
-      <p class="cta-sub" style="position:relative;z-index:1">7 ימי ניסיון חינם — גישה מלאה לכל התכנים, ללא כרטיס אשראי.</p>
-      <div style="position:relative;z-index:1">
-        <a href="app.html" class="btn-primary" style="font-size:1.05rem;padding:0.9rem 2.2rem">התחל ניסיון חינמי עכשיו</a>
-      </div>
-      <p class="cta-price" style="position:relative;z-index:1">לאחר 7 הימים — <strong>₪29 לחודש</strong> בלבד · ביטול בכל עת</p>
+<!-- FEATURE 2: image on left, text on right (RTL: text first in DOM = right) -->
+<section class="feature-section bg-soft">
+    <div class="feature-wrap">
+        <div class="feature-text">
+            <div class="feature-tag">הסבר בשפה שלנו</div>
+            <h2 class="feature-h">דקדוק — בעברית,<br>ברור ולעניין</h2>
+            <p class="feature-p">
+                כל כלל דקדוקי מוסבר בעברית פשוטה עם דוגמאות. בלי לדבר סינית.
+            </p>
+            <ul class="check-list">
+                <li>הסברים ברורים עם דוגמאות</li>
+                <li>תרגול מובנה אחרי כל נושא</li>
+                <li>זמנים, מבנה משפט, פעלים ועוד</li>
+                <li>מבחנים עם ניקוד ומשוב מיידי</li>
+            </ul>
+        </div>
+        <div class="feature-img">
+            <img src="images/landing/tablet.jpg" alt="ילד לומד עם מורה">
+        </div>
     </div>
-  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="cta-inner">
+        <h2 class="cta-h">מוכנים להתחיל?</h2>
+        <p class="cta-p">7 ימי ניסיון חינם — גישה מלאה לכל התכנים, ללא כרטיס אשראי.</p>
+        <a href="app.html" class="btn-primary" style="font-size:1.05rem;padding:0.9rem 2.4rem">התחל ניסיון חינמי עכשיו</a>
+        <p class="cta-note">ללא כרטיס אשראי · ביטול בכל עת · ₪29 לחודש לאחר הניסיון</p>
+    </div>
 </section>
 
 <!-- FOOTER -->
-<footer class="ln-footer">
-  <div class="footer-inner">
+<footer class="footer">
     <div class="footer-top">
-      <div>
-        <div class="footer-brand"><span>Lamdani</span> English</div>
-        <div class="footer-tagline">למדני אנגלית — בשפה שלך, בקצב שלך</div>
-      </div>
-      <div class="footer-links">
-        <h4>לימוד</h4>
-        <a href="vocabulary.html">אוצר מילים</a>
-        <a href="grammar.html">דקדוק</a>
-        <a href="הבנת הנקרא.html">הבנת הנקרא</a>
-        <a href="שיחון.html">שיחון</a>
-      </div>
-      <div class="footer-links">
-        <h4>כללי</h4>
-        <a href="אודות.html">אודות</a>
-        <a href="תמחור.html">תמחור</a>
-        <a href="צור קשר.html">צור קשר</a>
-      </div>
-      <div class="footer-links">
-        <h4>משפטי</h4>
-        <a href="תנאי שימוש.html">תנאי שימוש</a>
-        <a href="מדיניות פרטיות.html">מדיניות פרטיות</a>
-      </div>
+        <div>
+            <div class="footer-brand-name"><em>Lamdani</em> English</div>
+            <div class="footer-tagline">למדני אנגלית — בשפה שלך, בקצב שלך</div>
+        </div>
+        <div class="footer-col">
+            <h4>לימוד</h4>
+            <a href="vocabulary.html">אוצר מילים</a>
+            <a href="grammar.html">דקדוק</a>
+            <a href="הבנת הנקרא.html">הבנת הנקרא</a>
+            <a href="שיחון.html">שיחון</a>
+        </div>
+        <div class="footer-col">
+            <h4>כללי</h4>
+            <a href="אודות.html">אודות</a>
+            <a href="תמחור.html">תמחור</a>
+            <a href="צור קשר.html">צור קשר</a>
+        </div>
+        <div class="footer-col">
+            <h4>משפטי</h4>
+            <a href="תנאי שימוש.html">תנאי שימוש</a>
+            <a href="מדיניות פרטיות.html">מדיניות פרטיות</a>
+        </div>
     </div>
-    <hr class="footer-divider">
     <div class="footer-bottom">
-      <span>© 2025 למדני אנגלית · Lamdani English. כל הזכויות שמורות.</span>
-      <div style="display:flex;gap:1rem">
-        <a href="תנאי שימוש.html">תנאי שימוש</a>
-        <a href="מדיניות פרטיות.html">פרטיות</a>
-        <a href="צור קשר.html">צור קשר</a>
-      </div>
+        © 2025 למדני אנגלית · Lamdani English. כל הזכויות שמורות.
     </div>
-  </div>
 </footer>
+
+<script src="user.js"></script>
+</body>
+</html>
