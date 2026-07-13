@@ -163,22 +163,20 @@
         }
         .modules-header p { color: var(--muted); font-size: 0.95rem; }
         .modules-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
         }
         .module-card {
-            background: #fff;
-            border: 1.5px solid var(--border);
-            border-radius: 14px;
-            padding: 1.4rem 1rem;
+            background: none;
+            border: none;
+            padding: 1rem;
             text-align: center;
-            transition: box-shadow 0.2s;
+            flex: 0 0 auto;
         }
-        .module-card:hover { box-shadow: 0 6px 20px rgba(37,99,235,0.09); }
-        .module-icon { font-size: 1.8rem; margin-bottom: 0.6rem; }
-        .module-name { font-size: 0.97rem; font-weight: 700; color: var(--navy); margin-bottom: 0.25rem; }
-        .module-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.55; }
+        .module-icon { font-size: 3.6rem; margin-bottom: 0.75rem; }
+        .module-name { font-size: 1.94rem; font-weight: 700; color: var(--navy); margin-bottom: 0.4rem; }
+        .module-desc { font-size: 1.64rem; color: var(--muted); line-height: 1.55; }
 
         /* ── FEATURE ROWS ────────────────────── */
         .feature-section { padding: 5.5rem 2rem; }
