@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>למדני אנגלית | Lamdani English — לימוד אנגלית בעברית</title>
     <meta name="description" content="למדני אנגלית — פלטפורמת לימוד אנגלית אינטראקטיבית בעברית. אוצר מילים, דקדוק, הבנת הנקרא ושיחון לבית ספר יסודי.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
     <!-- Google Analytics — החלף G-XXXXXXXXXX במזהה שלך -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
@@ -25,7 +28,7 @@
         }
 
         body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+            font-family: 'Fredoka', system-ui, sans-serif;
             color: var(--text);
             background: var(--bg);
             direction: rtl;
@@ -69,15 +72,11 @@
         }
         .nav-links a:hover { color: var(--text); }
         .nav-cta {
-            background: var(--blue) !important;
-            color: #fff !important;
-            padding: 0.55rem 1.3rem !important;
-            border-radius: 8px !important;
+            color: var(--blue) !important;
             font-weight: 700 !important;
-            font-size: 0.88rem !important;
-            transition: background 0.15s !important;
+            font-size: 0.9rem !important;
         }
-        .nav-cta:hover { background: var(--blue-h) !important; }
+        .nav-cta:hover { color: var(--blue-h) !important; text-decoration: underline; }
 
         /* ── HERO ─────────────────────────────── */
         .hero {
@@ -120,27 +119,25 @@
             margin-bottom: 3rem;
         }
         .btn-primary {
-            background: var(--blue);
-            color: #fff;
-            padding: 0.85rem 2rem;
-            border-radius: 9px;
-            font-size: 1rem;
+            color: var(--blue);
+            font-size: 1.05rem;
             font-weight: 700;
             text-decoration: none;
-            transition: background 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: color 0.15s;
         }
-        .btn-primary:hover { background: var(--blue-h); }
+        .btn-primary::after { content: ' ←'; font-size: 1rem; }
+        .btn-primary:hover { color: var(--blue-h); text-decoration: underline; }
         .btn-outline {
-            color: var(--navy);
-            border: 1.5px solid var(--border);
-            padding: 0.85rem 2rem;
-            border-radius: 9px;
+            color: var(--muted);
             font-size: 0.97rem;
-            font-weight: 600;
+            font-weight: 500;
             text-decoration: none;
-            transition: border-color 0.15s, color 0.15s;
+            transition: color 0.15s;
         }
-        .btn-outline:hover { border-color: var(--blue); color: var(--blue); }
+        .btn-outline:hover { color: var(--text); text-decoration: underline; }
         .hero-note { font-size: 0.8rem; color: #aab4be; margin-top: 0.75rem; }
 
         /* Hero image */
@@ -439,7 +436,7 @@
     <div class="cta-inner">
         <h2 class="cta-h">מוכנים להתחיל?</h2>
         <p class="cta-p">7 ימי ניסיון חינם — גישה מלאה לכל התכנים, ללא כרטיס אשראי.</p>
-        <a href="app.html" class="btn-primary" style="font-size:1.05rem;padding:0.9rem 2.4rem">התחל ניסיון חינמי עכשיו</a>
+        <a href="app.html" class="btn-primary" style="font-size:1.15rem">התחל ניסיון חינמי עכשיו</a>
         <p class="cta-note">ללא כרטיס אשראי · ביטול בכל עת · ₪29 לחודש לאחר הניסיון</p>
     </div>
 </section>
