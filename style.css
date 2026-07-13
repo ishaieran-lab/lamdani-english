@@ -6,6 +6,7 @@
 
 html {
     font-size: 125%;
+    scrollbar-gutter: stable;
 }
 
 :root {
@@ -39,13 +40,13 @@ body {
     z-index: 100;
     background: #fff;
     border-bottom: 1px solid var(--gray-bdr);
-    padding: 14px 32px;
+    padding: 0.9rem 2rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 .nav-brand {
-    font-size: 19px;
+    font-size: 1.2rem;
     font-weight: 800;
     color: var(--navy);
     text-decoration: none;
@@ -55,12 +56,12 @@ body {
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 28px;
+    gap: 1.75rem;
 }
 .nav-links a {
     color: var(--gray-txt);
     text-decoration: none;
-    font-size: 14px;
+    font-size: 0.9rem;
     font-weight: 500;
     transition: color 0.15s;
 }
@@ -68,7 +69,7 @@ body {
 .nav-cta {
     color: var(--blue) !important;
     font-weight: 700 !important;
-    font-size: 14px !important;
+    font-size: 0.9rem !important;
 }
 .nav-cta:hover { color: var(--blue-dark) !important; text-decoration: underline; }
 @media (max-width: 768px) {
