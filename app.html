@@ -40,26 +40,10 @@
     <div class="home-hero">
         <h1><span class="accent">Lamdani</span> English <span class="home-he-tag">· לומדים אנגלית ובכייף ובקלות</span></h1>
         <p class="home-desc">מגלים מילים חדשות, שולטים בדקדוק ומבינים כל טקסט – צעד אחר צעד, בקצב שלכם.</p>
-        <p id="homeTitle" class="home-greeting">בחר רמה</p>
+        <p id="homeTitle" class="home-greeting">בי"ס יסודי</p>
     </div>
 
-    <!-- מסך בחירת רמה -->
-    <div id="viewLevelSelect" style="display:flex;justify-content:center;padding:2rem 1rem">
-
-        <div class="stage-slot" style="max-width:320px;width:100%">
-            <div class="stage-card available" onclick="showLevelContent()" style="cursor:pointer;box-shadow:none;border-top:none">
-                <h2>בי"ס יסודי</h2>
-                <img src="images/home/אוצר מילים שלב 1.jpg" class="stage-img" alt="בי&quot;ס יסודי">
-                <p>אוצר מילים, דקדוק ושיחון לרמת בית הספר היסודי.</p>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- תוכן בי"ס יסודי (המסך הקיים) -->
-    <div id="viewElementary" style="display:none">
-        <button class="back-link" onclick="showLevelSelect()" style="margin-bottom:1rem">→ חזור לבחירת רמה</button>
-
+    <div id="viewElementary">
         <div class="stages-grid">
 
             <div class="stage-slot">
@@ -101,28 +85,13 @@ var MODULES = [
     { key: 'reading',    id: 'prog-reading',     total: 10 },
 ];
 
-if (location.search.indexOf('level=elementary') !== -1) { showLevelContent(); }
-
-function showLevelSelect() {
-    document.getElementById('viewLevelSelect').style.display = '';
-    document.getElementById('viewElementary').style.display = 'none';
-    document.getElementById('homeTitle').textContent = 'בחר רמה';
-}
-
-function showLevelContent() {
-    document.getElementById('viewLevelSelect').style.display = 'none';
-    document.getElementById('viewElementary').style.display = 'block';
-    document.getElementById('homeTitle').textContent = 'בי"ס יסודי';
-    renderProgress();
-}
-
 function onProgressUpdated() {
     var u = getUser();
     var hero = document.getElementById('homeTitle');
     if (u) {
         hero.textContent = 'שלום, ' + u.username + ' 👋';
     } else {
-        hero.textContent = 'בחר רמה';
+        hero.textContent = 'בי"ס יסודי';
     }
     renderProgress();
 }
@@ -207,13 +176,6 @@ function renderProgress() {
             '<div class="cp-bar-track"><div class="' + barC + '" style="width:' + pct + '%"></div></div>';
     });
 }
-
-window.onBackspace = function() {
-    var elementary = document.getElementById('viewElementary');
-    if (elementary && elementary.style.display !== 'none') {
-        showLevelSelect();
-    }
-};
 </script>
 </body>
 </html>
