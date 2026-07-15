@@ -170,7 +170,20 @@
             <h1>צעדים ראשונים — קריאה</h1>
             <p>לימוד קריאה באנגלית מהבסיס — אותיות, צלילים ומילים ראשונות</p>
         </div>
-        <div class="steps-grid" id="stepsGrid"></div>
+        <div class="steps-grid" id="stepsGrid">
+            <div class="step-card" onclick="showDetail(0)"><div class="step-num">1</div><div class="step-title-he">הכרת האותיות</div><div class="step-title-en">ABC — שמות האותיות</div></div>
+            <div class="step-card" onclick="showDetail(1)"><div class="step-num">2</div><div class="step-title-he">צלילי האותיות</div><div class="step-title-en">Letter Sounds</div></div>
+            <div class="step-card" onclick="showDetail(2)"><div class="step-num">3</div><div class="step-title-he">אותיות גדולות וקטנות</div><div class="step-title-en">Uppercase &amp; Lowercase</div></div>
+            <div class="step-card" onclick="showDetail(3)"><div class="step-num">4</div><div class="step-title-he">חיבור צלילים למילים קצרות</div><div class="step-title-en">Blending</div></div>
+            <div class="step-card" onclick="showDetail(4)"><div class="step-num">5</div><div class="step-title-he">פירוק מילים לצלילים</div><div class="step-title-en">Segmenting</div></div>
+            <div class="step-card" onclick="showDetail(5)"><div class="step-num">6</div><div class="step-title-he">מילים נפוצות</div><div class="step-title-en">Sight Words</div></div>
+            <div class="step-card" onclick="showDetail(6)"><div class="step-num">7</div><div class="step-title-he">משפחות מילים</div><div class="step-title-en">Word Families</div></div>
+            <div class="step-card" onclick="showDetail(7)"><div class="step-num">8</div><div class="step-title-he">דיגרפים</div><div class="step-title-en">sh, ch, th, ck, ph, wh</div></div>
+            <div class="step-card" onclick="showDetail(8)"><div class="step-num">9</div><div class="step-title-he">תנועות קצרות</div><div class="step-title-en">Short Vowels</div></div>
+            <div class="step-card" onclick="showDetail(9)"><div class="step-num">10</div><div class="step-title-he">תנועות ארוכות</div><div class="step-title-en">Long Vowels</div></div>
+            <div class="step-card" onclick="showDetail(10)"><div class="step-num">11</div><div class="step-title-he">צירופי תנועות</div><div class="step-title-en">Vowel Teams</div></div>
+            <div class="step-card" onclick="showDetail(11)"><div class="step-num">12</div><div class="step-title-he">הברות פשוטות</div><div class="step-title-en">Syllables</div></div>
+        </div>
     </div>
 </div>
 
@@ -190,7 +203,7 @@
 <script>
 
 var STEPS = [
-    { title: 'הכרת האותיות', en: 'ABC — שמות האותיות' },
+    { title: 'הכרת האותיות', en: 'ABC' },
     { title: 'צלילי האותיות', en: 'Letter Sounds' },
     { title: 'אותיות גדולות וקטנות', en: 'Uppercase & Lowercase' },
     { title: 'חיבור צלילים למילים קצרות', en: 'Blending' },
@@ -498,7 +511,7 @@ function buildContent(idx) {
     }
 }
 
-buildGrid();
+
 </script>
 </body>
 </html>
