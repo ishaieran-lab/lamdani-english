@@ -258,7 +258,7 @@ function buildGrid() {
 }
 
 function showGrid() {
-    document.getElementById('viewGrid').style.display = '';
+    document.getElementById('viewGrid').style.display = 'block';
     document.getElementById('viewDetail').style.display = 'none';
     window.scrollTo(0,0);
 }
@@ -266,7 +266,7 @@ function showGrid() {
 function showDetail(idx) {
     var s = STEPS[idx];
     document.getElementById('viewGrid').style.display = 'none';
-    document.getElementById('viewDetail').style.display = '';
+    document.getElementById('viewDetail').style.display = 'block';
     document.getElementById('detailTitle').textContent = (idx+1) + '. ' + s.title;
     document.getElementById('detailSub').textContent = s.en;
     document.getElementById('detailBody').innerHTML = buildContent(idx);
