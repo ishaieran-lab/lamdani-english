@@ -870,7 +870,8 @@ body {
 .quiz-menu-panel {
     display: none;
     position: absolute;
-    top: 0;
+    bottom: 0;
+    top: auto;
     right: calc(100% + 2px);
     background: white;
     border: 1.5px solid var(--gray-bdr);
