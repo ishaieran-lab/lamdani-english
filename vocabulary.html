@@ -58,7 +58,7 @@
             </div>
         </div>
         <div class="select-action-bar" id="selectActionBar" style="display:none">
-            <button class="btn-start-quiz-img" id="btnStartCustom" onclick="startCustomQuiz()" disabled><img src="images/ui/התחל בוחן אייקון.png" alt="התחל בוחן"></button>
+            <button class="btn-check-3d" id="btnStartCustom" onclick="startCustomQuiz()" disabled style="opacity:0.4;cursor:default">התחל בוחן</button>
             <button class="btn-check-3d" onclick="toggleSelectMode()">ביטול</button>
             <span id="selectCount" style="display:none"></span>
         </div>
@@ -2099,9 +2099,13 @@ function updateSelectCount() {
     if (selectedIndices.length === 0) {
         el.textContent = 'לא נבחרו כרטיסיות';
         btn.disabled = true;
+        btn.style.opacity = '0.4';
+        btn.style.cursor = 'default';
     } else {
         el.textContent = selectedIndices.length + ' כרטיסיות · ' + totalWords + ' מילים';
         btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
     }
 }
 
