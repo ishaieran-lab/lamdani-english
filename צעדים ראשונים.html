@@ -11,92 +11,140 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
     <style>
+        /* ── Grid ── */
+        .steps-page { max-width: 980px; margin: 0 auto; padding: 0 1.5rem 3rem; }
+        .steps-hero { text-align: center; padding: 1.6rem 0 1.2rem; }
+        .steps-hero h1 { font-size: 1.7rem; font-weight: 800; color: var(--navy); margin-bottom: 0.3rem; }
+        .steps-hero p { color: var(--gray-txt); font-size: 0.95rem; }
         .steps-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 1.25rem;
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem 3rem;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.4rem;
         }
         .step-card {
             background: #fff;
-            border: 1.5px solid var(--gray-bdr, #e4eaf0);
+            border: 1.5px solid var(--gray-bdr);
             border-radius: 14px;
-            padding: 1.4rem 1.2rem;
+            padding: 1.2rem 1rem;
             text-align: center;
-            text-decoration: none;
-            color: inherit;
             cursor: pointer;
             transition: box-shadow 0.15s, transform 0.15s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
+            display: flex; flex-direction: column; align-items: center; gap: 0.45rem;
         }
-        .step-card:hover {
-            box-shadow: 0 4px 18px rgba(37,99,235,0.13);
-            transform: translateY(-2px);
-        }
+        .step-card:hover { box-shadow: 0 4px 18px rgba(37,99,235,0.13); transform: translateY(-2px); }
         .step-num {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--blue, #2563eb);
-            color: #fff;
-            font-size: 1rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            width: 34px; height: 34px; border-radius: 50%;
+            background: var(--blue); color: #fff;
+            font-size: 0.95rem; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
         }
-        .step-title-he {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--navy, #0d2347);
-            line-height: 1.3;
-        }
-        .step-title-en {
-            font-size: 0.82rem;
-            color: var(--gray-txt, #637080);
-            font-style: italic;
-        }
-        .steps-hero {
-            text-align: center;
-            padding: 1.8rem 1.5rem 0;
-        }
-        .steps-hero h1 {
-            font-size: 1.7rem;
-            font-weight: 800;
-            color: var(--navy, #0d2347);
-            margin-bottom: 0.4rem;
-        }
-        .steps-hero p {
-            color: var(--gray-txt, #637080);
-            font-size: 0.97rem;
-        }
+        .step-title-he { font-size: 1rem; font-weight: 700; color: var(--navy); line-height: 1.3; }
+        .step-title-en { font-size: 0.78rem; color: var(--gray-txt); font-style: italic; }
+
+        /* ── Detail view ── */
+        #viewDetail { display: none; }
+        .detail-wrap { max-width: 860px; margin: 0 auto; padding: 0 1.5rem 3rem; }
+        .detail-header { padding: 1.4rem 0 1rem; }
         .back-btn {
-            display: inline-block;
-            margin: 1.2rem 1.5rem 0;
-            color: var(--blue, #2563eb);
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-            background: none;
-            border: none;
-            font-family: inherit;
+            background: none; border: none; color: var(--blue);
+            font-size: 0.95rem; font-weight: 600; cursor: pointer;
+            font-family: inherit; padding: 0; margin-bottom: 0.8rem; display: block;
         }
         .back-btn:hover { text-decoration: underline; }
+        .detail-title { font-size: 1.6rem; font-weight: 800; color: var(--navy); }
+        .detail-sub { color: var(--gray-txt); font-size: 0.92rem; margin-top: 0.2rem; }
+        .detail-body { margin-top: 1.2rem; }
+
+        /* ── Letter cards (sections 1,2,3) ── */
+        .letter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 0.75rem;
+        }
+        .letter-card {
+            background: #fff; border: 1.5px solid var(--gray-bdr);
+            border-radius: 12px; padding: 0.9rem 0.5rem;
+            text-align: center;
+        }
+        .lc-big { font-size: 2.2rem; font-weight: 700; color: var(--blue); line-height: 1.1; }
+        .lc-small { font-size: 1.4rem; color: var(--navy); font-weight: 600; }
+        .lc-name { font-size: 0.78rem; color: var(--gray-txt); margin-top: 0.3rem; }
+        .lc-example { font-size: 0.82rem; color: var(--text); margin-top: 0.15rem; font-weight: 600; }
+        .lc-sound { font-size: 0.75rem; color: #7c3aed; margin-top: 0.1rem; }
+
+        /* ── Word rows (blending, segmenting, vowels, etc.) ── */
+        .word-group { margin-bottom: 1.6rem; }
+        .word-group-title {
+            font-size: 1.05rem; font-weight: 700; color: var(--navy);
+            margin-bottom: 0.6rem; border-bottom: 2px solid var(--gray-bdr); padding-bottom: 0.3rem;
+        }
+        .word-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .word-chip {
+            background: var(--blue-lt, #eff6ff); color: var(--blue);
+            border-radius: 8px; padding: 0.35rem 0.75rem;
+            font-size: 0.95rem; font-weight: 600; direction: ltr;
+        }
+        .blend-row {
+            display: flex; align-items: center; gap: 0.5rem;
+            background: #fff; border: 1.5px solid var(--gray-bdr);
+            border-radius: 10px; padding: 0.6rem 1rem; margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .blend-parts { color: var(--gray-txt); font-size: 1rem; direction: ltr; font-weight: 600; }
+        .blend-arrow { color: var(--blue); font-size: 1.1rem; }
+        .blend-word { color: var(--navy); font-size: 1.15rem; font-weight: 700; direction: ltr; }
+        .blend-he { font-size: 0.82rem; color: var(--gray-txt); margin-right: auto; }
+
+        /* ── Sight words ── */
+        .sight-level { margin-bottom: 1.4rem; }
+        .sight-level-title {
+            font-size: 0.88rem; font-weight: 700; color: #fff;
+            background: var(--blue); border-radius: 6px;
+            padding: 0.2rem 0.65rem; display: inline-block; margin-bottom: 0.5rem;
+        }
+        .sight-chip {
+            background: #fff; border: 1.5px solid var(--gray-bdr);
+            border-radius: 8px; padding: 0.3rem 0.7rem;
+            font-size: 1rem; font-weight: 600; direction: ltr; color: var(--navy);
+        }
+
+        /* ── Digraphs ── */
+        .digraph-block {
+            background: #fff; border: 1.5px solid var(--gray-bdr);
+            border-radius: 12px; padding: 1rem; margin-bottom: 0.8rem;
+        }
+        .digraph-letters {
+            font-size: 1.6rem; font-weight: 800; color: var(--blue);
+            direction: ltr; margin-bottom: 0.4rem;
+        }
+        .digraph-desc { font-size: 0.85rem; color: var(--gray-txt); margin-bottom: 0.5rem; }
+
+        /* ── Syllables ── */
+        .syllable-row {
+            background: #fff; border: 1.5px solid var(--gray-bdr);
+            border-radius: 10px; padding: 0.65rem 1rem;
+            margin-bottom: 0.5rem; display: flex; align-items: center; gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .syl-count { font-size: 0.78rem; color: #fff; background: var(--blue); border-radius: 6px; padding: 0.15rem 0.5rem; font-weight: 700; }
+        .syl-word { font-size: 1.05rem; font-weight: 700; direction: ltr; color: var(--navy); }
+        .syl-split { font-size: 0.9rem; color: var(--blue); direction: ltr; }
+        .syl-he { font-size: 0.82rem; color: var(--gray-txt); }
+
+        /* ── Vowel teams ── */
+        .vt-block {
+            background: #fff; border: 1.5px solid var(--gray-bdr);
+            border-radius: 12px; padding: 1rem; margin-bottom: 0.8rem;
+        }
+        .vt-team { font-size: 1.5rem; font-weight: 800; color: #7c3aed; direction: ltr; margin-bottom: 0.4rem; }
+        .vt-desc { font-size: 0.84rem; color: var(--gray-txt); margin-bottom: 0.5rem; }
     </style>
 </head>
 <body>
 
 <nav class="toolbar">
-    <a href="index.html" class="toolbar-brand">
-        <span class="accent">Lamdani</span> English
-    </a>
+    <a href="index.html" class="toolbar-brand"><span class="accent">Lamdani</span> English</a>
     <div class="toolbar-nav">
         <div class="nav-menu-wrap">
             <button class="nav-icon-btn" id="navMenuBtn" onclick="toggleNavMenu()">
@@ -115,89 +163,341 @@
     </div>
 </nav>
 
-<a href="app.html" class="back-btn">→ חזור לדף הראשי</a>
-
-<div class="steps-hero">
-    <h1>צעדים ראשונים — קריאה</h1>
-    <p>לימוד קריאה באנגלית מהבסיס — אותיות, צלילים ומילים ראשונות</p>
+<!-- ══ GRID VIEW ══ -->
+<div id="viewGrid">
+    <div class="steps-page">
+        <div class="steps-hero">
+            <h1>צעדים ראשונים — קריאה</h1>
+            <p>לימוד קריאה באנגלית מהבסיס — אותיות, צלילים ומילים ראשונות</p>
+        </div>
+        <div class="steps-grid" id="stepsGrid"></div>
+    </div>
 </div>
 
-<div class="steps-grid">
-
-    <div class="step-card">
-        <div class="step-num">1</div>
-        <div class="step-title-he">הכרת האותיות</div>
-        <div class="step-title-en">ABC — שמות האותיות</div>
+<!-- ══ DETAIL VIEW ══ -->
+<div id="viewDetail">
+    <div class="detail-wrap">
+        <div class="detail-header">
+            <button class="back-btn" onclick="showGrid()">→ חזור לכל הנושאים</button>
+            <div class="detail-title" id="detailTitle"></div>
+            <div class="detail-sub" id="detailSub"></div>
+        </div>
+        <div class="detail-body" id="detailBody"></div>
     </div>
-
-    <div class="step-card">
-        <div class="step-num">2</div>
-        <div class="step-title-he">צלילי האותיות</div>
-        <div class="step-title-en">Letter Sounds</div>
-    </div>
-
-    <div class="step-card">
-        <div class="step-num">3</div>
-        <div class="step-title-he">אותיות גדולות וקטנות</div>
-        <div class="step-title-en">Uppercase & Lowercase</div>
-    </div>
-
-    <div class="step-card">
-        <div class="step-num">4</div>
-        <div class="step-title-he">חיבור צלילים למילים קצרות</div>
-        <div class="step-title-en">Blending</div>
-    </div>
-
-    <div class="step-card">
-        <div class="step-num">5</div>
-        <div class="step-title-he">פירוק מילים לצלילים</div>
-        <div class="step-title-en">Segmenting</div>
-    </div>
-
-    <div class="step-card">
-        <div class="step-num">6</div>
-        <div class="step-title-he">מילים נפוצות</div>
-        <div class="step-title-en">Sight Words</div>
-    </div>
-
-    <div class="step-card">
-        <div class="step-num">7</div>
-        <div class="step-title-he">משפחות מילים</div>
-        <div class="step-title-en">Word Families</div>
-    </div>
-
-    <div class="step-card">
-        <div class="step-num">8</div>
-        <div class="step-title-he">דיגרפים</div>
-        <div class="step-title-en">sh, ch, th, ck, ph, wh</div>
-    </div>
-
-    <div class="step-card">
-        <div class="step-num">9</div>
-        <div class="step-title-he">תנועות קצרות</div>
-        <div class="step-title-en">Short Vowels</div>
-    </div>
-
-    <div class="step-card">
-        <div class="step-num">10</div>
-        <div class="step-title-he">תנועות ארוכות</div>
-        <div class="step-title-en">Long Vowels</div>
-    </div>
-
-    <div class="step-card">
-        <div class="step-num">11</div>
-        <div class="step-title-he">צירופי תנועות</div>
-        <div class="step-title-en">Vowel Teams — ai, ee, oa, ea</div>
-    </div>
-
-    <div class="step-card">
-        <div class="step-num">12</div>
-        <div class="step-title-he">הברות פשוטות</div>
-        <div class="step-title-en">Syllables</div>
-    </div>
-
 </div>
 
 <script src="user.js"></script>
+<script>
+
+var STEPS = [
+    { title: 'הכרת האותיות', en: 'ABC — שמות האותיות' },
+    { title: 'צלילי האותיות', en: 'Letter Sounds' },
+    { title: 'אותיות גדולות וקטנות', en: 'Uppercase & Lowercase' },
+    { title: 'חיבור צלילים למילים קצרות', en: 'Blending' },
+    { title: 'פירוק מילים לצלילים', en: 'Segmenting' },
+    { title: 'מילים נפוצות', en: 'Sight Words' },
+    { title: 'משפחות מילים', en: 'Word Families' },
+    { title: 'דיגרפים', en: 'sh, ch, th, ck, ph, wh' },
+    { title: 'תנועות קצרות', en: 'Short Vowels' },
+    { title: 'תנועות ארוכות', en: 'Long Vowels' },
+    { title: 'צירופי תנועות', en: 'Vowel Teams' },
+    { title: 'הברות פשוטות', en: 'Syllables' }
+];
+
+var LETTERS = [
+    { L:'A', name:'אֵי', example:'Apple', sound:'/æ/' },
+    { L:'B', name:'בִּי', example:'Ball', sound:'/b/' },
+    { L:'C', name:'סִי', example:'Cat', sound:'/k/' },
+    { L:'D', name:'דִּי', example:'Dog', sound:'/d/' },
+    { L:'E', name:'אִי', example:'Egg', sound:'/ɛ/' },
+    { L:'F', name:'אֶף', example:'Fish', sound:'/f/' },
+    { L:'G', name:'גִּי', example:'Girl', sound:'/g/' },
+    { L:'H', name:'אֵייטְש', example:'Hat', sound:'/h/' },
+    { L:'I', name:'אַי', example:'Insect', sound:'/ɪ/' },
+    { L:'J', name:'גֵ\'י', example:'Juice', sound:'/dʒ/' },
+    { L:'K', name:'קֵי', example:'King', sound:'/k/' },
+    { L:'L', name:'אֶל', example:'Lion', sound:'/l/' },
+    { L:'M', name:'אֶם', example:'Moon', sound:'/m/' },
+    { L:'N', name:'אֶן', example:'Nose', sound:'/n/' },
+    { L:'O', name:'אוֹ', example:'Orange', sound:'/ɒ/' },
+    { L:'P', name:'פִּי', example:'Pen', sound:'/p/' },
+    { L:'Q', name:'קְיוּ', example:'Queen', sound:'/kw/' },
+    { L:'R', name:'אָר', example:'Rain', sound:'/r/' },
+    { L:'S', name:'אֶס', example:'Sun', sound:'/s/' },
+    { L:'T', name:'טִי', example:'Tree', sound:'/t/' },
+    { L:'U', name:'יוּ', example:'Umbrella', sound:'/ʌ/' },
+    { L:'V', name:'וִי', example:'Van', sound:'/v/' },
+    { L:'W', name:'דַבְּלְיוּ', example:'Water', sound:'/w/' },
+    { L:'X', name:'אֶקְס', example:'Fox', sound:'/ks/' },
+    { L:'Y', name:'וַואי', example:'Yellow', sound:'/j/' },
+    { L:'Z', name:'זֶד', example:'Zebra', sound:'/z/' }
+];
+
+function buildGrid() {
+    var g = document.getElementById('stepsGrid');
+    g.innerHTML = STEPS.map(function(s,i) {
+        return '<div class="step-card" onclick="showDetail(' + i + ')">' +
+            '<div class="step-num">' + (i+1) + '</div>' +
+            '<div class="step-title-he">' + s.title + '</div>' +
+            '<div class="step-title-en">' + s.en + '</div>' +
+        '</div>';
+    }).join('');
+}
+
+function showGrid() {
+    document.getElementById('viewGrid').style.display = '';
+    document.getElementById('viewDetail').style.display = 'none';
+    window.scrollTo(0,0);
+}
+
+function showDetail(idx) {
+    var s = STEPS[idx];
+    document.getElementById('viewGrid').style.display = 'none';
+    document.getElementById('viewDetail').style.display = '';
+    document.getElementById('detailTitle').textContent = (idx+1) + '. ' + s.title;
+    document.getElementById('detailSub').textContent = s.en;
+    document.getElementById('detailBody').innerHTML = buildContent(idx);
+    window.scrollTo(0,0);
+}
+
+function letterCards(showSound) {
+    return '<div class="letter-grid">' +
+        LETTERS.map(function(l) {
+            return '<div class="letter-card">' +
+                '<div class="lc-big">' + l.L + '</div>' +
+                '<div class="lc-small">' + l.L.toLowerCase() + '</div>' +
+                '<div class="lc-name">' + l.name + '</div>' +
+                (showSound ? '<div class="lc-sound">' + l.sound + '</div>' : '') +
+                '<div class="lc-example">' + l.example + '</div>' +
+            '</div>';
+        }).join('') +
+    '</div>';
+}
+
+function buildContent(idx) {
+    switch(idx) {
+
+    case 0: // הכרת האותיות
+        return '<p style="color:var(--gray-txt);margin-bottom:1rem">26 אותיות הא-ב האנגלי — שם האות, גרסה גדולה וקטנה, ומילה לדוגמה.</p>' +
+        letterCards(false);
+
+    case 1: // צלילי האותיות
+        return '<p style="color:var(--gray-txt);margin-bottom:1rem">לכל אות יש צליל ייחודי. הצליל מופיע בסוגריים מסולסלים.</p>' +
+        letterCards(true);
+
+    case 2: // אותיות גדולות וקטנות
+        return '<p style="color:var(--gray-txt);margin-bottom:1rem">כל אות קיימת בשתי צורות — גדולה (Capital) וקטנה (Lowercase).</p>' +
+        '<div class="letter-grid">' +
+        LETTERS.map(function(l) {
+            return '<div class="letter-card">' +
+                '<div style="font-size:2rem;font-weight:800;color:var(--blue);direction:ltr">' + l.L + ' ' + l.L.toLowerCase() + '</div>' +
+                '<div class="lc-name">' + l.name + '</div>' +
+            '</div>';
+        }).join('') + '</div>';
+
+    case 3: // Blending
+        var blends = [
+            { parts:'c + a + t', word:'cat', he:'חתול' },
+            { parts:'d + o + g', word:'dog', he:'כלב' },
+            { parts:'s + u + n', word:'sun', he:'שמש' },
+            { parts:'p + i + g', word:'pig', he:'חזיר' },
+            { parts:'h + e + n', word:'hen', he:'תרנגולת' },
+            { parts:'b + u + s', word:'bus', he:'אוטובוס' },
+            { parts:'f + i + sh', word:'fish', he:'דג' },
+            { parts:'b + e + d', word:'bed', he:'מיטה' },
+            { parts:'c + u + p', word:'cup', he:'כוס' },
+            { parts:'h + a + t', word:'hat', he:'כובע' },
+            { parts:'r + e + d', word:'red', he:'אדום' },
+            { parts:'b + i + g', word:'big', he:'גדול' },
+            { parts:'r + u + n', word:'run', he:'לרוץ' },
+            { parts:'j + u + mp', word:'jump', he:'לקפוץ' },
+            { parts:'f + r + o + g', word:'frog', he:'צפרדע' },
+        ];
+        return '<p style="color:var(--gray-txt);margin-bottom:1rem">חיבור צלילים נפרדים ליצירת מילה שלמה.</p>' +
+        blends.map(function(b) {
+            return '<div class="blend-row">' +
+                '<span class="blend-parts">' + b.parts + '</span>' +
+                '<span class="blend-arrow">→</span>' +
+                '<span class="blend-word">' + b.word + '</span>' +
+                '<span class="blend-he">' + b.he + '</span>' +
+            '</div>';
+        }).join('');
+
+    case 4: // Segmenting
+        var segs = [
+            { word:'cat', parts:'k – æ – t', he:'חתול' },
+            { word:'dog', parts:'d – ɒ – g', he:'כלב' },
+            { word:'sun', parts:'s – ʌ – n', he:'שמש' },
+            { word:'fish', parts:'f – ɪ – sh', he:'דג' },
+            { word:'ship', parts:'sh – ɪ – p', he:'ספינה' },
+            { word:'blue', parts:'b – l – uː', he:'כחול' },
+            { word:'jump', parts:'dʒ – ʌ – m – p', he:'לקפוץ' },
+            { word:'frog', parts:'f – r – ɒ – g', he:'צפרדע' },
+            { word:'train', parts:'t – r – eɪ – n', he:'רכבת' },
+            { word:'clock', parts:'k – l – ɒ – k', he:'שעון' },
+        ];
+        return '<p style="color:var(--gray-txt);margin-bottom:1rem">פירוק כל מילה לצלילים הבודדים שמרכיבים אותה.</p>' +
+        segs.map(function(s) {
+            return '<div class="blend-row">' +
+                '<span class="blend-word">' + s.word + '</span>' +
+                '<span class="blend-arrow">→</span>' +
+                '<span class="blend-parts">' + s.parts + '</span>' +
+                '<span class="blend-he">' + s.he + '</span>' +
+            '</div>';
+        }).join('');
+
+    case 5: // Sight Words
+        var levels = [
+            { label:'רמה 1', words:['the','I','a','to','and','is','in','it','of','you','he','she','we','me','be'] },
+            { label:'רמה 2', words:['at','an','am','do','go','no','so','up','if','my','by','or','on','us','as'] },
+            { label:'רמה 3', words:['all','are','can','has','had','him','his','her','not','but','did','its','let','may','see'] },
+            { label:'רמה 4', words:['that','this','with','they','have','from','was','for','one','two','were','what','when','who','will'] },
+        ];
+        return '<p style="color:var(--gray-txt);margin-bottom:1rem">מילים שחוזרות הרבה בכתיבה — חשוב לזהות אותן במהירות.</p>' +
+        levels.map(function(lv) {
+            return '<div class="sight-level">' +
+                '<div class="sight-level-title">' + lv.label + '</div>' +
+                '<div class="word-chips">' +
+                lv.words.map(function(w){ return '<span class="sight-chip">' + w + '</span>'; }).join('') +
+                '</div></div>';
+        }).join('');
+
+    case 6: // Word Families
+        var families = [
+            { end:'-at', words:['cat','bat','hat','mat','rat','sat','fat','pat','flat','that'] },
+            { end:'-an', words:['can','fan','man','pan','ran','tan','ban','van','plan','than'] },
+            { end:'-en', words:['hen','ten','pen','den','men','then','when','open'] },
+            { end:'-in', words:['bin','fin','pin','tin','win','thin','spin','chin'] },
+            { end:'-og', words:['dog','fog','hog','log','frog','blog'] },
+            { end:'-op', words:['hop','mop','pop','top','shop','drop','stop','crop'] },
+            { end:'-ug', words:['bug','hug','mug','rug','tug','plug','drug','slug'] },
+            { end:'-ake', words:['cake','lake','bake','fake','rake','take','make','snake','shake'] },
+            { end:'-ight', words:['light','night','right','tight','fight','bright','slight'] },
+        ];
+        return '<p style="color:var(--gray-txt);margin-bottom:1rem">קבוצות מילים שמסתיימות באותו צליל.</p>' +
+        families.map(function(f) {
+            return '<div class="word-group">' +
+                '<div class="word-group-title" style="direction:ltr">' + f.end + '</div>' +
+                '<div class="word-chips">' +
+                f.words.map(function(w){ return '<span class="word-chip">' + w + '</span>'; }).join('') +
+                '</div></div>';
+        }).join('');
+
+    case 7: // Digraphs
+        var digraphs = [
+            { pair:'sh', desc:'שתי אותיות שיוצרות צליל "ש"', words:['ship','shop','shoe','shark','sheep','shell','brush','wish'] },
+            { pair:'ch', desc:'שתי אותיות שיוצרות צליל "צ\'ׁ"', words:['chair','chick','cheese','chocolate','chain','beach','lunch','much'] },
+            { pair:'th', desc:'שתי אותיות שיוצרות צליל "ת\' " (כמו "the")', words:['the','this','that','think','three','throw','tooth','math'] },
+            { pair:'ck', desc:'שתי אותיות שיוצרות צליל "ק" (בסוף מילה)', words:['duck','sock','truck','clock','brick','black','lock','neck'] },
+            { pair:'ph', desc:'שתי אותיות שיוצרות צליל "פ"', words:['phone','photo','elephant','dolphin','graph','alphabet'] },
+            { pair:'wh', desc:'שתי אותיות שיוצרות צליל "ו" או "ה"', words:['whale','when','where','white','which','whisper','wheel'] },
+        ];
+        return '<p style="color:var(--gray-txt);margin-bottom:1rem">דיגרף = שתי אותיות שיחד יוצרות צליל אחד חדש.</p>' +
+        digraphs.map(function(d) {
+            return '<div class="digraph-block">' +
+                '<div class="digraph-letters">' + d.pair + '</div>' +
+                '<div class="digraph-desc">' + d.desc + '</div>' +
+                '<div class="word-chips">' +
+                d.words.map(function(w){ return '<span class="word-chip">' + w + '</span>'; }).join('') +
+                '</div></div>';
+        }).join('');
+
+    case 8: // Short Vowels
+        var shortV = [
+            { v:'a', sound:'/æ/', he:'כמו בעברית "א" קצר', color:'#2563eb', words:['cat','bag','hat','map','ran','black','hand','lamp','sand','flat'] },
+            { v:'e', sound:'/ɛ/', he:'כמו בעברית "א" סגור', color:'#16a34a', words:['bed','red','hen','leg','yes','when','spell','held','best','next'] },
+            { v:'i', sound:'/ɪ/', he:'כמו בעברית "י" קצר', color:'#7c3aed', words:['pig','sit','bin','hit','big','fish','wind','lift','drip','grill'] },
+            { v:'o', sound:'/ɒ/', he:'כמו בעברית "ו" עגול', color:'#ea580c', words:['dog','hop','box','hot','pot','sock','clock','block','cross','drop'] },
+            { v:'u', sound:'/ʌ/', he:'כמו "א" עמוק', color:'#db2777', words:['cup','bug','sun','run','mud','jump','drum','brush','stuck','trunk'] },
+        ];
+        return '<p style="color:var(--gray-txt);margin-bottom:1rem">חמש תנועות בסיסיות עם הצליל הקצר שלהן.</p>' +
+        shortV.map(function(v) {
+            return '<div class="word-group">' +
+                '<div class="word-group-title" style="direction:ltr;color:' + v.color + '">' +
+                    v.v.toUpperCase() + ' / ' + v.v + ' &nbsp;' +
+                    '<span style="color:var(--gray-txt);font-size:0.85rem">' + v.sound + ' — ' + v.he + '</span>' +
+                '</div>' +
+                '<div class="word-chips">' +
+                v.words.map(function(w){ return '<span class="word-chip" style="background:#f8fafc">' + w + '</span>'; }).join('') +
+                '</div></div>';
+        }).join('');
+
+    case 9: // Long Vowels
+        var longV = [
+            { v:'a', sound:'/eɪ/', he:'כמו שם האות A', rule:'a_e, ai, ay', color:'#2563eb', words:['cake','lake','name','rain','play','gate','save','plate','day','say'] },
+            { v:'e', sound:'/iː/', he:'צליל ארוך וגבוה', rule:'ee, ea, e_e', color:'#16a34a', words:['see','tree','beach','read','these','feet','green','dream','speak','clean'] },
+            { v:'i', sound:'/aɪ/', he:'כמו שם האות I', rule:'i_e, igh, y', color:'#7c3aed', words:['bike','kite','time','night','light','fly','cry','smile','mind','fine'] },
+            { v:'o', sound:'/oʊ/', he:'כמו שם האות O', rule:'o_e, oa, ow', color:'#ea580c', words:['note','home','boat','road','snow','rose','stone','flow','vote','globe'] },
+            { v:'u', sound:'/juː/', he:'כמו שם האות U', rule:'u_e, ue, ew', color:'#db2777', words:['cube','tune','cute','huge','blue','clue','flew','true','mule','fuse'] },
+        ];
+        return '<p style="color:var(--gray-txt);margin-bottom:1rem">כאשר תנועה היא ארוכה — היא נשמעת כמו שם האות עצמה.</p>' +
+        longV.map(function(v) {
+            return '<div class="word-group">' +
+                '<div class="word-group-title" style="direction:ltr;color:' + v.color + '">' +
+                    v.v.toUpperCase() + ' / ' + v.v + ' &nbsp;' +
+                    '<span style="color:var(--gray-txt);font-size:0.85rem">' + v.sound + ' · ' + v.rule + ' — ' + v.he + '</span>' +
+                '</div>' +
+                '<div class="word-chips">' +
+                v.words.map(function(w){ return '<span class="word-chip" style="background:#f8fafc">' + w + '</span>'; }).join('') +
+                '</div></div>';
+        }).join('');
+
+    case 10: // Vowel Teams
+        var vt = [
+            { team:'ai', sound:'/eɪ/', desc:'צליל "אֵי"', words:['rain','tail','wait','sail','mail','pain','main','train','snail','Spain'] },
+            { team:'ay', sound:'/eɪ/', desc:'צליל "אֵי" (בסוף מילה)', words:['day','say','play','way','pay','ray','gray','stay','spray','delay'] },
+            { team:'ee', sound:'/iː/', desc:'צליל "אִי" ארוך', words:['tree','feet','see','bee','three','green','street','sleep','teeth','free'] },
+            { team:'ea', sound:'/iː/', desc:'צליל "אִי" (לרוב)', words:['eat','sea','read','beach','team','dream','leaf','speak','clean','reach'] },
+            { team:'oa', sound:'/oʊ/', desc:'צליל "אוֹ"', words:['boat','coat','road','soap','toad','goal','float','toast','groan','coach'] },
+            { team:'ow', sound:'/oʊ/', desc:'צליל "אוֹ" (בסוף מילה)', words:['snow','grow','show','flow','slow','know','below','window','elbow','yellow'] },
+            { team:'oo', sound:'/uː/', desc:'צליל "אוּ" ארוך', words:['moon','food','pool','school','zoom','boot','room','spoon','tool','cool'] },
+            { team:'ou', sound:'/aʊ/', desc:'צליל "אַאו"', words:['out','cloud','round','mouth','found','sound','house','shout','count','ground'] },
+        ];
+        return '<p style="color:var(--gray-txt);margin-bottom:1rem">שני אותיות תנועה ביחד שיוצרות צליל אחד.</p>' +
+        vt.map(function(v) {
+            return '<div class="vt-block">' +
+                '<div class="vt-team">' + v.team + '</div>' +
+                '<div class="vt-desc">' + v.sound + ' — ' + v.desc + '</div>' +
+                '<div class="word-chips">' +
+                v.words.map(function(w){ return '<span class="word-chip">' + w + '</span>'; }).join('') +
+                '</div></div>';
+        }).join('');
+
+    case 11: // Syllables
+        var syls = [
+            { count:1, word:'cat', split:'cat', he:'חתול' },
+            { count:1, word:'fish', split:'fish', he:'דג' },
+            { count:1, word:'school', split:'school', he:'בית ספר' },
+            { count:1, word:'bright', split:'bright', he:'בהיר' },
+            { count:2, word:'rabbit', split:'rab-bit', he:'ארנב' },
+            { count:2, word:'pencil', split:'pen-cil', he:'עיפרון' },
+            { count:2, word:'apple', split:'ap-ple', he:'תפוח' },
+            { count:2, word:'basket', split:'bas-ket', he:'סל' },
+            { count:2, word:'winter', split:'win-ter', he:'חורף' },
+            { count:2, word:'dinner', split:'din-ner', he:'ארוחת ערב' },
+            { count:3, word:'elephant', split:'el-e-phant', he:'פיל' },
+            { count:3, word:'computer', split:'com-pu-ter', he:'מחשב' },
+            { count:3, word:'banana', split:'ba-na-na', he:'בננה' },
+            { count:3, word:'umbrella', split:'um-brel-la', he:'מטרייה' },
+            { count:3, word:'butterfly', split:'but-ter-fly', he:'פרפר' },
+            { count:4, word:'watermelon', split:'wa-ter-mel-on', he:'אבטיח' },
+            { count:4, word:'caterpillar', split:'cat-er-pil-lar', he:'זחל' },
+        ];
+        return '<p style="color:var(--gray-txt);margin-bottom:1rem">הברה = חלק של מילה עם תנועה אחת. ניתן לספור הברות לפי מספר הפעמים שהפה נפתח.</p>' +
+        syls.map(function(s) {
+            return '<div class="syllable-row">' +
+                '<span class="syl-count">' + s.count + ' ' + (s.count === 1 ? 'הברה' : 'הברות') + '</span>' +
+                '<span class="syl-word">' + s.word + '</span>' +
+                '<span class="syl-split">' + s.split + '</span>' +
+                '<span class="syl-he">' + s.he + '</span>' +
+            '</div>';
+        }).join('');
+
+    default: return '';
+    }
+}
+
+buildGrid();
+</script>
 </body>
 </html>
