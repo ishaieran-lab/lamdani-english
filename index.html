@@ -302,6 +302,66 @@
             text-align: center;
         }
 
+        /* ── PRICING SECTION ─────────────────── */
+        .pricing-section { padding: 5rem 2rem; background: #fff; scroll-margin-top: 70px; }
+        .about-section   { padding: 5rem 2rem; background: var(--bg-soft); scroll-margin-top: 70px; }
+        .contact-section { padding: 5rem 2rem; background: #fff; scroll-margin-top: 70px; }
+        .section-hdr { text-align: center; margin-bottom: 2.5rem; }
+        .section-hdr h2 { font-size: 1.9rem; font-weight: 800; color: var(--navy); margin-bottom: 0.4rem; }
+        .section-hdr p  { color: var(--muted); font-size: 1rem; }
+        .pricing-inner  { max-width: 860px; margin: 0 auto; }
+        .plan-card {
+            background: #fff; border: 2px solid var(--blue);
+            border-radius: 20px; padding: 2rem 1.75rem;
+            box-shadow: 0 8px 32px rgba(37,99,235,0.12);
+            max-width: 360px;
+        }
+        .plan-name { font-size: 1.2rem; font-weight: 800; color: var(--navy); margin-bottom: 0.4rem; }
+        .plan-desc { font-size: 0.88rem; color: var(--muted); margin-bottom: 1.4rem; }
+        .plan-price { display: flex; align-items: baseline; gap: 0.3rem; margin-bottom: 1.5rem; }
+        .price-currency { font-size: 1.1rem; color: var(--navy); font-weight: 700; }
+        .price-amount   { font-size: 2.6rem; font-weight: 800; color: var(--navy); line-height: 1; }
+        .price-period   { font-size: 0.85rem; color: var(--muted); }
+        .plan-features  { list-style: none; padding: 0; margin: 0 0 1.75rem; }
+        .plan-features li { font-size: 0.93rem; color: #374151; padding: 0.4rem 0; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; gap: 0.5rem; }
+        .plan-features li::before { content: '✓'; color: var(--blue); font-weight: 700; }
+        .plan-cta-btn { display: block; width: 100%; padding: 0.85rem; background: var(--blue); color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; text-align: center; text-decoration: none; cursor: pointer; font-family: var(--font); transition: opacity 0.15s; }
+        .plan-cta-btn:hover { opacity: 0.88; }
+        .faq-section { margin-top: 3rem; max-width: 620px; margin-right: auto; margin-left: auto; }
+        .faq-section h3 { font-size: 1.2rem; font-weight: 800; color: var(--navy); text-align: center; margin-bottom: 1.2rem; }
+        .faq-item { background: #fff; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 0.6rem; overflow: hidden; }
+        .faq-q { padding: 0.9rem 1.2rem; font-weight: 700; color: var(--navy); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
+        .faq-q::after { content: '+'; font-size: 1.2rem; color: var(--blue); transition: transform 0.2s; }
+        .faq-item.open .faq-q::after { transform: rotate(45deg); }
+        .faq-a { display: none; padding: 0 1.2rem 0.9rem; color: #374151; font-size: 0.92rem; line-height: 1.75; }
+        .faq-item.open .faq-a { display: block; }
+        /* About */
+        .about-inner { max-width: 720px; margin: 0 auto; }
+        .about-card { padding: 1.5rem 0; border-bottom: 1px solid var(--border); }
+        .about-card:last-child { border-bottom: none; }
+        .about-card h3 { font-size: 1.1rem; font-weight: 700; color: var(--navy); margin-bottom: 0.6rem; }
+        .about-card p, .about-card li { color: #374151; font-size: 0.96rem; line-height: 1.75; }
+        .about-card ul { padding-right: 1.25rem; margin-top: 0.5rem; }
+        .about-card li { margin-bottom: 0.3rem; }
+        .about-modules-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 0.85rem; margin-top: 1rem; }
+        .about-mod { background: var(--blue-lt); border-radius: 12px; padding: 0.9rem; text-align: center; }
+        .about-mod-title { font-weight: 700; color: var(--blue); font-size: 0.92rem; }
+        .about-mod-desc  { color: var(--muted); font-size: 0.82rem; margin-top: 0.25rem; }
+        /* Contact */
+        .contact-inner { max-width: 540px; margin: 0 auto; }
+        .contact-card { background: #fff; border-radius: 16px; border: 1px solid var(--border); padding: 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+        .contact-field { margin-bottom: 1.1rem; }
+        .contact-field label { display: block; font-weight: 600; font-size: 0.88rem; color: var(--navy); margin-bottom: 0.35rem; }
+        .contact-field input, .contact-field textarea { width: 100%; padding: 0.6rem 0.85rem; border: 1.5px solid var(--border); border-radius: 9px; font-size: 0.93rem; font-family: var(--font); color: var(--text); background: var(--bg-soft); transition: border-color 0.15s; box-sizing: border-box; }
+        .contact-field input:focus, .contact-field textarea:focus { outline: none; border-color: var(--blue); background: #fff; }
+        .contact-field textarea { resize: vertical; min-height: 110px; }
+        .contact-submit { width: 100%; padding: 0.75rem; background: var(--blue); color: #fff; border: none; border-radius: 9px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: var(--font); transition: background 0.15s; margin-top: 0.4rem; }
+        .contact-submit:hover { background: var(--blue-h, #1d4ed8); }
+        .contact-success { display: none; text-align: center; padding: 1.5rem; color: #16a34a; font-weight: 700; font-size: 1.05rem; }
+        .contact-divider { text-align: center; color: var(--muted); font-size: 0.85rem; margin: 1.2rem 0 0.8rem; }
+        .contact-email-link { display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: var(--blue); font-weight: 600; text-decoration: none; font-size: 0.95rem; }
+        .contact-email-link:hover { text-decoration: underline; }
+
         /* ── RESPONSIVE ──────────────────────── */
         @media (max-width: 768px) {
             .nav-links a:not(.nav-cta) { display: none; }
@@ -324,9 +384,9 @@
 <nav class="nav">
     <div class="nav-links">
         <a href="app.html" class="nav-cta">התחל עכשיו</a>
-        <a href="תמחור.html">מחירים</a>
-        <a href="אודות.html">אודות</a>
-        <a href="צור קשר.html">צור קשר</a>
+        <a href="#pricing">מחירים</a>
+        <a href="#about">אודות</a>
+        <a href="#contact">צור קשר</a>
     </div>
     <a href="index.html" class="nav-brand"><em>Lamdani</em> English</a>
 </nav>
@@ -415,9 +475,124 @@
 <section class="cta-section">
     <div class="cta-inner">
         <h2 class="cta-h">מוכנים להתחיל?</h2>
-        <p class="cta-p">7 ימי ניסיון חינם — גישה מלאה לכל התכנים, ללא כרטיס אשראי.</p>
-        <a href="app.html" class="btn-primary" style="font-size:1.15rem">התחל ניסיון חינמי עכשיו</a>
-        <p class="cta-note">ללא כרטיס אשראי · ביטול בכל עת · ₪29 לחודש לאחר הניסיון</p>
+        <p class="cta-p">הירשמו עכשיו וגשו לכל תכני הלימוד — אוצר מילים, דקדוק והבנת הנקרא.</p>
+        <a href="app.html" class="btn-primary" style="font-size:1.15rem">התחל עכשיו</a>
+        <p class="cta-note">₪29 לחודש · ביטול בכל עת</p>
+    </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section" id="pricing">
+    <div class="pricing-inner">
+        <div class="section-hdr">
+            <h2>מנוי פשוט, ערך אמיתי</h2>
+            <p>גישה מלאה לכל התכנים — אוצר מילים, דקדוק והבנת הנקרא</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:2.5rem;flex-wrap:wrap;justify-content:center;">
+            <img src="images/landing/ילד למדני.png" alt="ילד לומד אנגלית" style="width:280px;max-width:100%;border-radius:16px;">
+            <div class="plan-card">
+                <div class="plan-name">מנוי מלא</div>
+                <div class="plan-desc">גישה לכל התכנים ללא הגבלה</div>
+                <div class="plan-price">
+                    <span class="price-currency">₪</span>
+                    <span class="price-amount">29</span>
+                    <span class="price-period">לחודש</span>
+                </div>
+                <ul class="plan-features">
+                    <li>כל 50 נושאי אוצר המילים</li>
+                    <li>כל שלבי הדקדוק</li>
+                    <li>כל קטעי הבנת הנקרא (10 רמות)</li>
+                    <li>תרגול צירופי מילים</li>
+                    <li>מעקב התקדמות מפורט</li>
+                    <li>עדכוני תוכן שוטפים</li>
+                </ul>
+                <a href="app.html" class="plan-cta-btn">הרשמה והתחלה</a>
+            </div>
+        </div>
+        <p style="text-align:center;margin-top:1.5rem;font-size:0.85rem;color:var(--muted)">
+            ביטול בכל עת · <a href="תנאי שימוש.html" style="color:var(--blue)">תנאי שימוש</a> · <a href="מדיניות פרטיות.html" style="color:var(--blue)">מדיניות פרטיות</a>
+        </p>
+        <div class="faq-section">
+            <h3>שאלות נפוצות</h3>
+            <div class="faq-item">
+                <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">האם ניתן לבטל את המנוי?</div>
+                <div class="faq-a">כן, ניתן לבטל בכל עת מהגדרות החשבון. לאחר הביטול תישמר גישה עד סוף תקופת התשלום הנוכחית.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">האם יש הנחה לבתי ספר?</div>
+                <div class="faq-a">כן. לרכישה קבוצתית לכיתות ובתי ספר נציע מחיר מיוחד. <a href="#contact" style="color:var(--blue)">צרו קשר</a> לפרטים.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">מה אמצעי התשלום המקובלים?</div>
+                <div class="faq-a">כרטיס אשראי (Visa, Mastercard, American Express) ו-PayPal. תשלום מאובטח ומוצפן.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">האם ניתן לגשת מכל מכשיר?</div>
+                <div class="faq-a">בהחלט. האתר מותאם למחשב, טאבלט וסמארטפון. ההתקדמות נשמרת ומסונכרנת בין המכשירים.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section" id="about">
+    <div class="about-inner">
+        <div class="section-hdr">
+            <h2><em style="color:var(--blue);font-style:normal">Lamdani</em> English</h2>
+            <p>פלטפורמת לימוד אנגלית אינטראקטיבית לדוברי עברית</p>
+        </div>
+        <div class="about-card">
+            <h3>מה זה למדני אנגלית?</h3>
+            <p>למדני אנגלית היא פלטפורמה ללימוד עצמי של שפה אנגלית, בנויה בעברית ומותאמת לדוברי עברית. האתר מציע מסלול לימוד מובנה — מרמה בסיסית ועד מתקדמת — עם תרגול אינטראקטיבי, בוחנים ומעקב התקדמות אישי.</p>
+        </div>
+        <div class="about-card">
+            <h3>מה לומדים כאן?</h3>
+            <div class="about-modules-grid">
+                <div class="about-mod"><div class="about-mod-title">אוצר מילים</div><div class="about-mod-desc">מילים לפי נושאים עם בוחן כתיבה</div></div>
+                <div class="about-mod"><div class="about-mod-title">דקדוק</div><div class="about-mod-desc">חוקים, תרגול ומבחנים שלב אחר שלב</div></div>
+                <div class="about-mod"><div class="about-mod-title">הבנת הנקרא</div><div class="about-mod-desc">קטעי קריאה עם שאלות הבנה</div></div>
+            </div>
+        </div>
+        <div class="about-card">
+            <h3>עקרונות הלמידה</h3>
+            <ul>
+                <li>לימוד הדרגתי — כל שלב בנוי על הקודם</li>
+                <li>תרגול אקטיבי — לא רק קריאה, אלא כתיבה ובחירה</li>
+                <li>מעקב התקדמות אישי — ראה כמה השתפרת</li>
+                <li>נגיש בכל מכשיר — מחשב, טאבלט וסמארטפון</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+    <div class="contact-inner">
+        <div class="section-hdr">
+            <h2>צור קשר</h2>
+            <p>שאלה, הצעה או משוב? נשמח לשמוע ממך</p>
+        </div>
+        <div class="contact-card">
+            <form id="contactForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+                <input type="hidden" name="_subject" value="פנייה מ-למדני אנגלית">
+                <div class="contact-field">
+                    <label for="contactName">שם מלא</label>
+                    <input type="text" id="contactName" name="name" placeholder="הכנס את שמך" required>
+                </div>
+                <div class="contact-field">
+                    <label for="contactEmail">כתובת מייל</label>
+                    <input type="email" id="contactEmail" name="email" placeholder="example@email.com" dir="ltr" required>
+                </div>
+                <div class="contact-field">
+                    <label for="contactMsg">הודעה</label>
+                    <textarea id="contactMsg" name="message" placeholder="כתוב כאן את הודעתך..." required></textarea>
+                </div>
+                <button type="submit" class="contact-submit" id="submitBtn">שלח הודעה</button>
+            </form>
+            <div class="contact-success" id="contactSuccess">✅ ההודעה נשלחה! נחזור אליך בהקדם.</div>
+            <div class="contact-divider">— או פנה ישירות —</div>
+            <a href="mailto:ishaieran@gmail.com" class="contact-email-link">✉ ishaieran@gmail.com</a>
+        </div>
     </div>
 </section>
 
@@ -430,16 +605,16 @@
         </div>
         <div class="footer-col">
             <h4>לימוד</h4>
-            <a href="vocabulary.html">אוצר מילים</a>
-            <a href="grammar.html">דקדוק</a>
-            <a href="הבנת הנקרא.html">הבנת הנקרא</a>
-            <a href="שיחון.html">שיחון</a>
+            <a href="app.html">דף הלימוד</a>
+            <a href="app.html">אוצר מילים</a>
+            <a href="app.html">דקדוק</a>
+            <a href="app.html">הבנת הנקרא</a>
         </div>
         <div class="footer-col">
             <h4>כללי</h4>
-            <a href="אודות.html">אודות</a>
-            <a href="תמחור.html">תמחור</a>
-            <a href="צור קשר.html">צור קשר</a>
+            <a href="#about">אודות</a>
+            <a href="#pricing">מחירים</a>
+            <a href="#contact">צור קשר</a>
         </div>
         <div class="footer-col">
             <h4>משפטי</h4>
@@ -453,5 +628,26 @@
 </footer>
 
 <script src="user.js"></script>
+<script>
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var btn = document.getElementById('submitBtn');
+    btn.textContent = 'שולח...';
+    btn.disabled = true;
+    try {
+        var resp = await fetch(this.action, { method:'POST', body:new FormData(this), headers:{'Accept':'application/json'} });
+        if (resp.ok) {
+            this.style.display = 'none';
+            document.getElementById('contactSuccess').style.display = 'block';
+        } else {
+            alert('שגיאה בשליחה. שלח ישירות למייל.');
+            btn.textContent = 'שלח הודעה'; btn.disabled = false;
+        }
+    } catch(err) {
+        alert('שגיאה בשליחה. שלח ישירות למייל.');
+        btn.textContent = 'שלח הודעה'; btn.disabled = false;
+    }
+});
+</script>
 </body>
 </html>
