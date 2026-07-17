@@ -304,9 +304,19 @@ function _buildKidPicker() {
     document.body.appendChild(d);
 }
 
-// ── מודל כניסה — הפנייה ל-Firebase Auth ──────────────────────────
+// ── מודל כניסה ─────────────────────────────────────────────────
 function openLoginModal(mode) {
-    // firebase-auth.js מגדיר מחדש פונקציה זו
+    var ov = document.getElementById('fbLoginOv');
+    if (!ov) return;
+    ov.style.display = 'flex';
+    var m = mode === 'login' ? 'login' : 'register';
+    var isReg = m === 'register';
+    document.getElementById('fbModeVal').value = m;
+    document.getElementById('fbNameRow').style.display  = isReg ? 'block' : 'none';
+    document.getElementById('fbModalTitle').textContent = isReg ? 'הרשמה' : 'כניסה';
+    document.getElementById('fbSubmitBtn').textContent  = isReg ? 'הרשמה ←' : 'כנס ←';
+    document.getElementById('fbToggleBtn').textContent  = isReg ? 'כבר יש לך חשבון? כנס' : 'אין לך חשבון? הירשם';
+    document.getElementById('fbErr').textContent = '';
 }
 
 function closeLoginModal() {
