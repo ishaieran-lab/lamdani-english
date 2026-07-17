@@ -105,27 +105,24 @@ function renderUserNav() {
     var u = getUser();
     if (!u) {
         el.innerHTML =
-            '<button class="u-login-btn" onclick="openLoginModal()">כניסת משתמש</button>';
+            '<button class="u-login-btn" onclick="openLoginModal()">כניסה / הרשמה</button>';
     } else {
-        var emoji = getAvatarEmoji(u.gender, u.age);
-        var color = getAvatarColor(u.gender);
-        var hasOthers = getUsers().filter(function(x){ return x.id !== u.id; }).length > 0;
+        var name  = u.username || u.email || '?';
+        var init  = name[0].toUpperCase();
         el.innerHTML =
             '<div class="u-chip" onclick="uToggleMenu(event)">' +
-                '<span class="u-av-sm" style="background:' + color + '">' + emoji + '</span>' +
-                '<span class="u-chip-name">' + u.username + '</span>' +
+                '<span class="u-av-sm" style="background:#2563eb;color:#fff;font-size:0.8rem;font-weight:700;">' + init + '</span>' +
+                '<span class="u-chip-name">' + name + '</span>' +
                 '<span class="u-chip-arr">▾</span>' +
             '</div>' +
             '<div class="u-menu" id="uMenu" style="display:none">' +
                 '<div class="u-menu-head">' +
-                    '<span class="u-av-lg" style="background:' + color + '">' + emoji + '</span>' +
+                    '<span class="u-av-lg" style="background:#2563eb;color:#fff;font-size:1.1rem;font-weight:700;">' + init + '</span>' +
                     '<div>' +
-                        '<div class="u-menu-uname">' + u.username + '</div>' +
-                        '<div class="u-menu-sub">גיל ' + u.age + ' · ' + (u.gender === 'female' ? 'נקבה' : 'זכר') + '</div>' +
+                        '<div class="u-menu-uname">' + name + '</div>' +
+                        (u.email ? '<div class="u-menu-sub">' + u.email + '</div>' : '') +
                     '</div>' +
                 '</div>' +
-                '<button class="u-menu-item" onclick="openLoginModal(\'edit\')">✏️ ערוך פרופיל</button>' +
-                '<button class="u-menu-item" onclick="openLoginModal(\'select\')">👥 החלף משתמש</button>' +
                 '<button class="u-menu-item u-menu-logout" onclick="uLogout()">🚪 התנתק</button>' +
             '</div>';
     }
@@ -144,7 +141,12 @@ document.addEventListener('click', function() {
 });
 
 function uLogout() {
-    if (confirm('להתנתק?')) {
+    if (!confirm('להתנתק?')) return;
+    if (window._firebaseAuth) {
+        window._firebaseAuth.signOut().catch(function() {
+            clearUser(); renderUserNav();
+        });
+    } else {
         clearUser();
         renderUserNav();
         if (typeof window.onProgressUpdated === 'function') window.onProgressUpdated();
