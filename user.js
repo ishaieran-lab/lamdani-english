@@ -254,8 +254,8 @@ function _saveNewKid() {
     var name = (document.getElementById('kidName').value || '').trim();
     var age  = parseInt(document.getElementById('kidAge').value) || 0;
     var err  = document.getElementById('kidErr');
-    if (!name)                { err.textContent = 'נא להזין שם'; return; }
-    if (age < 5 || age > 20) { err.textContent = 'נא להזין גיל תקין (5–20)'; return; }
+    if (!name) { err.textContent = 'נא להזין שם'; return; }
+    if (age < 1 || age > 120) age = 0;
     err.textContent = '';
 
     var kid  = { id: 'kid_' + Date.now(), name: name, gender: _kidGender, age: age };
@@ -275,20 +275,20 @@ function _buildKidPicker() {
             '<div id="kidListView">' +
                 '<div id="kidPickerTitle" style="font-size:1.2rem;font-weight:800;color:#1e293b;margin-bottom:1.4rem;text-align:center;"></div>' +
                 '<div id="kidGrid" style="display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;margin-bottom:1.2rem;"></div>' +
-                '<button onclick="_showAddKidForm()" style="width:100%;padding:0.65rem;border:2px dashed #cbd5e1;border-radius:0.75rem;background:none;cursor:pointer;color:#64748b;font-size:0.95rem;font-weight:600;">＋ הוסף ילד</button>' +
+                '<button onclick="_showAddKidForm()" style="width:100%;padding:0.65rem;border:2px dashed #cbd5e1;border-radius:0.75rem;background:none;cursor:pointer;color:#64748b;font-size:0.95rem;font-weight:600;">＋ הוסף פרופיל</button>' +
             '</div>' +
 
             '<div id="kidFormView" style="display:none">' +
                 '<button onclick="_showKidList()" style="background:none;border:none;color:#2563eb;cursor:pointer;font-size:0.9rem;margin-bottom:1rem;">→ חזור</button>' +
-                '<div style="font-size:1.2rem;font-weight:800;color:#1e293b;margin-bottom:0.3rem;text-align:center;">ילד חדש 👤</div>' +
-                '<div style="color:#64748b;font-size:0.9rem;text-align:center;margin-bottom:1.2rem;">הכנס את פרטי הילד</div>' +
+                '<div style="font-size:1.2rem;font-weight:800;color:#1e293b;margin-bottom:0.3rem;text-align:center;">פרופיל חדש 👤</div>' +
+                '<div style="color:#64748b;font-size:0.9rem;text-align:center;margin-bottom:1.2rem;">הכנס את פרטי המשתמש</div>' +
                 '<div style="margin-bottom:0.7rem;">' +
                     '<label style="font-size:0.82rem;font-weight:600;color:#374151;display:block;margin-bottom:0.25rem;">שם</label>' +
-                    '<input id="kidName" type="text" placeholder="שם הילד..." dir="rtl" style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:0.5rem;font-size:0.95rem;box-sizing:border-box;" onkeydown="if(event.key===\'Enter\')document.getElementById(\'kidAge\').focus()">' +
+                    '<input id="kidName" type="text" placeholder="שם המשתמש..." dir="rtl" style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:0.5rem;font-size:0.95rem;box-sizing:border-box;" onkeydown="if(event.key===\'Enter\')document.getElementById(\'kidAge\').focus()">' +
                 '</div>' +
                 '<div style="margin-bottom:0.7rem;">' +
                     '<label style="font-size:0.82rem;font-weight:600;color:#374151;display:block;margin-bottom:0.25rem;">גיל</label>' +
-                    '<input id="kidAge" type="number" placeholder="גיל" min="5" max="20" style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:0.5rem;font-size:0.95rem;box-sizing:border-box;" onkeydown="if(event.key===\'Enter\')_saveNewKid()">' +
+                    '<input id="kidAge" type="number" placeholder="גיל (אופציונלי)" min="1" max="120" style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:0.5rem;font-size:0.95rem;box-sizing:border-box;" onkeydown="if(event.key===\'Enter\')_saveNewKid()">' +
                 '</div>' +
                 '<div style="margin-bottom:1rem;">' +
                     '<label style="font-size:0.82rem;font-weight:600;color:#374151;display:block;margin-bottom:0.25rem;">מין</label>' +
