@@ -384,7 +384,7 @@
 <!-- NAV -->
 <nav class="nav">
     <div class="nav-links">
-        <a href="app.html" class="nav-cta">התחל עכשיו</a>
+        <a href="app.html" class="nav-cta" onclick="event.preventDefault();openLoginModal()">התחל עכשיו</a>
         <a href="#pricing">מחירים</a>
         <a href="#about">אודות</a>
         <a href="#contact">צור קשר</a>
@@ -483,7 +483,7 @@
     <div class="cta-inner">
         <h2 class="cta-h">מוכנים להתחיל?</h2>
         <p class="cta-p">הירשמו עכשיו וגשו לכל תכני הלימוד — אוצר מילים, דקדוק והבנת הנקרא.</p>
-        <a href="app.html" class="btn-primary" style="font-size:1.15rem">התחל עכשיו</a>
+        <button class="btn-primary" style="font-size:1.15rem;background:none;border:none;cursor:pointer;padding:0;" onclick="openLoginModal()">התחל עכשיו</button>
         <p class="cta-note">₪29 לחודש · ביטול בכל עת</p>
     </div>
 </section>
@@ -656,6 +656,9 @@ document.getElementById('contactForm').addEventListener('submit', async function
         btn.textContent = 'שלח הודעה'; btn.disabled = false;
     }
 });
+</script>
+<script>
+window.onUserLogin = function() { window.location.href = "app.html"; };
 </script>
 </body>
 </html>
