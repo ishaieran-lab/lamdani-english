@@ -1,4 +1,4 @@
-// firebase-auth.js — Firebase Authentication for Lamdani English
+﻿// firebase-auth.js — Firebase Authentication for Lamdani English
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import {
     getAuth,
@@ -31,14 +31,10 @@ window._firebaseAuth = auth;
 // ── Auth State ───────────────────────────────────────────────────
 onAuthStateChanged(auth, function(user) {
     if (user) {
-        var name = user.displayName || user.email.split('@')[0];
-        if (typeof saveUser === 'function') saveUser({ id: user.uid, username: name, email: user.email });
+        if (typeof window.onFirebaseAuth === 'function') window.onFirebaseAuth(user);
     } else {
-        if (typeof clearUser === 'function') clearUser();
+        if (typeof window.onFirebaseLogout === 'function') window.onFirebaseLogout();
     }
-    if (typeof renderUserNav      === 'function') renderUserNav();
-    if (typeof window.onUserLogin === 'function') window.onUserLogin();
-    if (typeof window.onProgressUpdated === 'function') window.onProgressUpdated();
 });
 
 // ── Override openLoginModal ──────────────────────────────────────
@@ -82,7 +78,6 @@ window.fbSubmitEmail = async function() {
         if (mode === 'register') {
             var cred = await createUserWithEmailAndPassword(auth, email, pass);
             await updateProfile(cred.user, { displayName: name });
-            if (typeof saveUser === 'function') saveUser({ id: cred.user.uid, username: name, email: cred.user.email });
         } else {
             await signInWithEmailAndPassword(auth, email, pass);
         }

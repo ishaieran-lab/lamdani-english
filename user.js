@@ -1,5 +1,5 @@
-﻿// ════════════════════════════════════════════════════════════════
-// user.js — ניהול משתמשים והתקדמות (משותף לכל הדפים)
+// ════════════════════════════════════════════════════════════════
+// user.js — ניהול הורה, ילדים והתקדמות
 // ════════════════════════════════════════════════════════════════
 
 // ── תפריט ניווט עליון ──────────────────────────────────────────
@@ -12,60 +12,69 @@ document.addEventListener('click', function(e) {
     var btn = document.getElementById('navMenuBtn');
     var panel = document.getElementById('navMenuPanel');
     if (!panel || !btn) return;
-    if (!btn.contains(e.target) && !panel.contains(e.target)) {
+    if (!btn.contains(e.target) && !panel.contains(e.target))
         panel.classList.remove('open');
-    }
 });
 
-var USER_KEY  = 'engUser';    // המשתמש הפעיל כרגע
-var USERS_KEY = 'engUsers';   // רשימת כל המשתמשים
-var PROG_KEY  = 'engProgress'; // prefix להתקדמות לפי משתמש
-var VOCAB_VER = '4';          // להעלות כשמשתנה סדר/מבנה VOCAB
+// ── מפתחות localStorage ─────────────────────────────────────────
+var PARENT_KEY   = 'fbParent';         // { uid, email, name }
+var KIDS_PREFIX  = 'engKids_';         // engKids_{uid} → מערך ילדים
+var ACTIVE_KID   = 'activeKid';        // הילד הפעיל כרגע
+var PROG_KEY     = 'engProgress';      // prefix להתקדמות
+var VOCAB_VER    = '4';
 
-// ── אחסון ──────────────────────────────────────────────────────
-function getUser()     { try{return JSON.parse(localStorage.getItem(USER_KEY))||null;}catch(e){return null;} }
-function saveUser(u)   { localStorage.setItem(USER_KEY,JSON.stringify(u)); }
-function clearUser()   { localStorage.removeItem(USER_KEY); }
+// ── הורה ────────────────────────────────────────────────────────
+function getParent()     { try{return JSON.parse(localStorage.getItem(PARENT_KEY))||null;}catch(e){return null;} }
+function saveParent(p)   { localStorage.setItem(PARENT_KEY, JSON.stringify(p)); }
+function clearParent()   { localStorage.removeItem(PARENT_KEY); }
 
-function getUsers()    { try{return JSON.parse(localStorage.getItem(USERS_KEY))||[];}catch(e){return [];} }
-function saveUsers(a)  { localStorage.setItem(USERS_KEY,JSON.stringify(a)); }
+// ── ילדים ───────────────────────────────────────────────────────
+function getChildren() {
+    var p = getParent();
+    if (!p) return [];
+    try { return JSON.parse(localStorage.getItem(KIDS_PREFIX + p.uid)) || []; } catch(e) { return []; }
+}
+function saveChildren(arr) {
+    var p = getParent();
+    if (!p) return;
+    localStorage.setItem(KIDS_PREFIX + p.uid, JSON.stringify(arr));
+}
 
+// ── ילד פעיל ────────────────────────────────────────────────────
+function getActiveKid()      { try{return JSON.parse(localStorage.getItem(ACTIVE_KID))||null;}catch(e){return null;} }
+function setActiveKid(kid)   { localStorage.setItem(ACTIVE_KID, JSON.stringify(kid)); }
+function clearActiveKid()    { localStorage.removeItem(ACTIVE_KID); }
+
+// ── getUser — תאימות לשאר הקוד ──────────────────────────────────
+function getUser() {
+    var kid = getActiveKid();
+    if (!kid) return null;
+    return { id: kid.id, username: kid.name, gender: kid.gender, age: kid.age };
+}
+function saveUser(u)  {}   // לא בשימוש — שמירה דרך setActiveKid
+function clearUser()  { clearActiveKid(); }
+
+// ── התקדמות ─────────────────────────────────────────────────────
 function getProgress() {
-    var u = getUser();
-    var k = u ? PROG_KEY + '_' + u.id : PROG_KEY;
-    try{return JSON.parse(localStorage.getItem(k))||{};}catch(e){return {};}
+    var kid = getActiveKid();
+    var k = kid ? PROG_KEY + '_' + kid.id : PROG_KEY;
+    try { return JSON.parse(localStorage.getItem(k)) || {}; } catch(e) { return {}; }
 }
 function saveProgress(p) {
-    var u = getUser();
-    var k = u ? PROG_KEY + '_' + u.id : PROG_KEY;
+    var kid = getActiveKid();
+    var k = kid ? PROG_KEY + '_' + kid.id : PROG_KEY;
     localStorage.setItem(k, JSON.stringify(p));
 }
 
-// ── מיגרציה ממשתמש ישן (ללא id) ────────────────────────────────
-function _migrate() {
-    var u = getUser();
-    if (!u) return;
-    if (!u.id) {
-        u.id = 'usr_' + Date.now();
-        saveUser(u);
-        var oldP = localStorage.getItem(PROG_KEY);
-        if (oldP) {
-            localStorage.setItem(PROG_KEY + '_' + u.id, oldP);
-            localStorage.removeItem(PROG_KEY);
-        }
-    }
-    var users = getUsers();
-    if (!users.find(function(x){ return x.id === u.id; })) {
-        users.push(u);
-        saveUsers(users);
-    }
-}
+// ── compat stubs ─────────────────────────────────────────────────
+function getUsers()    { return getChildren(); }
+function saveUsers(a)  { saveChildren(a); }
 
 // ── אוואטר ─────────────────────────────────────────────────────
 function getAvatarEmoji(gender, age) {
-    age = parseInt(age) || 20;
-    if (gender === 'female') return age < 18 ? '👧' : age >= 60 ? '👵' : '👩';
-    return age < 18 ? '👦' : age >= 60 ? '👴' : '👨';
+    age = parseInt(age) || 10;
+    if (gender === 'female') return age < 18 ? '👧' : '👩';
+    return age < 18 ? '👦' : '👨';
 }
 function getAvatarColor(gender) {
     return gender === 'female' ? '#db2777' : '#2563eb';
@@ -73,7 +82,7 @@ function getAvatarColor(gender) {
 
 // ── רישום התקדמות ───────────────────────────────────────────────
 function logProgress(module, stageIdx, type, score) {
-    if (!getUser()) return;
+    if (!getActiveKid()) return;
     var p = getProgress();
     if (!p[module]) p[module] = {};
     if (!p[module][stageIdx]) p[module][stageIdx] = {};
@@ -84,7 +93,7 @@ function logProgress(module, stageIdx, type, score) {
     if (type === 'examples')  s.examplesViewed = true;
     if (type === 'grammar')   { s.grammarAttempts=(s.grammarAttempts||0)+1; s.grammarBest=Math.min(100,Math.max(s.grammarBest||0,score||0)); }
     if (type === 'vocabQuiz') { s.vocabAttempts =(s.vocabAttempts||0)+1;   s.vocabBest  =Math.min(100,score||0); }
-    if (type === 'match')     { s.matchAttempts =(s.matchAttempts||0)+1;   s.matchBest  =Math.min(100,Math.max(s.matchBest||0,  score||0)); }
+    if (type === 'match')     { s.matchAttempts =(s.matchAttempts||0)+1;   s.matchBest  =Math.min(100,Math.max(s.matchBest||0,score||0)); }
     saveProgress(p);
     if (typeof window.onProgressUpdated === 'function') window.onProgressUpdated();
 }
@@ -94,35 +103,38 @@ function getStageStatus(module, idx) {
     if (!p[module] || !p[module][idx]) return 'none';
     var s = p[module][idx];
     var practiced = s.grammarBest !== undefined || s.vocabBest !== undefined;
-    if (practiced) return 'complete';
-    return 'none';
+    return practiced ? 'complete' : 'none';
 }
 
 // ── סרגל ניווט ─────────────────────────────────────────────────
 function renderUserNav() {
     var el = document.getElementById('userNavArea');
     if (!el) return;
-    var u = getUser();
-    if (!u) {
-        el.innerHTML =
-            '<button class="u-login-btn" onclick="openLoginModal()">כניסה / הרשמה</button>';
+    var parent = getParent();
+    var kid    = getActiveKid();
+
+    if (!parent) {
+        el.innerHTML = '<button class="u-login-btn" onclick="openLoginModal()">כניסה / הרשמה</button>';
+    } else if (!kid) {
+        el.innerHTML = '<button class="u-login-btn" onclick="openChildPicker()">בחר ילד 👦</button>';
     } else {
-        var name  = u.username || u.email || '?';
-        var init  = name[0].toUpperCase();
+        var emoji = getAvatarEmoji(kid.gender, kid.age);
+        var color = getAvatarColor(kid.gender);
         el.innerHTML =
             '<div class="u-chip" onclick="uToggleMenu(event)">' +
-                '<span class="u-av-sm" style="background:#2563eb;color:#fff;font-size:0.8rem;font-weight:700;">' + init + '</span>' +
-                '<span class="u-chip-name">' + name + '</span>' +
+                '<span class="u-av-sm" style="background:' + color + '">' + emoji + '</span>' +
+                '<span class="u-chip-name">' + kid.name + '</span>' +
                 '<span class="u-chip-arr">▾</span>' +
             '</div>' +
             '<div class="u-menu" id="uMenu" style="display:none">' +
                 '<div class="u-menu-head">' +
-                    '<span class="u-av-lg" style="background:#2563eb;color:#fff;font-size:1.1rem;font-weight:700;">' + init + '</span>' +
+                    '<span class="u-av-lg" style="background:' + color + '">' + emoji + '</span>' +
                     '<div>' +
-                        '<div class="u-menu-uname">' + name + '</div>' +
-                        (u.email ? '<div class="u-menu-sub">' + u.email + '</div>' : '') +
+                        '<div class="u-menu-uname">' + kid.name + '</div>' +
+                        '<div class="u-menu-sub">' + (parent.email || '') + '</div>' +
                     '</div>' +
                 '</div>' +
+                '<button class="u-menu-item" onclick="openChildPicker()">👥 החלף ילד</button>' +
                 '<button class="u-menu-item u-menu-logout" onclick="uLogout()">🚪 התנתק</button>' +
             '</div>';
     }
@@ -134,7 +146,6 @@ function uToggleMenu(e) {
     var m = document.getElementById('uMenu');
     if (m) m.style.display = (m.style.display === 'none') ? 'block' : 'none';
 }
-
 document.addEventListener('click', function() {
     var m = document.getElementById('uMenu');
     if (m) m.style.display = 'none';
@@ -142,217 +153,184 @@ document.addEventListener('click', function() {
 
 function uLogout() {
     if (!confirm('להתנתק?')) return;
+    clearActiveKid();
+    clearParent();
     if (window._firebaseAuth) {
-        window._firebaseAuth.signOut().catch(function() {
-            clearUser(); renderUserNav();
-        });
+        window._firebaseAuth.signOut().catch(function() { renderUserNav(); });
     } else {
-        clearUser();
         renderUserNav();
         if (typeof window.onProgressUpdated === 'function') window.onProgressUpdated();
     }
 }
 
-// ── מודל כניסה ─────────────────────────────────────────────────
-var _sg       = 'male';
-var _formMode = 'create'; // 'create' | 'edit'
-
-function openLoginModal(mode) {
-    var ov = document.getElementById('uLoginOv');
-    if (!ov) { _buildModal(); ov = document.getElementById('uLoginOv'); }
-
-    var users = getUsers();
-    if (!mode) mode = users.length > 0 ? 'select' : 'create';
-    if (mode === 'select' && users.length === 0) mode = 'create';
-
-    if (mode === 'select') {
-        _showSelectView();
-    } else if (mode === 'edit') {
-        _showFormView(true);
+// ── Callbacks מ-Firebase Auth ────────────────────────────────────
+window.onFirebaseAuth = function(fbUser) {
+    saveParent({ uid: fbUser.uid, email: fbUser.email, name: fbUser.displayName || fbUser.email.split('@')[0] });
+    var kids = getChildren();
+    if (kids.length === 0 || !getActiveKid()) {
+        openChildPicker();
     } else {
-        _showFormView(false);
+        renderUserNav();
+        if (typeof window.onUserLogin === 'function') window.onUserLogin();
+        if (typeof window.onProgressUpdated === 'function') window.onProgressUpdated();
     }
+};
 
-    ov.style.display = 'flex';
+window.onFirebaseLogout = function() {
+    clearActiveKid();
+    clearParent();
+    renderUserNav();
+    if (typeof window.onProgressUpdated === 'function') window.onProgressUpdated();
+};
+
+// ── בוחר ילד ────────────────────────────────────────────────────
+var _kidGender = 'male';
+
+function openChildPicker() {
+    if (!document.getElementById('kidPickerOv')) _buildKidPicker();
+    document.getElementById('kidPickerOv').style.display = 'flex';
+    _showKidList();
 }
 
-function closeLoginModal() {
-    var ov = document.getElementById('uLoginOv');
+function closeChildPicker() {
+    var ov = document.getElementById('kidPickerOv');
     if (ov) ov.style.display = 'none';
 }
 
-// ── תצוגת בחירת משתמש ──────────────────────────────────────────
-function _showSelectView() {
-    var users = getUsers();
-    var cur   = getUser();
+function _selectKid(id) {
+    var kids = getChildren();
+    var kid  = kids.find(function(k) { return k.id === id; });
+    if (!kid) return;
+    setActiveKid(kid);
+    closeChildPicker();
+    renderUserNav();
+    if (typeof window.onUserLogin    === 'function') window.onUserLogin();
+    if (typeof window.onProgressUpdated === 'function') window.onProgressUpdated();
+}
 
-    document.getElementById('uSelectView').style.display = 'block';
-    document.getElementById('uFormView').style.display   = 'none';
+function _showKidList() {
+    var parent = getParent();
+    var kids   = getChildren();
+    var cur    = getActiveKid();
 
-    document.getElementById('uUserList').innerHTML = users.map(function(u) {
-        var emoji = getAvatarEmoji(u.gender, u.age);
-        var color = getAvatarColor(u.gender);
-        var isCur = cur && cur.id === u.id;
-        return '<div class="u-user-item' + (isCur ? ' u-user-current' : '') + '" onclick="selectExistingUser(\'' + u.id + '\')">' +
-            '<span class="u-av-sm" style="background:' + color + '">' + emoji + '</span>' +
-            '<div class="u-user-item-info">' +
-                '<span class="u-user-item-name">' + u.username + '</span>' +
-                '<span class="u-user-item-sub">גיל ' + u.age + ' · ' + (u.gender === 'female' ? 'נקבה' : 'זכר') + (isCur ? ' · פעיל' : '') + '</span>' +
-            '</div>' +
-            '<span class="u-user-item-arrow">←</span>' +
+    document.getElementById('kidListView').style.display = 'block';
+    document.getElementById('kidFormView').style.display = 'none';
+
+    var pName = parent ? (parent.name || parent.email) : '';
+    document.getElementById('kidPickerTitle').textContent = 'שלום, ' + pName + '! מי לומד היום?';
+
+    document.getElementById('kidGrid').innerHTML = kids.map(function(k) {
+        var emoji = getAvatarEmoji(k.gender, k.age);
+        var color = getAvatarColor(k.gender);
+        var isCur = cur && cur.id === k.id;
+        return '<div class="kp-card' + (isCur ? ' kp-card-active' : '') + '" onclick="_selectKid(\'' + k.id + '\')">' +
+            '<span class="kp-emoji" style="background:' + color + '">' + emoji + '</span>' +
+            '<div class="kp-name">' + k.name + '</div>' +
+            '<div class="kp-age">גיל ' + k.age + '</div>' +
         '</div>';
     }).join('');
 }
 
-function selectExistingUser(id) {
-    var users = getUsers();
-    var u = null;
-    for (var i = 0; i < users.length; i++) {
-        if (users[i].id === id) { u = users[i]; break; }
-    }
-    if (!u) return;
-    saveUser(u);
-    closeLoginModal();
-    renderUserNav();
-    if (typeof window.onUserLogin === 'function') window.onUserLogin();
+function _showAddKidForm() {
+    document.getElementById('kidListView').style.display = 'none';
+    document.getElementById('kidFormView').style.display = 'block';
+    document.getElementById('kidName').value = '';
+    document.getElementById('kidAge').value  = '';
+    document.getElementById('kidErr').textContent = '';
+    _kidGender = 'male';
+    _refreshKidGender();
+    setTimeout(function(){ var f=document.getElementById('kidName'); if(f) f.focus(); }, 80);
 }
 
-// ── תצוגת טופס יצירה/עריכה ─────────────────────────────────────
-function _showFormView(isEdit) {
-    _formMode = isEdit ? 'edit' : 'create';
-    var hasSavedUsers = getUsers().length > 0;
+function setKidGender(g) { _kidGender = g; _refreshKidGender(); }
 
-    document.getElementById('uSelectView').style.display = 'none';
-    document.getElementById('uFormView').style.display   = 'block';
-    document.getElementById('uFormBack').style.display   = hasSavedUsers ? 'block' : 'none';
-    document.getElementById('uFormTitle').textContent    = isEdit ? 'ערוך פרופיל ✏️' : 'משתמש חדש 👤';
-    document.getElementById('uFormSub').textContent      = isEdit ? 'עדכן את הפרטים שלך' : 'צור את הפרופיל שלך';
-
-    var u = getUser();
-    if (isEdit && u) {
-        document.getElementById('uLName').value = u.username;
-        document.getElementById('uLAge').value  = u.age;
-        _sg = u.gender;
-    } else {
-        document.getElementById('uLName').value = '';
-        document.getElementById('uLAge').value  = '';
-        _sg = 'male';
-    }
-    _refreshGBtns();
-    document.getElementById('uLErr').textContent = '';
-    setTimeout(function(){ var f = document.getElementById('uLName'); if(f) f.focus(); }, 80);
+function _refreshKidGender() {
+    var bm = document.getElementById('kgBtnM'), bf = document.getElementById('kgBtnF');
+    if (bm) bm.className = 'gender-btn' + (_kidGender === 'male'   ? ' active' : '');
+    if (bf) bf.className = 'gender-btn' + (_kidGender === 'female' ? ' active' : '');
 }
 
-function setGender(g) { _sg = g; _refreshGBtns(); }
-
-function _refreshGBtns() {
-    var bm = document.getElementById('gBtnM'), bf = document.getElementById('gBtnF');
-    if (bm) bm.className = 'gender-btn' + (_sg === 'male'   ? ' active' : '');
-    if (bf) bf.className = 'gender-btn' + (_sg === 'female' ? ' active' : '');
-}
-
-// ── שמירת משתמש ────────────────────────────────────────────────
-function submitLogin() {
-    var name = (document.getElementById('uLName').value || '').trim();
-    var age  = parseInt(document.getElementById('uLAge').value) || 0;
-    var err  = document.getElementById('uLErr');
-    if (!name)              { err.textContent = 'נא להזין שם משתמש'; return; }
-    if (age < 5 || age > 120) { err.textContent = 'נא להזין גיל תקין (5–120)'; return; }
+function _saveNewKid() {
+    var name = (document.getElementById('kidName').value || '').trim();
+    var age  = parseInt(document.getElementById('kidAge').value) || 0;
+    var err  = document.getElementById('kidErr');
+    if (!name)                { err.textContent = 'נא להזין שם'; return; }
+    if (age < 5 || age > 20) { err.textContent = 'נא להזין גיל תקין (5–20)'; return; }
     err.textContent = '';
 
-    var cur = getUser();
-    var userData;
-    if (_formMode === 'edit' && cur) {
-        userData = { id: cur.id, username: name, age: age, gender: _sg };
-    } else {
-        userData = { id: 'usr_' + Date.now(), username: name, age: age, gender: _sg };
-    }
-
-    var users = getUsers();
-    var found = false;
-    for (var i = 0; i < users.length; i++) {
-        if (users[i].id === userData.id) { users[i] = userData; found = true; break; }
-    }
-    if (!found) users.push(userData);
-    saveUsers(users);
-    saveUser(userData);
-
-    closeLoginModal();
-    renderUserNav();
-    if (typeof window.onUserLogin === 'function') window.onUserLogin();
+    var kid  = { id: 'kid_' + Date.now(), name: name, gender: _kidGender, age: age };
+    var kids = getChildren();
+    kids.push(kid);
+    saveChildren(kids);
+    _selectKid(kid.id);
 }
 
-// ── בניית המודל ─────────────────────────────────────────────────
-function _buildModal() {
+function _buildKidPicker() {
     var d = document.createElement('div');
-    d.id = 'uLoginOv';
-    d.className = 'u-login-ov';
-    d.style.display = 'none';
+    d.id = 'kidPickerOv';
+    d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:10000;direction:rtl;';
     d.innerHTML =
-        '<div class="u-login-box" onclick="event.stopPropagation()">' +
-            '<button class="u-login-x" onclick="closeLoginModal()">✕</button>' +
+        '<div style="background:#fff;border-radius:1.4rem;padding:2rem;width:min(94vw,460px);position:relative;font-family:inherit;" onclick="event.stopPropagation()">' +
 
-            // ── תצוגת בחירה ──────────────────────────────────
-            '<div id="uSelectView">' +
-                '<div class="u-login-title">מי מתחבר? 👋</div>' +
-                '<div id="uUserList" class="u-user-list"></div>' +
-                '<button class="u-new-user-btn" onclick="_showFormView(false)">＋ משתמש חדש</button>' +
+            '<div id="kidListView">' +
+                '<div id="kidPickerTitle" style="font-size:1.2rem;font-weight:800;color:#1e293b;margin-bottom:1.4rem;text-align:center;"></div>' +
+                '<div id="kidGrid" style="display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;margin-bottom:1.2rem;"></div>' +
+                '<button onclick="_showAddKidForm()" style="width:100%;padding:0.65rem;border:2px dashed #cbd5e1;border-radius:0.75rem;background:none;cursor:pointer;color:#64748b;font-size:0.95rem;font-weight:600;">＋ הוסף ילד</button>' +
             '</div>' +
 
-            // ── טופס יצירה/עריכה ─────────────────────────────
-            '<div id="uFormView" style="display:none">' +
-                '<button id="uFormBack" class="u-form-back" onclick="_showSelectView()" style="display:none">→ חזור למשתמשים</button>' +
-                '<div class="u-login-title" id="uFormTitle">משתמש חדש 👤</div>' +
-                '<div class="u-login-sub"  id="uFormSub">צור את הפרופיל שלך</div>' +
-                '<div class="u-field">' +
-                    '<label class="u-label">שם משתמש</label>' +
-                    '<input id="uLName" class="u-input" type="text" placeholder="השם שלך..." dir="rtl" maxlength="20"' +
-                    ' onkeydown="if(event.key===\'Enter\')document.getElementById(\'uLAge\').focus()">' +
+            '<div id="kidFormView" style="display:none">' +
+                '<button onclick="_showKidList()" style="background:none;border:none;color:#2563eb;cursor:pointer;font-size:0.9rem;margin-bottom:1rem;">→ חזור</button>' +
+                '<div style="font-size:1.2rem;font-weight:800;color:#1e293b;margin-bottom:0.3rem;text-align:center;">ילד חדש 👤</div>' +
+                '<div style="color:#64748b;font-size:0.9rem;text-align:center;margin-bottom:1.2rem;">הכנס את פרטי הילד</div>' +
+                '<div style="margin-bottom:0.7rem;">' +
+                    '<label style="font-size:0.82rem;font-weight:600;color:#374151;display:block;margin-bottom:0.25rem;">שם</label>' +
+                    '<input id="kidName" type="text" placeholder="שם הילד..." dir="rtl" style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:0.5rem;font-size:0.95rem;box-sizing:border-box;" onkeydown="if(event.key===\'Enter\')document.getElementById(\'kidAge\').focus()">' +
                 '</div>' +
-                '<div class="u-field">' +
-                    '<label class="u-label">גיל</label>' +
-                    '<input id="uLAge" class="u-input u-age-inp" type="number" placeholder="גיל" min="5" max="120"' +
-                    ' onkeydown="if(event.key===\'Enter\')submitLogin()">' +
+                '<div style="margin-bottom:0.7rem;">' +
+                    '<label style="font-size:0.82rem;font-weight:600;color:#374151;display:block;margin-bottom:0.25rem;">גיל</label>' +
+                    '<input id="kidAge" type="number" placeholder="גיל" min="5" max="20" style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:0.5rem;font-size:0.95rem;box-sizing:border-box;" onkeydown="if(event.key===\'Enter\')_saveNewKid()">' +
                 '</div>' +
-                '<div class="u-field">' +
-                    '<label class="u-label">מין</label>' +
-                    '<div style="display:flex;gap:0.5rem">' +
-                        '<button id="gBtnM" class="gender-btn active" onclick="setGender(\'male\')">👦 זכר</button>' +
-                        '<button id="gBtnF" class="gender-btn" onclick="setGender(\'female\')">👧 נקבה</button>' +
+                '<div style="margin-bottom:1rem;">' +
+                    '<label style="font-size:0.82rem;font-weight:600;color:#374151;display:block;margin-bottom:0.25rem;">מין</label>' +
+                    '<div style="display:flex;gap:0.5rem;">' +
+                        '<button id="kgBtnM" class="gender-btn active" onclick="setKidGender(\'male\')">👦 זכר</button>' +
+                        '<button id="kgBtnF" class="gender-btn" onclick="setKidGender(\'female\')">👧 נקבה</button>' +
                     '</div>' +
                 '</div>' +
-                '<div id="uLErr" class="u-err"></div>' +
-                '<button class="btn-primary u-submit-btn" onclick="submitLogin()">כנס ←</button>' +
+                '<div id="kidErr" style="color:#ef4444;font-size:0.85rem;margin-bottom:0.65rem;min-height:1em;"></div>' +
+                '<button onclick="_saveNewKid()" style="width:100%;padding:0.75rem;background:#2563eb;color:#fff;border:none;border-radius:0.6rem;font-size:1rem;font-weight:700;cursor:pointer;">שמור ←</button>' +
             '</div>' +
         '</div>';
-    d.onclick = function(e) { if (e.target === d) closeLoginModal(); };
     document.body.appendChild(d);
 }
 
-// ── איפוס ציוני אוצר מילים בעת שינוי גרסה ─────────────────────
+// ── מודל כניסה — הפנייה ל-Firebase Auth ──────────────────────────
+function openLoginModal(mode) {
+    // firebase-auth.js מגדיר מחדש פונקציה זו
+}
+
+function closeLoginModal() {
+    var ov = document.getElementById('fbLoginOv');
+    if (ov) ov.style.display = 'none';
+}
+
+// ── איפוס ציוני אוצר מילים ─────────────────────────────────────
 function _resetVocabIfNeeded() {
     if (localStorage.getItem('vocabVer') === VOCAB_VER) return;
-    var users = getUsers();
-    users.forEach(function(u) {
-        var k = PROG_KEY + '_' + u.id;
+    var kids = getChildren();
+    kids.forEach(function(k) {
+        var key = PROG_KEY + '_' + k.id;
         try {
-            var p = JSON.parse(localStorage.getItem(k)) || {};
+            var p = JSON.parse(localStorage.getItem(key)) || {};
             delete p['vocabulary'];
-            localStorage.setItem(k, JSON.stringify(p));
+            localStorage.setItem(key, JSON.stringify(p));
         } catch(e) {}
     });
-    // גם התקדמות ללא משתמש
-    try {
-        var p0 = JSON.parse(localStorage.getItem(PROG_KEY)) || {};
-        delete p0['vocabulary'];
-        localStorage.setItem(PROG_KEY, JSON.stringify(p0));
-    } catch(e) {}
     localStorage.setItem('vocabVer', VOCAB_VER);
 }
 
 // ── אתחול ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
-    _migrate();
     _resetVocabIfNeeded();
     renderUserNav();
 });
