@@ -381,6 +381,87 @@
 </head>
 <body>
 
+<!-- ══ מודל כניסה / הרשמה ══════════════════════════════════════════ -->
+<div id="fbLoginOv" onclick="if(event.target===this)closeLoginModal()"
+     style="position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:9999;direction:rtl;">
+  <div onclick="event.stopPropagation()"
+       style="background:#fff;border-radius:1.2rem;padding:2rem 2rem 1.5rem;width:min(92vw,380px);position:relative;text-align:center;font-family:inherit;">
+    <button onclick="closeLoginModal()"
+            style="position:absolute;top:0.7rem;left:0.8rem;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#94a3b8;">✕</button>
+    <input type="hidden" id="fbModeVal" value="register">
+    <div id="fbModalTitle" style="font-size:1.35rem;font-weight:800;color:#1e293b;margin-bottom:1.4rem;">הרשמה</div>
+
+    <button onclick="fbSignInGoogle()"
+            style="width:100%;display:flex;align-items:center;justify-content:center;gap:0.6rem;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:0.6rem;background:#fff;cursor:pointer;font-size:0.95rem;font-weight:600;margin-bottom:1rem;">
+      <svg width="18" height="18" viewBox="0 0 48 48">
+        <path fill="#EA4335" d="M24 9.5c3.1 0 5.8 1.1 8 2.8l6-6C34.1 3.1 29.3 1 24 1 14.9 1 7.1 6.7 3.8 14.7l7 5.4C12.5 13.7 17.8 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.4 5.7c4.3-4 6.8-9.9 6.8-16.9z"/>
+        <path fill="#FBBC05" d="M10.8 28.1c-.5-1.5-.8-3-.8-4.6s.3-3.1.8-4.6l-7-5.4C2.3 16.6 1 20.2 1 24s1.3 7.4 3.7 10.5l7.1-5.4z"/>
+        <path fill="#34A853" d="M24 47c5.4 0 9.9-1.8 13.2-4.8l-7.4-5.7c-1.8 1.2-4.1 1.9-5.8 1.9-6.2 0-11.4-4.2-13.3-9.9l-7.1 5.4C7.1 41.3 14.9 47 24 47z"/>
+      </svg>
+      המשך עם Google
+    </button>
+
+    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;">
+      <div style="flex:1;height:1px;background:#e2e8f0;"></div>
+      <span style="color:#94a3b8;font-size:0.8rem;">או</span>
+      <div style="flex:1;height:1px;background:#e2e8f0;"></div>
+    </div>
+
+    <div id="fbNameRow" style="margin-bottom:0.65rem;text-align:right;">
+      <label style="font-size:0.82rem;font-weight:600;color:#374151;display:block;margin-bottom:0.25rem;">שם מלא</label>
+      <input id="fbName" type="text" placeholder="השם שלך..." dir="rtl"
+             style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:0.5rem;font-size:0.95rem;box-sizing:border-box;"
+             onkeydown="if(event.key==='Enter')document.getElementById('fbEmail').focus()">
+    </div>
+    <div style="margin-bottom:0.65rem;text-align:right;">
+      <label style="font-size:0.82rem;font-weight:600;color:#374151;display:block;margin-bottom:0.25rem;">אימייל</label>
+      <input id="fbEmail" type="email" placeholder="your@email.com" dir="ltr"
+             style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:0.5rem;font-size:0.95rem;box-sizing:border-box;"
+             onkeydown="if(event.key==='Enter')document.getElementById('fbPass').focus()">
+    </div>
+    <div style="margin-bottom:0.9rem;text-align:right;">
+      <label style="font-size:0.82rem;font-weight:600;color:#374151;display:block;margin-bottom:0.25rem;">סיסמה</label>
+      <input id="fbPass" type="password" placeholder="לפחות 6 תווים" dir="ltr"
+             style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:0.5rem;font-size:0.95rem;box-sizing:border-box;"
+             onkeydown="if(event.key==='Enter')fbSubmitEmail()">
+    </div>
+
+    <div id="fbErr" style="color:#ef4444;font-size:0.85rem;margin-bottom:0.65rem;min-height:1.1em;"></div>
+
+    <button id="fbSubmitBtn" onclick="fbSubmitEmail()"
+            style="width:100%;padding:0.75rem;background:#2563eb;color:#fff;border:none;border-radius:0.6rem;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:0.9rem;">
+      הרשמה ←
+    </button>
+    <button id="fbToggleBtn" onclick="fbToggleMode()"
+            style="background:none;border:none;color:#2563eb;font-size:0.85rem;cursor:pointer;text-decoration:underline;">
+      כבר יש לך חשבון? כנס
+    </button>
+  </div>
+</div>
+<script>
+function openLoginModal(mode) {
+    document.getElementById('fbLoginOv').style.display = 'flex';
+    var m = mode === 'login' ? 'login' : 'register';
+    document.getElementById('fbModeVal').value = m;
+    var isReg = m === 'register';
+    document.getElementById('fbNameRow').style.display  = isReg ? 'block' : 'none';
+    document.getElementById('fbModalTitle').textContent = isReg ? 'הרשמה' : 'כניסה';
+    document.getElementById('fbSubmitBtn').textContent  = isReg ? 'הרשמה ←' : 'כנס ←';
+    document.getElementById('fbToggleBtn').textContent  = isReg ? 'כבר יש לך חשבון? כנס' : 'אין לך חשבון? הירשם';
+    document.getElementById('fbErr').textContent = '';
+}
+function closeLoginModal() {
+    document.getElementById('fbLoginOv').style.display = 'none';
+}
+function fbToggleMode() {
+    var cur = document.getElementById('fbModeVal').value;
+    openLoginModal(cur === 'register' ? 'login' : 'register');
+}
+function fbSignInGoogle()  { document.getElementById('fbErr').textContent = 'טוען...'; if(window._fbDoGoogle)  window._fbDoGoogle();  }
+function fbSubmitEmail()   { if(window._fbDoEmail)   window._fbDoEmail();   else document.getElementById('fbErr').textContent = 'Firebase לא נטען עדיין — נסה שוב'; }
+</script>
+
 <!-- NAV -->
 <nav class="nav">
     <div class="nav-links">
@@ -634,16 +715,8 @@
     </div>
 </footer>
 
-<script>
-// fallback — אם Firebase לא נטען, הכפתור יראה שגיאה ברורה במקום לא לעשות כלום
-window.openLoginModal = function() {
-    alert('טוען... נסה שוב בעוד שנייה');
-};
-</script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"
-    onerror="console.error('Failed to load Firebase app-compat SDK')"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"
-    onerror="console.error('Failed to load Firebase auth-compat SDK')"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="firebase-auth.js"></script>
 <script src="user.js"></script>
 <script>
