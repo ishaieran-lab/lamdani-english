@@ -3,7 +3,7 @@
 
 (function() {
     var firebaseConfig = {
-        apiKey:            "AIzaSyDttv79Uf6CVsJob2S6xVyA0fE6hkvuq1U",
+        apiKey:            "AIzaSyDttv79Uf6CVsJob2S6xVyAOfE6hkvuq1U",
         authDomain:        "lamdani-eng.firebaseapp.com",
         projectId:         "lamdani-eng",
         storageBucket:     "lamdani-eng.firebasestorage.app",
