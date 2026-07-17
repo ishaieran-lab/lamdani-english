@@ -34,7 +34,12 @@
     </div>
 </nav>
 
-<main class="home">
+<div id="authLoader" style="position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:1rem;">
+    <img src="images/landing/לוגו.png" alt="למדני" style="height:80px;opacity:0.8;">
+    <div style="width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+<main class="home" id="appMain" style="display:none">
     <div class="home-hero">
         <img src="images/landing/לוגו.png" alt="למדני" style="height:240px;display:block;margin:0 auto 0.5rem;">
         <p class="home-desc">מגלים מילים חדשות, שולטים בדקדוק ומבינים כל טקסט – צעד אחר צעד, בקצב שלכם.</p>
@@ -87,6 +92,25 @@
 
 <script type="module" src="firebase-auth.js"></script>
 <script src="user.js"></script>
+<script>
+// ── Auth Guard ───────────────────────────────────────────────────
+var _origAuth   = window.onFirebaseAuth;
+var _origLogout = window.onFirebaseLogout;
+
+window.onFirebaseAuth = function(fbUser) {
+    document.getElementById('appMain').style.display = '';
+    document.getElementById('authLoader').style.display = 'none';
+    if (typeof _origAuth === 'function') _origAuth(fbUser);
+};
+window.onFirebaseLogout = function() {
+    window.location.href = 'index.html';
+};
+// אם Firebase לא מגיב תוך 4 שניות — נניח שלא מחובר
+setTimeout(function() {
+    if (document.getElementById('appMain').style.display === 'none')
+        window.location.href = 'index.html';
+}, 4000);
+</script>
 <script>
 var MODULES = [
     { key: 'vocabulary', id: 'prog-vocabulary',  total: 50 },
