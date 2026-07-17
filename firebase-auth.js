@@ -84,15 +84,17 @@ window.fbSubmitEmail = async function() {
         window.closeLoginModal();
     } catch(e) {
         var msgs = {
-            'auth/email-already-in-use': 'האימייל כבר רשום — נסה להתחבר',
-            'auth/invalid-credential':   'אימייל או סיסמה שגויים',
-            'auth/invalid-email':        'כתובת אימייל לא תקינה',
-            'auth/user-not-found':       'משתמש לא נמצא',
-            'auth/wrong-password':       'סיסמה שגויה',
-            'auth/weak-password':        'הסיסמה חלשה — מינימום 6 תווים',
-            'auth/too-many-requests':    'יותר מדי ניסיונות — נסה שוב מאוחר יותר'
+            'auth/email-already-in-use':  'האימייל כבר רשום — נסה להתחבר',
+            'auth/invalid-credential':    'אימייל או סיסמה שגויים',
+            'auth/invalid-email':         'כתובת אימייל לא תקינה',
+            'auth/user-not-found':        'משתמש לא נמצא',
+            'auth/wrong-password':        'סיסמה שגויה',
+            'auth/weak-password':         'הסיסמה חלשה — מינימום 6 תווים',
+            'auth/too-many-requests':     'יותר מדי ניסיונות — נסה שוב מאוחר יותר',
+            'auth/unauthorized-domain':   'הדומיין לא מורשה — יש להוסיפו ב-Firebase Console',
+            'auth/network-request-failed':'בעיית רשת — בדוק את החיבור לאינטרנט'
         };
-        _setErr(msgs[e.code] || 'שגיאה — נסה שוב');
+        _setErr(msgs[e.code] || ('שגיאה: ' + e.code));
     } finally {
         btn.disabled = false;
         _setMode(mode);
