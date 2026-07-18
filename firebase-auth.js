@@ -55,24 +55,48 @@
         var btn = document.getElementById('fbSubmitBtn');
         btn.disabled = true; btn.textContent = '...';
 
+        var msgs = {
+            'auth/email-already-in-use':  'האימייל כבר רשום — נסה להתחבר',
+            'auth/invalid-credential':    'אימייל או סיסמה שגויים',
+            'auth/invalid-email':         'כתובת אימייל לא תקינה',
+            'auth/user-not-found':        'משתמש לא נמצא',
+            'auth/wrong-password':        'סיסמה שגויה',
+            'auth/weak-password':         'סיסמה חלשה — מינימום 6 תווים',
+            'auth/too-many-requests':     'יותר מדי ניסיונות — נסה מאוחר יותר',
+            'auth/unauthorized-domain':   'הדומיין לא מורשה ב-Firebase'
+        };
+
         var p = mode === 'register'
             ? auth.createUserWithEmailAndPassword(email, pass)
-                  .then(function(c) { return c.user.updateProfile({ displayName: name }); })
-            : auth.signInWithEmailAndPassword(email, pass);
+                  .then(function(c) {
+                      return c.user.updateProfile({ displayName: name })
+                          .then(function() { return c.user.sendEmailVerification(); })
+                          .then(function() { return auth.signOut(); });
+                  })
+            : auth.signInWithEmailAndPassword(email, pass)
+                  .then(function(c) {
+                      if (!c.user.emailVerified) {
+                          return auth.signOut().then(function() {
+                              throw { code: 'auth/email-not-verified' };
+                          });
+                      }
+                  });
 
-        p.then(function() { closeLoginModal(); })
+        msgs['auth/email-not-verified'] = 'נא לאמת את האימייל תחילה — בדוק את תיבת הדואר שלך';
+
+        p.then(function() {
+            if (mode === 'register') {
+                setErr('');
+                document.getElementById('fbErr').style.color = '#16a34a';
+                setErr('נשלח מייל אימות! בדוק את תיבת הדואר ואמת לפני הכניסה.');
+                btn.disabled = false;
+                btn.textContent = 'הרשמה ←';
+            } else {
+                closeLoginModal();
+            }
+        })
          .catch(function(e) {
              console.error('Auth error:', e.code, e.message);
-             var msgs = {
-                 'auth/email-already-in-use':  'האימייל כבר רשום — נסה להתחבר',
-                 'auth/invalid-credential':    'אימייל או סיסמה שגויים',
-                 'auth/invalid-email':         'כתובת אימייל לא תקינה',
-                 'auth/user-not-found':        'משתמש לא נמצא',
-                 'auth/wrong-password':        'סיסמה שגויה',
-                 'auth/weak-password':         'סיסמה חלשה — מינימום 6 תווים',
-                 'auth/too-many-requests':     'יותר מדי ניסיונות — נסה מאוחר יותר',
-                 'auth/unauthorized-domain':   'הדומיין לא מורשה ב-Firebase'
-             };
              setErr(msgs[e.code] || ('שגיאה: ' + e.code));
              btn.disabled = false;
              btn.textContent = mode === 'register' ? 'הרשמה ←' : 'כנס ←';
