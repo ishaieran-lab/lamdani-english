@@ -17,10 +17,12 @@
     window._firebaseAuth = auth;
 
     // ── Auth State ───────────────────────────────────────────────────
+    // emailVerified check: prevents redirect during registration (Firebase auto-signs in
+    // the new user before our code can call signOut + sendEmailVerification)
     auth.onAuthStateChanged(function(user) {
-        if (user) {
+        if (user && user.emailVerified) {
             if (typeof window.onFirebaseAuth   === 'function') window.onFirebaseAuth(user);
-        } else {
+        } else if (!user) {
             if (typeof window.onFirebaseLogout === 'function') window.onFirebaseLogout();
         }
     });
