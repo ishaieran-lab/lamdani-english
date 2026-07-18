@@ -134,7 +134,7 @@ function renderUserNav() {
                         '<div class="u-menu-sub">' + (parent.email || '') + '</div>' +
                     '</div>' +
                 '</div>' +
-                '<button class="u-menu-item" onclick="openChildPicker()">👥 החלף ילד</button>' +
+                '<button class="u-menu-item" onclick="openChildPicker()">👥 החלף משתמש</button>' +
                 '<button class="u-menu-item u-menu-logout" onclick="uLogout()">🚪 התנתק</button>' +
             '</div>';
     }
