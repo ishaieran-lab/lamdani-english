@@ -84,13 +84,13 @@
                       }
                   });
 
-        msgs['auth/email-not-verified'] = 'נא לאמת את האימייל תחילה — בדוק את תיבת הדואר שלך';
+        msgs['auth/email-not-verified'] = 'נא לאמת את האימייל תחילה — בדוק את תיבת הדואר ותיקיית ספאם/זבל';
 
         p.then(function() {
             if (mode === 'register') {
                 setErr('');
                 document.getElementById('fbErr').style.color = '#16a34a';
-                setErr('נשלח מייל אימות! בדוק את תיבת הדואר ואמת לפני הכניסה.');
+                setErr('נשלח מייל אימות! בדוק את תיבת הדואר (כולל תיקיית ספאם/זבל) ואמת לפני הכניסה.');
                 btn.disabled = false;
                 btn.textContent = 'הרשמה ←';
             } else {
