@@ -5,6 +5,22 @@
 // ── תמונת פרופיל ────────────────────────────────────────────────
 var _kidPhoto = '';
 
+function _openAvatarMenu() {
+    var menu = document.getElementById('avatarMenu');
+    if (!menu) return;
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    if (menu.style.display === 'block') {
+        setTimeout(function() {
+            document.addEventListener('click', function _closeMenu(e) {
+                if (!menu.contains(e.target)) { menu.style.display = 'none'; }
+                document.removeEventListener('click', _closeMenu);
+            });
+        }, 10);
+    }
+}
+function _avatarPickCamera()  { document.getElementById('avatarMenu').style.display='none'; document.getElementById('kidAvatarInputCamera').click(); }
+function _avatarPickGallery() { document.getElementById('avatarMenu').style.display='none'; document.getElementById('kidAvatarInputGallery').click(); }
+
 function _setKidAvatar(input) {
     if (!input.files || !input.files[0]) return;
     var reader = new FileReader();
@@ -317,18 +333,23 @@ function _buildKidPicker() {
             '</div>' +
 
             '<div id="kidFormView" style="display:none">' +
-                '<button onclick="_showKidList()" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:0.9rem;margin-bottom:1.1rem;padding:0;">→ חזור</button>' +
+                '<button onclick="_showKidList()" style="background:none;border:none;color:#475569;cursor:pointer;font-size:0.9rem;margin-bottom:1.1rem;padding:0;font-weight:600;">→ חזור</button>' +
 
                 '<div style="text-align:center;margin-bottom:1.8rem;">' +
-                    '<div style="position:relative;width:5rem;height:5rem;margin:0 auto 0.8rem;cursor:pointer;" onclick="document.getElementById(\'kidAvatarInput\').click()">' +
+                    '<div style="position:relative;width:5rem;height:5rem;margin:0 auto 0.5rem;cursor:pointer;" onclick="_openAvatarMenu()">' +
                         '<div style="width:5rem;height:5rem;border-radius:50%;background:#f0f4ff;border:2px solid #e2e8f0;display:flex;align-items:center;justify-content:center;overflow:hidden;">' +
                             '<span id="kidAvatarEmoji" style="font-size:2.4rem;">👤</span>' +
                             '<img id="kidAvatarImg" src="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;">' +
                         '</div>' +
                         '<div style="position:absolute;bottom:1px;left:1px;width:1.6rem;height:1.6rem;background:#2563eb;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,0.2);">+</div>' +
                     '</div>' +
-                    '<input type="file" id="kidAvatarInput" accept="image/*" style="display:none;" onchange="_setKidAvatar(this)">' +
-                    '<div style="font-size:0.8rem;color:#94a3b8;margin-bottom:0.8rem;">הוסף תמונה</div>' +
+                    '<input type="file" id="kidAvatarInputGallery" accept="image/*" style="display:none;" onchange="_setKidAvatar(this)">' +
+                    '<input type="file" id="kidAvatarInputCamera"  accept="image/*" capture="user" style="display:none;" onchange="_setKidAvatar(this)">' +
+                    '<div id="avatarMenu" style="display:none;position:absolute;background:#fff;border:1px solid #e2e8f0;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:20;left:50%;transform:translateX(-50%);white-space:nowrap;">' +
+                        '<button onclick="_avatarPickCamera()" style="display:block;width:100%;padding:0.6rem 1.2rem;border:none;background:none;font-family:inherit;font-size:0.95rem;cursor:pointer;text-align:right;">📷 צלם תמונה</button>' +
+                        '<button onclick="_avatarPickGallery()" style="display:block;width:100%;padding:0.6rem 1.2rem;border:none;background:none;font-family:inherit;font-size:0.95rem;cursor:pointer;text-align:right;">🖼️ העלה מהגלריה</button>' +
+                    '</div>' +
+                    '<div style="font-size:0.8rem;color:#94a3b8;margin-bottom:0.8rem;margin-top:0.3rem;">הוסף תמונה</div>' +
                     '<div style="font-size:1.35rem;font-weight:800;color:#0f172a;">פרופיל חדש</div>' +
                     '<div style="color:#94a3b8;font-size:0.92rem;margin-top:0.2rem;">הכנס את פרטי המשתמש</div>' +
                 '</div>' +
@@ -357,7 +378,7 @@ function _buildKidPicker() {
 
                 '<div id="kidErr" style="color:#ef4444;font-size:0.88rem;margin-bottom:0.8rem;min-height:1em;text-align:center;"></div>' +
 
-                '<button onclick="_saveNewKid()" style="width:100%;padding:1rem;background:#2563eb;color:#fff;border:none;border-radius:0;font-size:1.1rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background=\'#1d4ed8\'" onmouseout="this.style.background=\'#2563eb\'">שמור ←</button>' +
+                '<button onclick="_saveNewKid()" style="width:100%;padding:1rem;background:none;color:#0f172a;border:none;border-radius:0;font-size:1.2rem;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity 0.15s;" onmouseover="this.style.opacity=\'0.6\'" onmouseout="this.style.opacity=\'1\'">שמור ←</button>' +
             '</div>' +
         '</div>';
     document.body.appendChild(d);
