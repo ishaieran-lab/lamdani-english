@@ -366,7 +366,7 @@ function _buildKidPicker() {
     d.id = 'kidPickerOv';
     d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:10000;direction:rtl;';
     d.innerHTML =
-        '<div style="background:#fff;border-radius:0;padding:2rem;width:min(94vw,460px);position:relative;font-family:inherit;" onclick="event.stopPropagation()">' +
+        '<div style="background:#fff;border-radius:0;padding:1.2rem 1.5rem;width:min(94vw,460px);position:relative;font-family:inherit;" onclick="event.stopPropagation()">' +
 
             '<div id="kidListView">' +
                 '<div style="margin-bottom:1.4rem;text-align:center;">' +
@@ -378,12 +378,12 @@ function _buildKidPicker() {
             '</div>' +
 
             '<div id="kidFormView" style="display:none">' +
-                '<button onclick="_showKidList()" style="background:none;border:none;color:#475569;cursor:pointer;font-size:0.9rem;margin-bottom:1.1rem;padding:0;font-weight:600;">→ חזור</button>' +
+                '<button onclick="_showKidList()" style="background:none;border:none;color:#475569;cursor:pointer;font-size:0.9rem;margin-bottom:0.4rem;padding:0;font-weight:600;">→ חזור</button>' +
 
-                '<div style="text-align:center;margin-bottom:1.8rem;">' +
-                    '<div style="position:relative;width:5rem;height:5rem;margin:0 auto 0.5rem;cursor:pointer;" onclick="_openAvatarMenu()">' +
-                        '<div style="width:5rem;height:5rem;border-radius:50%;background:#f0f4ff;border:2px solid #e2e8f0;display:flex;align-items:center;justify-content:center;overflow:hidden;">' +
-                            '<span id="kidAvatarEmoji" style="font-size:2.4rem;">👤</span>' +
+                '<div style="text-align:center;margin-bottom:0.7rem;">' +
+                    '<div style="position:relative;width:4rem;height:4rem;margin:0 auto 0.2rem;cursor:pointer;" onclick="_openAvatarMenu()">' +
+                        '<div style="width:4rem;height:4rem;border-radius:50%;background:#f0f4ff;border:2px solid #e2e8f0;display:flex;align-items:center;justify-content:center;overflow:hidden;">' +
+                            '<span id="kidAvatarEmoji" style="font-size:2rem;">👤</span>' +
                             '<img id="kidAvatarImg" src="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;">' +
                         '</div>' +
                         '<div style="position:absolute;bottom:1px;left:1px;width:1.6rem;height:1.6rem;background:#2563eb;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,0.2);">+</div>' +
@@ -394,23 +394,23 @@ function _buildKidPicker() {
                         '<button onclick="_avatarPickCamera()" style="display:block;width:100%;padding:0.6rem 1.2rem;border:none;background:none;font-family:inherit;font-size:0.95rem;cursor:pointer;text-align:right;">📷 צלם תמונה</button>' +
                         '<button onclick="_avatarPickGallery()" style="display:block;width:100%;padding:0.6rem 1.2rem;border:none;background:none;font-family:inherit;font-size:0.95rem;cursor:pointer;text-align:right;">🖼️ העלה מהגלריה</button>' +
                     '</div>' +
-                    '<div style="font-size:0.8rem;color:#94a3b8;margin-bottom:0.8rem;margin-top:0.3rem;">הוסף תמונה</div>' +
+                    '<div style="font-size:0.78rem;color:#94a3b8;margin-bottom:0.3rem;margin-top:0.15rem;">הוסף תמונה</div>' +
                     '<div style="font-size:1.35rem;font-weight:800;color:#0f172a;">פרופיל חדש</div>' +
-                    '<div style="color:#94a3b8;font-size:0.92rem;margin-top:0.2rem;">הכנס את פרטי המשתמש</div>' +
+                    '<div style="color:#94a3b8;font-size:0.92rem;margin-top:0.1rem;">הכנס את פרטי המשתמש</div>' +
                 '</div>' +
 
-                '<div style="margin-bottom:1.1rem;">' +
-                    '<label style="font-size:0.88rem;font-weight:700;color:#475569;display:block;margin-bottom:0.4rem;">שם</label>' +
-                    '<input id="kidName" type="text" placeholder="השם שלך..." dir="rtl" style="width:100%;padding:0.75rem 0.9rem;border:1.5px solid #e2e8f0;border-radius:0;font-size:1rem;box-sizing:border-box;font-family:inherit;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#2563eb\'" onblur="this.style.borderColor=\'#e2e8f0\'" onkeydown="if(event.key===\'Enter\')document.getElementById(\'kidAge\').focus()">' +
+                '<div style="margin-bottom:0.6rem;">' +
+                    '<label style="font-size:0.88rem;font-weight:700;color:#475569;display:block;margin-bottom:0.25rem;">שם</label>' +
+                    '<input id="kidName" type="text" placeholder="השם שלך..." dir="rtl" style="width:100%;padding:0.5rem 0.9rem;border:1.5px solid #e2e8f0;border-radius:0;font-size:1rem;box-sizing:border-box;font-family:inherit;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#2563eb\'" onblur="this.style.borderColor=\'#e2e8f0\'" onkeydown="if(event.key===\'Enter\')document.getElementById(\'kidAge\').focus()">' +
                 '</div>' +
 
-                '<div style="margin-bottom:1.2rem;">' +
-                    '<label style="font-size:0.88rem;font-weight:700;color:#475569;display:block;margin-bottom:0.4rem;">גיל <span style="font-weight:400;color:#94a3b8;font-size:0.82rem;">(אופציונלי)</span></label>' +
-                    '<input id="kidAge" type="number" placeholder="למשל: 12" min="1" max="120" style="width:100%;padding:0.75rem 0.9rem;border:1.5px solid #e2e8f0;border-radius:0;font-size:1rem;box-sizing:border-box;font-family:inherit;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#2563eb\'" onblur="this.style.borderColor=\'#e2e8f0\'" onkeydown="if(event.key===\'Enter\')_saveNewKid()">' +
+                '<div style="margin-bottom:0.6rem;">' +
+                    '<label style="font-size:0.88rem;font-weight:700;color:#475569;display:block;margin-bottom:0.25rem;">גיל <span style="font-weight:400;color:#94a3b8;font-size:0.82rem;">(אופציונלי)</span></label>' +
+                    '<input id="kidAge" type="number" placeholder="למשל: 12" min="1" max="120" style="width:100%;padding:0.5rem 0.9rem;border:1.5px solid #e2e8f0;border-radius:0;font-size:1rem;box-sizing:border-box;font-family:inherit;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#2563eb\'" onblur="this.style.borderColor=\'#e2e8f0\'" onkeydown="if(event.key===\'Enter\')_saveNewKid()">' +
                 '</div>' +
 
-                '<div style="margin-bottom:1.4rem;">' +
-                    '<label style="font-size:0.88rem;font-weight:700;color:#475569;display:block;margin-bottom:0.6rem;">מין</label>' +
+                '<div style="margin-bottom:0.5rem;">' +
+                    '<label style="font-size:0.88rem;font-weight:700;color:#475569;display:block;margin-bottom:0.25rem;">מין</label>' +
                     '<div style="display:flex;gap:0;">' +
                         '<button id="kgBtnM" class="gender-btn active" onclick="setKidGender(\'male\')">' +
                             '<span class="gb-wrap"><span class="gb-emoji">👦🏽</span></span>זכר' +
@@ -423,7 +423,7 @@ function _buildKidPicker() {
 
                 '<div id="kidErr" style="color:#ef4444;font-size:0.88rem;margin-bottom:0.4rem;min-height:1em;text-align:center;"></div>' +
 
-                '<button onclick="_saveNewKid()" style="width:100%;padding:1.4rem;background:none;color:#0f172a;border:none;border-radius:0;font-size:1.5rem;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity 0.15s;letter-spacing:0.02em;" onmouseover="this.style.opacity=\'0.5\'" onmouseout="this.style.opacity=\'1\'">שמור ←</button>' +
+                '<button onclick="_saveNewKid()" style="width:100%;padding:0.8rem;background:none;color:#0f172a;border:none;border-radius:0;font-size:1.5rem;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity 0.15s;letter-spacing:0.02em;" onmouseover="this.style.opacity=\'0.5\'" onmouseout="this.style.opacity=\'1\'">שמור ←</button>' +
             '</div>' +
         '</div>';
     document.body.appendChild(d);

@@ -1993,20 +1993,20 @@ body {
 
 /* Gender toggle */
 .gender-btn {
-    flex: 1; padding: 0.7rem 0.5rem; border: none; border-radius: 0;
+    flex: 1; padding: 0.35rem 0.5rem; border: none; border-radius: 0;
     outline: none; -webkit-appearance: none; appearance: none;
     background: none; font-family: var(--font); font-size: 1.05rem;
     cursor: pointer; font-weight: 700; color: #94a3b8;
     transition: all 0.18s; display: flex; flex-direction: column;
-    align-items: center; gap: 0.45rem;
+    align-items: center; gap: 0.25rem;
 }
 .gender-btn:focus { outline: none; }
 .gender-btn .gb-wrap {
-    width: 3.4rem; height: 3.4rem; border-radius: 50%;
+    width: 2.7rem; height: 2.7rem; border-radius: 50%;
     background: #f1f5f9; display: flex; align-items: center;
     justify-content: center; transition: all 0.18s;
 }
-.gender-btn .gb-emoji { font-size: 1.9rem; line-height: 1; }
+.gender-btn .gb-emoji { font-size: 1.55rem; line-height: 1; }
 .gender-btn:hover .gb-wrap { background: #e2e8f0; }
 .gender-btn:hover { color: #475569; }
 .gender-btn.active { color: #2563eb; }
