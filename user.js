@@ -18,7 +18,52 @@ function _openAvatarMenu() {
         }, 10);
     }
 }
-function _avatarPickCamera()  { document.getElementById('avatarMenu').style.display='none'; document.getElementById('kidAvatarInputCamera').click(); }
+function _avatarPickCamera() {
+    document.getElementById('avatarMenu').style.display = 'none';
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        document.getElementById('kidAvatarInputCamera').click();
+        return;
+    }
+    var ov = document.createElement('div');
+    ov.id = 'cameraOv';
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:20000;display:flex;align-items:center;justify-content:center;direction:rtl;';
+    ov.innerHTML =
+        '<div style="background:#111;overflow:hidden;max-width:92vw;text-align:center;">' +
+            '<video id="camVideo" autoplay playsinline muted style="display:block;width:100%;max-width:380px;max-height:55vh;object-fit:cover;background:#000;"></video>' +
+            '<div style="padding:0.9rem;display:flex;gap:0.8rem;justify-content:center;">' +
+                '<button onclick="_capturePhoto()" style="padding:0.65rem 2rem;background:#2563eb;color:#fff;border:none;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;">📷 צלם</button>' +
+                '<button onclick="_closeCameraOv()" style="padding:0.65rem 1.4rem;background:#374151;color:#fff;border:none;font-size:1rem;cursor:pointer;font-family:inherit;">ביטול</button>' +
+            '</div>' +
+        '</div>';
+    document.body.appendChild(ov);
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+        .then(function(stream) {
+            window._camStream = stream;
+            document.getElementById('camVideo').srcObject = stream;
+        })
+        .catch(function() {
+            _closeCameraOv();
+            document.getElementById('kidAvatarInputCamera').click();
+        });
+}
+function _capturePhoto() {
+    var v = document.getElementById('camVideo');
+    if (!v) return;
+    var c = document.createElement('canvas');
+    var max = 200, scale = Math.min(max / v.videoWidth, max / v.videoHeight, 1);
+    c.width = Math.round(v.videoWidth * scale);
+    c.height = Math.round(v.videoHeight * scale);
+    c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+    _kidPhoto = c.toDataURL('image/jpeg', 0.75);
+    var av = document.getElementById('kidAvatarImg'), em = document.getElementById('kidAvatarEmoji');
+    if (av) { av.src = _kidPhoto; av.style.display = 'block'; }
+    if (em) em.style.display = 'none';
+    _closeCameraOv();
+}
+function _closeCameraOv() {
+    if (window._camStream) { window._camStream.getTracks().forEach(function(t){t.stop();}); window._camStream=null; }
+    var ov = document.getElementById('cameraOv'); if (ov) ov.remove();
+}
 function _avatarPickGallery() { document.getElementById('avatarMenu').style.display='none'; document.getElementById('kidAvatarInputGallery').click(); }
 
 function _setKidAvatar(input) {
@@ -376,9 +421,9 @@ function _buildKidPicker() {
                     '</div>' +
                 '</div>' +
 
-                '<div id="kidErr" style="color:#ef4444;font-size:0.88rem;margin-bottom:0.8rem;min-height:1em;text-align:center;"></div>' +
+                '<div id="kidErr" style="color:#ef4444;font-size:0.88rem;margin-bottom:0.4rem;min-height:1em;text-align:center;"></div>' +
 
-                '<button onclick="_saveNewKid()" style="width:100%;padding:1rem;background:none;color:#0f172a;border:none;border-radius:0;font-size:1.2rem;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity 0.15s;" onmouseover="this.style.opacity=\'0.6\'" onmouseout="this.style.opacity=\'1\'">שמור ←</button>' +
+                '<button onclick="_saveNewKid()" style="width:100%;padding:1.4rem;background:none;color:#0f172a;border:none;border-radius:0;font-size:1.5rem;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity 0.15s;letter-spacing:0.02em;" onmouseover="this.style.opacity=\'0.5\'" onmouseout="this.style.opacity=\'1\'">שמור ←</button>' +
             '</div>' +
         '</div>';
     document.body.appendChild(d);
