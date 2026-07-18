@@ -217,7 +217,8 @@ function _showKidList() {
     document.getElementById('kidFormView').style.display = 'none';
 
     var pName = parent ? (parent.name || parent.email) : '';
-    document.getElementById('kidPickerTitle').textContent = 'שלום, ' + pName + '! מי לומד היום?';
+    document.getElementById('kidPickerLine1').textContent = 'שלום, ' + pName + '!';
+    document.getElementById('kidPickerLine2').textContent = 'מי לומד היום?';
 
     document.getElementById('kidGrid').innerHTML = kids.map(function(k) {
         var emoji = getAvatarEmoji(k.gender, k.age);
@@ -270,12 +271,15 @@ function _buildKidPicker() {
     d.id = 'kidPickerOv';
     d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:10000;direction:rtl;';
     d.innerHTML =
-        '<div style="background:#fff;border-radius:1.4rem;padding:2rem;width:min(94vw,460px);position:relative;font-family:inherit;" onclick="event.stopPropagation()">' +
+        '<div style="background:#fff;border-radius:0;padding:2rem;width:min(94vw,460px);position:relative;font-family:inherit;" onclick="event.stopPropagation()">' +
 
             '<div id="kidListView">' +
-                '<div id="kidPickerTitle" style="font-size:1.2rem;font-weight:800;color:#1e293b;margin-bottom:1.4rem;text-align:center;"></div>' +
+                '<div style="margin-bottom:1.4rem;text-align:center;">' +
+                    '<div id="kidPickerLine1" style="font-size:1.25rem;font-weight:800;color:#1e293b;"></div>' +
+                    '<div id="kidPickerLine2" style="font-size:1.1rem;font-weight:600;color:#475569;margin-top:0.2rem;"></div>' +
+                '</div>' +
                 '<div id="kidGrid" style="display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;margin-bottom:1.2rem;"></div>' +
-                '<button onclick="_showAddKidForm()" style="width:100%;padding:0.65rem;border:2px dashed #cbd5e1;border-radius:0.75rem;background:none;cursor:pointer;color:#64748b;font-size:0.95rem;font-weight:600;">＋ הוסף פרופיל</button>' +
+                '<button onclick="_showAddKidForm()" style="width:100%;padding:0.65rem;border:2px dashed #cbd5e1;border-radius:0;background:none;cursor:pointer;color:#64748b;font-size:0.95rem;font-weight:600;font-family:inherit;">＋ הוסף פרופיל</button>' +
             '</div>' +
 
             '<div id="kidFormView" style="display:none">' +
