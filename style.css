@@ -1993,13 +1993,19 @@ body {
 
 /* Gender toggle */
 .gender-btn {
-    flex: 1; padding: 0.52rem 0.5rem; border-radius: 9px;
-    border: 1.5px solid var(--gray-bdr); background: white;
-    font-family: var(--font); font-size: 0.88rem;
-    cursor: pointer; font-weight: 600; color: var(--text);
-    transition: all 0.15s;
+    flex: 1; padding: 0.85rem 0.5rem; border-radius: 12px;
+    border: 2px solid #e2e8f0; background: #f8fafc;
+    font-family: var(--font); font-size: 1rem;
+    cursor: pointer; font-weight: 700; color: #64748b;
+    transition: all 0.18s; display: flex; flex-direction: column;
+    align-items: center; gap: 0.3rem;
 }
-.gender-btn.active { border-color: var(--blue); background: var(--blue); color: white; }
+.gender-btn .gb-emoji { font-size: 1.7rem; line-height: 1; }
+.gender-btn:hover { border-color: #93c5fd; background: #f0f7ff; color: var(--text); }
+.gender-btn.active {
+    border-color: var(--blue); background: #eff6ff; color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+}
 
 /* ── Kid picker cards ────────────────────────────────── */
 .kp-card {
