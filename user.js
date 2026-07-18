@@ -2,6 +2,32 @@
 // user.js — ניהול הורה, ילדים והתקדמות
 // ════════════════════════════════════════════════════════════════
 
+// ── תמונת פרופיל ────────────────────────────────────────────────
+var _kidPhoto = '';
+
+function _setKidAvatar(input) {
+    if (!input.files || !input.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var imgEl = new Image();
+        imgEl.onload = function() {
+            var canvas = document.createElement('canvas');
+            var max = 200;
+            var scale = Math.min(max / imgEl.width, max / imgEl.height, 1);
+            canvas.width = Math.round(imgEl.width * scale);
+            canvas.height = Math.round(imgEl.height * scale);
+            canvas.getContext('2d').drawImage(imgEl, 0, 0, canvas.width, canvas.height);
+            _kidPhoto = canvas.toDataURL('image/jpeg', 0.75);
+            var av = document.getElementById('kidAvatarImg');
+            var em = document.getElementById('kidAvatarEmoji');
+            if (av) { av.src = _kidPhoto; av.style.display = 'block'; }
+            if (em) em.style.display = 'none';
+        };
+        imgEl.src = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
 // ── תפריט ניווט עליון ──────────────────────────────────────────
 function toggleNavMenu() {
     var panel = document.getElementById('navMenuPanel');
@@ -224,10 +250,13 @@ function _showKidList() {
         var emoji = getAvatarEmoji(k.gender, k.age);
         var color = getAvatarColor(k.gender);
         var isCur = cur && cur.id === k.id;
+        var avatarHtml = k.photo
+            ? '<span class="kp-emoji" style="padding:0;overflow:hidden;"><img src="' + k.photo + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"></span>'
+            : '<span class="kp-emoji" style="background:' + color + '">' + emoji + '</span>';
         return '<div class="kp-card' + (isCur ? ' kp-card-active' : '') + '" onclick="_selectKid(\'' + k.id + '\')">' +
-            '<span class="kp-emoji" style="background:' + color + '">' + emoji + '</span>' +
+            avatarHtml +
             '<div class="kp-name">' + k.name + '</div>' +
-            '<div class="kp-age">גיל ' + k.age + '</div>' +
+            (k.age ? '<div class="kp-age">גיל ' + k.age + '</div>' : '') +
         '</div>';
     }).join('');
 }
@@ -239,6 +268,11 @@ function _showAddKidForm() {
     document.getElementById('kidAge').value  = '';
     document.getElementById('kidErr').textContent = '';
     _kidGender = 'male';
+    _kidPhoto  = '';
+    var av = document.getElementById('kidAvatarImg');
+    var em = document.getElementById('kidAvatarEmoji');
+    if (av) { av.src = ''; av.style.display = 'none'; }
+    if (em) em.style.display = 'block';
     _refreshKidGender();
     setTimeout(function(){ var f=document.getElementById('kidName'); if(f) f.focus(); }, 80);
 }
@@ -259,7 +293,7 @@ function _saveNewKid() {
     if (age < 1 || age > 120) age = 0;
     err.textContent = '';
 
-    var kid  = { id: 'kid_' + Date.now(), name: name, gender: _kidGender, age: age };
+    var kid  = { id: 'kid_' + Date.now(), name: name, gender: _kidGender, age: age, photo: _kidPhoto };
     var kids = getChildren();
     kids.push(kid);
     saveChildren(kids);
@@ -283,33 +317,47 @@ function _buildKidPicker() {
             '</div>' +
 
             '<div id="kidFormView" style="display:none">' +
-                '<button onclick="_showKidList()" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:0.85rem;margin-bottom:1.2rem;padding:0;display:flex;align-items:center;gap:0.3rem;">→ חזור</button>' +
-                '<div style="text-align:center;margin-bottom:1.6rem;">' +
-                    '<div style="width:3.5rem;height:3.5rem;background:linear-gradient(135deg,#dbeafe,#eff6ff);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 0.75rem;">👤</div>' +
-                    '<div style="font-size:1.25rem;font-weight:800;color:#0f172a;">פרופיל חדש</div>' +
-                    '<div style="color:#94a3b8;font-size:0.85rem;margin-top:0.2rem;">הכנס את פרטי המשתמש</div>' +
+                '<button onclick="_showKidList()" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:0.9rem;margin-bottom:1.1rem;padding:0;">→ חזור</button>' +
+
+                '<div style="text-align:center;margin-bottom:1.8rem;">' +
+                    '<div style="position:relative;width:5rem;height:5rem;margin:0 auto 0.8rem;cursor:pointer;" onclick="document.getElementById(\'kidAvatarInput\').click()">' +
+                        '<div style="width:5rem;height:5rem;border-radius:50%;background:#f0f4ff;border:2px solid #e2e8f0;display:flex;align-items:center;justify-content:center;overflow:hidden;">' +
+                            '<span id="kidAvatarEmoji" style="font-size:2.4rem;">👤</span>' +
+                            '<img id="kidAvatarImg" src="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;">' +
+                        '</div>' +
+                        '<div style="position:absolute;bottom:1px;left:1px;width:1.6rem;height:1.6rem;background:#2563eb;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,0.2);">+</div>' +
+                    '</div>' +
+                    '<input type="file" id="kidAvatarInput" accept="image/*" style="display:none;" onchange="_setKidAvatar(this)">' +
+                    '<div style="font-size:0.8rem;color:#94a3b8;margin-bottom:0.8rem;">הוסף תמונה</div>' +
+                    '<div style="font-size:1.35rem;font-weight:800;color:#0f172a;">פרופיל חדש</div>' +
+                    '<div style="color:#94a3b8;font-size:0.92rem;margin-top:0.2rem;">הכנס את פרטי המשתמש</div>' +
                 '</div>' +
-                '<div style="margin-bottom:1rem;">' +
-                    '<label style="font-size:0.8rem;font-weight:700;color:#475569;display:block;margin-bottom:0.4rem;letter-spacing:0.02em;">שם</label>' +
-                    '<input id="kidName" type="text" placeholder="השם שלך..." dir="rtl" style="width:100%;padding:0.7rem 0.9rem;border:1.5px solid #e2e8f0;border-radius:0.6rem;font-size:0.97rem;box-sizing:border-box;font-family:inherit;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#2563eb\'" onblur="this.style.borderColor=\'#e2e8f0\'" onkeydown="if(event.key===\'Enter\')document.getElementById(\'kidAge\').focus()">' +
-                '</div>' +
+
                 '<div style="margin-bottom:1.1rem;">' +
-                    '<label style="font-size:0.8rem;font-weight:700;color:#475569;display:block;margin-bottom:0.4rem;letter-spacing:0.02em;">גיל <span style="font-weight:400;color:#94a3b8;">(אופציונלי)</span></label>' +
-                    '<input id="kidAge" type="number" placeholder="למשל: 12" min="1" max="120" style="width:100%;padding:0.7rem 0.9rem;border:1.5px solid #e2e8f0;border-radius:0.6rem;font-size:0.97rem;box-sizing:border-box;font-family:inherit;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#2563eb\'" onblur="this.style.borderColor=\'#e2e8f0\'" onkeydown="if(event.key===\'Enter\')_saveNewKid()">' +
+                    '<label style="font-size:0.88rem;font-weight:700;color:#475569;display:block;margin-bottom:0.4rem;">שם</label>' +
+                    '<input id="kidName" type="text" placeholder="השם שלך..." dir="rtl" style="width:100%;padding:0.75rem 0.9rem;border:1.5px solid #e2e8f0;border-radius:0;font-size:1rem;box-sizing:border-box;font-family:inherit;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#2563eb\'" onblur="this.style.borderColor=\'#e2e8f0\'" onkeydown="if(event.key===\'Enter\')document.getElementById(\'kidAge\').focus()">' +
                 '</div>' +
-                '<div style="margin-bottom:1.3rem;">' +
-                    '<label style="font-size:0.8rem;font-weight:700;color:#475569;display:block;margin-bottom:0.5rem;letter-spacing:0.02em;">מין</label>' +
-                    '<div style="display:flex;gap:0.6rem;">' +
+
+                '<div style="margin-bottom:1.2rem;">' +
+                    '<label style="font-size:0.88rem;font-weight:700;color:#475569;display:block;margin-bottom:0.4rem;">גיל <span style="font-weight:400;color:#94a3b8;font-size:0.82rem;">(אופציונלי)</span></label>' +
+                    '<input id="kidAge" type="number" placeholder="למשל: 12" min="1" max="120" style="width:100%;padding:0.75rem 0.9rem;border:1.5px solid #e2e8f0;border-radius:0;font-size:1rem;box-sizing:border-box;font-family:inherit;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#2563eb\'" onblur="this.style.borderColor=\'#e2e8f0\'" onkeydown="if(event.key===\'Enter\')_saveNewKid()">' +
+                '</div>' +
+
+                '<div style="margin-bottom:1.4rem;">' +
+                    '<label style="font-size:0.88rem;font-weight:700;color:#475569;display:block;margin-bottom:0.6rem;">מין</label>' +
+                    '<div style="display:flex;gap:0;">' +
                         '<button id="kgBtnM" class="gender-btn active" onclick="setKidGender(\'male\')">' +
-                            '<span class="gb-emoji">👦</span>זכר' +
+                            '<span class="gb-wrap"><span class="gb-emoji">👦🏽</span></span>זכר' +
                         '</button>' +
                         '<button id="kgBtnF" class="gender-btn" onclick="setKidGender(\'female\')">' +
-                            '<span class="gb-emoji">👧</span>נקבה' +
+                            '<span class="gb-wrap"><span class="gb-emoji">👩‍🦰</span></span>נקבה' +
                         '</button>' +
                     '</div>' +
                 '</div>' +
-                '<div id="kidErr" style="color:#ef4444;font-size:0.83rem;margin-bottom:0.7rem;min-height:1em;text-align:center;"></div>' +
-                '<button onclick="_saveNewKid()" style="width:100%;padding:0.8rem;background:#2563eb;color:#fff;border:none;border-radius:0.7rem;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:0.01em;transition:background 0.15s;" onmouseover="this.style.background=\'#1d4ed8\'" onmouseout="this.style.background=\'#2563eb\'">שמור ←</button>' +
+
+                '<div id="kidErr" style="color:#ef4444;font-size:0.88rem;margin-bottom:0.8rem;min-height:1em;text-align:center;"></div>' +
+
+                '<button onclick="_saveNewKid()" style="width:100%;padding:1rem;background:#2563eb;color:#fff;border:none;border-radius:0;font-size:1.1rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background 0.15s;" onmouseover="this.style.background=\'#1d4ed8\'" onmouseout="this.style.background=\'#2563eb\'">שמור ←</button>' +
             '</div>' +
         '</div>';
     document.body.appendChild(d);

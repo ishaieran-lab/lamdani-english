@@ -1993,19 +1993,22 @@ body {
 
 /* Gender toggle */
 .gender-btn {
-    flex: 1; padding: 0.85rem 0.5rem; border-radius: 12px;
-    border: 2px solid #e2e8f0; background: #f8fafc;
-    font-family: var(--font); font-size: 1rem;
-    cursor: pointer; font-weight: 700; color: #64748b;
+    flex: 1; padding: 0.7rem 0.5rem; border: none; border-radius: 0;
+    background: none; font-family: var(--font); font-size: 1.05rem;
+    cursor: pointer; font-weight: 700; color: #94a3b8;
     transition: all 0.18s; display: flex; flex-direction: column;
-    align-items: center; gap: 0.3rem;
+    align-items: center; gap: 0.45rem;
 }
-.gender-btn .gb-emoji { font-size: 1.7rem; line-height: 1; }
-.gender-btn:hover { border-color: #93c5fd; background: #f0f7ff; color: var(--text); }
-.gender-btn.active {
-    border-color: var(--blue); background: #eff6ff; color: var(--blue);
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+.gender-btn .gb-wrap {
+    width: 3.4rem; height: 3.4rem; border-radius: 50%;
+    background: #f1f5f9; display: flex; align-items: center;
+    justify-content: center; transition: all 0.18s;
 }
+.gender-btn .gb-emoji { font-size: 1.9rem; line-height: 1; }
+.gender-btn:hover .gb-wrap { background: #e2e8f0; }
+.gender-btn:hover { color: #475569; }
+.gender-btn.active { color: #2563eb; }
+.gender-btn.active .gb-wrap { background: #dbeafe; }
 
 /* ── Kid picker cards ────────────────────────────────── */
 .kp-card {
