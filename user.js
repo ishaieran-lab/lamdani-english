@@ -207,15 +207,21 @@ function renderUserNav() {
     } else {
         var emoji = getAvatarEmoji(kid.gender, kid.age);
         var color = getAvatarColor(kid.gender);
+        var photoStyle = kid.photo
+            ? 'background:none;padding:0;overflow:hidden;'
+            : 'background:' + color + ';';
+        var photoInner = kid.photo
+            ? '<img src="' + kid.photo + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">'
+            : emoji;
         el.innerHTML =
             '<div class="u-chip" onclick="uToggleMenu(event)">' +
-                '<span class="u-av-sm" style="background:' + color + '">' + emoji + '</span>' +
+                '<span class="u-av-sm" style="' + photoStyle + '">' + photoInner + '</span>' +
                 '<span class="u-chip-name">' + kid.name + '</span>' +
                 '<span class="u-chip-arr">▾</span>' +
             '</div>' +
             '<div class="u-menu" id="uMenu" style="display:none">' +
                 '<div class="u-menu-head">' +
-                    '<span class="u-av-lg" style="background:' + color + '">' + emoji + '</span>' +
+                    '<span class="u-av-lg" style="' + photoStyle + '">' + photoInner + '</span>' +
                     '<div>' +
                         '<div class="u-menu-uname">' + kid.name + '</div>' +
                         '<div class="u-menu-sub">' + (parent.email || '') + '</div>' +
