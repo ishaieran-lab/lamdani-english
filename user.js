@@ -379,7 +379,7 @@ function _buildKidPicker() {
                     '<div id="kidPickerLine1" style="font-size:1.25rem;font-weight:800;color:#1e293b;"></div>' +
                     '<div id="kidPickerLine2" style="font-size:1.1rem;font-weight:600;color:#475569;margin-top:0.2rem;"></div>' +
                 '</div>' +
-                '<div id="kidGrid" style="display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;margin-bottom:1.2rem;"></div>' +
+                '<div id="kidGrid" style="display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;margin-bottom:2rem;"></div>' +
                 '<button onclick="_showAddKidForm()" style="width:100%;padding:0.65rem;border:2px dashed #cbd5e1;border-radius:0;background:none;cursor:pointer;color:#64748b;font-size:0.95rem;font-weight:600;font-family:inherit;">＋ הוסף פרופיל</button>' +
             '</div>' +
 
