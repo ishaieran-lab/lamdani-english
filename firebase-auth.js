@@ -45,6 +45,12 @@
     };
 
     // ── Email/Password ───────────────────────────────────────────────
+    var _pendingEmail = '';
+    var _pendingPass  = '';
+    var VERIFY_URL = 'https://ishaieran-lab.github.io/lamdani-english/?verified=1';
+
+    function getActionSettings() { return { url: VERIFY_URL }; }
+
     window._fbDoEmail = function() {
         var mode  = document.getElementById('fbModeVal').value;
         var email = (document.getElementById('fbEmail').value || '').trim();
@@ -65,14 +71,17 @@
             'auth/wrong-password':        'סיסמה שגויה',
             'auth/weak-password':         'סיסמה חלשה — מינימום 6 תווים',
             'auth/too-many-requests':     'יותר מדי ניסיונות — נסה מאוחר יותר',
-            'auth/unauthorized-domain':   'הדומיין לא מורשה ב-Firebase'
+            'auth/unauthorized-domain':   'הדומיין לא מורשה ב-Firebase',
+            'auth/email-not-verified':    'נא לאמת את האימייל תחילה — בדוק תיבת דואר ותיקיית ספאם/זבל'
         };
 
         var p = mode === 'register'
             ? auth.createUserWithEmailAndPassword(email, pass)
                   .then(function(c) {
+                      _pendingEmail = email;
+                      _pendingPass  = pass;
                       return c.user.updateProfile({ displayName: name })
-                          .then(function() { return c.user.sendEmailVerification(); })
+                          .then(function() { return c.user.sendEmailVerification(getActionSettings()); })
                           .then(function() { return auth.signOut(); });
                   })
             : auth.signInWithEmailAndPassword(email, pass)
@@ -84,24 +93,38 @@
                       }
                   });
 
-        msgs['auth/email-not-verified'] = 'נא לאמת את האימייל תחילה — בדוק את תיבת הדואר ותיקיית ספאם/זבל';
-
         p.then(function() {
             if (mode === 'register') {
-                setErr('');
-                document.getElementById('fbErr').style.color = '#16a34a';
-                setErr('נשלח מייל אימות! בדוק את תיבת הדואר (כולל תיקיית ספאם/זבל) ואמת לפני הכניסה.');
-                btn.disabled = false;
-                btn.textContent = 'הרשמה ←';
+                btn.disabled = false; btn.textContent = 'הרשמה ←';
+                if (typeof window.fbShowVerifyView === 'function') window.fbShowVerifyView(email);
             } else {
                 closeLoginModal();
             }
-        })
-         .catch(function(e) {
-             console.error('Auth error:', e.code, e.message);
-             setErr(msgs[e.code] || ('שגיאה: ' + e.code));
-             btn.disabled = false;
-             btn.textContent = mode === 'register' ? 'הרשמה ←' : 'כנס ←';
-         });
+        }).catch(function(e) {
+            console.error('Auth error:', e.code, e.message);
+            setErr(msgs[e.code] || ('שגיאה: ' + e.code));
+            btn.disabled = false;
+            btn.textContent = mode === 'register' ? 'הרשמה ←' : 'כנס ←';
+        });
+    };
+
+    window._fbDoResend = function() {
+        if (!_pendingEmail || !_pendingPass) return;
+        var msg = document.getElementById('fbResendMsg');
+        if (msg) { msg.style.color = '#64748b'; msg.textContent = 'שולח...'; }
+        auth.signInWithEmailAndPassword(_pendingEmail, _pendingPass)
+            .then(function(c) {
+                return c.user.sendEmailVerification(getActionSettings())
+                    .then(function() { return auth.signOut(); });
+            })
+            .then(function() {
+                if (msg) { msg.style.color = '#16a34a'; msg.textContent = '✅ מייל האימות נשלח שוב!'; }
+                if (typeof window.fbStartResendCountdown === 'function') window.fbStartResendCountdown(60);
+            })
+            .catch(function(e) {
+                if (msg) { msg.style.color = '#ef4444'; msg.textContent = 'שגיאה: ' + e.code; }
+                var btn = document.getElementById('fbResendBtn');
+                if (btn) btn.disabled = false;
+            });
     };
 })();
