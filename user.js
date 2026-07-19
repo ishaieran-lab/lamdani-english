@@ -345,7 +345,7 @@ function _showKidList() {
         var avatarHtml = k.photo
             ? '<span style="' + circleBase + 'display:block;overflow:hidden;"><img src="' + k.photo + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"></span>'
             : '<span style="' + circleBase + 'background:' + color + ';display:flex;align-items:center;justify-content:center;font-size:2.5rem;">' + emoji + '</span>';
-        return '<div class="kp-card' + (isCur ? ' kp-card-active' : '') + '" onclick="_selectKid(\'' + k.id + '\')">' +
+        return '<div class="kp-card' + (isCur ? ' kp-card-active' : '') + '" onclick="_selectKid(\'' + k.id + '\')" style="cursor:pointer;">' +
             avatarHtml +
             '<div style="font-weight:700;font-size:1.05rem;color:#0f172a;font-family:inherit;text-align:center;width:100%;">' + k.name + '</div>' +
         '</div>';
