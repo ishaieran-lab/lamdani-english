@@ -322,8 +322,7 @@ function _showKidList() {
             : '<span class="kp-emoji" style="background:' + color + '">' + emoji + '</span>';
         return '<div class="kp-card' + (isCur ? ' kp-card-active' : '') + '" onclick="_selectKid(\'' + k.id + '\')">' +
             avatarHtml +
-            '<div class="kp-name">' + k.name + '</div>' +
-            (k.age ? '<div class="kp-age">גיל ' + k.age + '</div>' : '') +
+            '<div style="font-weight:700;font-size:1.05rem;color:#0f172a;font-family:inherit;text-align:center;width:100%;">' + k.name + '</div>' +
         '</div>';
     }).join('');
 }
@@ -380,7 +379,7 @@ function _buildKidPicker() {
                     '<div id="kidPickerLine2" style="font-size:1.1rem;font-weight:600;color:#475569;margin-top:0.2rem;"></div>' +
                 '</div>' +
                 '<div id="kidGrid" style="display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;margin-bottom:2rem;"></div>' +
-                '<button onclick="_showAddKidForm()" style="width:100%;padding:0.65rem;border:2px dashed #cbd5e1;border-radius:0;background:none;cursor:pointer;color:#64748b;font-size:0.95rem;font-weight:600;font-family:inherit;">＋ הוסף פרופיל</button>' +
+                '<button onclick="_showAddKidForm()" style="width:100%;padding:0.65rem;border:2px dashed #cbd5e1;border-radius:0;background:none;cursor:pointer;color:#64748b;font-size:0.95rem;font-weight:600;font-family:inherit;margin-top:1.5rem;">＋ הוסף פרופיל</button>' +
             '</div>' +
 
             '<div id="kidFormView" style="display:none">' +
