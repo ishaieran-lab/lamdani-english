@@ -3,7 +3,9 @@
 // ════════════════════════════════════════════════════════════════
 
 // ── תמונת פרופיל ────────────────────────────────────────────────
-var _kidPhoto = '';
+var _kidPhoto   = '';
+var _kidEditId  = '';
+var _editMode   = false; // true = edit form, false = add form
 
 function _openAvatarMenu() {
     var menu = document.getElementById('avatarMenu');
@@ -55,7 +57,8 @@ function _capturePhoto() {
     c.height = Math.round(v.videoHeight * scale);
     c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
     _kidPhoto = c.toDataURL('image/jpeg', 0.75);
-    var av = document.getElementById('kidAvatarImg'), em = document.getElementById('kidAvatarEmoji');
+    var pfx = _editMode ? 'kidEditAvatar' : 'kidAvatar';
+    var av = document.getElementById(pfx + 'Img'), em = document.getElementById(pfx + 'Emoji');
     if (av) { av.src = _kidPhoto; av.style.display = 'block'; }
     if (em) em.style.display = 'none';
     _closeCameraOv();
@@ -64,7 +67,25 @@ function _closeCameraOv() {
     if (window._camStream) { window._camStream.getTracks().forEach(function(t){t.stop();}); window._camStream=null; }
     var ov = document.getElementById('cameraOv'); if (ov) ov.remove();
 }
-function _avatarPickGallery() { document.getElementById('avatarMenu').style.display='none'; document.getElementById('kidAvatarInputGallery').click(); }
+function _avatarPickCamera()  { _editMode = false; document.getElementById('avatarMenu').style.display='none'; document.getElementById('kidAvatarInputCamera').click(); }
+function _avatarPickGallery() { _editMode = false; document.getElementById('avatarMenu').style.display='none'; document.getElementById('kidAvatarInputGallery').click(); }
+
+function _openEditAvatarMenu() {
+    _editMode = true;
+    var menu = document.getElementById('editAvatarMenu');
+    if (!menu) return;
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    if (menu.style.display === 'block') {
+        setTimeout(function() {
+            document.addEventListener('click', function _c(e) {
+                if (!menu.contains(e.target)) { menu.style.display = 'none'; }
+                document.removeEventListener('click', _c);
+            });
+        }, 10);
+    }
+}
+function _editAvatarPickCamera()  { _editMode = true; document.getElementById('editAvatarMenu').style.display='none'; document.getElementById('kidEditAvatarInputCamera').click(); }
+function _editAvatarPickGallery() { _editMode = true; document.getElementById('editAvatarMenu').style.display='none'; document.getElementById('kidEditAvatarInputGallery').click(); }
 
 function _setKidAvatar(input) {
     if (!input.files || !input.files[0]) return;
@@ -79,8 +100,8 @@ function _setKidAvatar(input) {
             canvas.height = Math.round(imgEl.height * scale);
             canvas.getContext('2d').drawImage(imgEl, 0, 0, canvas.width, canvas.height);
             _kidPhoto = canvas.toDataURL('image/jpeg', 0.75);
-            var av = document.getElementById('kidAvatarImg');
-            var em = document.getElementById('kidAvatarEmoji');
+            var pfx = _editMode ? 'kidEditAvatar' : 'kidAvatar';
+            var av = document.getElementById(pfx + 'Img'), em = document.getElementById(pfx + 'Emoji');
             if (av) { av.src = _kidPhoto; av.style.display = 'block'; }
             if (em) em.style.display = 'none';
         };
@@ -308,20 +329,26 @@ function _showKidList() {
 
     document.getElementById('kidListView').style.display = 'block';
     document.getElementById('kidFormView').style.display = 'none';
+    var ev = document.getElementById('kidEditView'); if (ev) ev.style.display = 'none';
 
     var pName = parent ? (parent.name || parent.email) : '';
     document.getElementById('kidPickerLine1').textContent = 'שלום, ' + pName + '!';
     document.getElementById('kidPickerLine2').textContent = 'מי לומד היום?';
 
+    var SZ = '5rem';
     document.getElementById('kidGrid').innerHTML = kids.map(function(k) {
         var emoji = getAvatarEmoji(k.gender, k.age);
         var color = getAvatarColor(k.gender);
         var isCur = cur && cur.id === k.id;
+        var circleBase = 'width:' + SZ + ';height:' + SZ + ';border-radius:50%;flex-shrink:0;';
         var avatarHtml = k.photo
-            ? '<span class="kp-emoji" style="padding:0;overflow:hidden;"><img src="' + k.photo + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"></span>'
-            : '<span class="kp-emoji" style="background:' + color + '">' + emoji + '</span>';
-        return '<div class="kp-card' + (isCur ? ' kp-card-active' : '') + '" onclick="_selectKid(\'' + k.id + '\')">' +
-            avatarHtml +
+            ? '<span style="' + circleBase + 'display:block;overflow:hidden;"><img src="' + k.photo + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"></span>'
+            : '<span style="' + circleBase + 'background:' + color + ';display:flex;align-items:center;justify-content:center;font-size:2.5rem;">' + emoji + '</span>';
+        return '<div class="kp-card' + (isCur ? ' kp-card-active' : '') + '" onclick="_selectKid(\'' + k.id + '\')" style="position:relative;">' +
+            '<div style="position:relative;display:inline-block;">' +
+                avatarHtml +
+                '<button onclick="event.stopPropagation();_showEditKidForm(\'' + k.id + '\')" title="ערוך פרופיל" style="position:absolute;bottom:1px;left:1px;width:1.5rem;height:1.5rem;background:#475569;border:none;border-radius:50%;color:#fff;font-size:0.75rem;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">✎</button>' +
+            '</div>' +
             '<div style="font-weight:700;font-size:1.05rem;color:#0f172a;font-family:inherit;text-align:center;width:100%;">' + k.name + '</div>' +
         '</div>';
     }).join('');
@@ -430,8 +457,113 @@ function _buildKidPicker() {
 
                 '<button onclick="_saveNewKid()" style="width:100%;padding:0.8rem;background:none;color:#0f172a;border:none;border-radius:0;font-size:1.5rem;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity 0.15s;letter-spacing:0.02em;" onmouseover="this.style.opacity=\'0.5\'" onmouseout="this.style.opacity=\'1\'">שמור ←</button>' +
             '</div>' +
+
+            '<div id="kidEditView" style="display:none">' +
+                '<button onclick="_showKidList()" style="background:none;border:none;color:#475569;cursor:pointer;font-size:0.9rem;margin-bottom:0.4rem;padding:0;font-weight:600;">→ חזור</button>' +
+
+                '<div style="text-align:center;margin-bottom:0.7rem;">' +
+                    '<div style="position:relative;width:4rem;height:4rem;margin:0 auto 0.2rem;cursor:pointer;" onclick="_openEditAvatarMenu()">' +
+                        '<div style="width:4rem;height:4rem;border-radius:50%;background:#f0f4ff;border:2px solid #e2e8f0;display:flex;align-items:center;justify-content:center;overflow:hidden;">' +
+                            '<span id="kidEditAvatarEmoji" style="font-size:2rem;">👤</span>' +
+                            '<img id="kidEditAvatarImg" src="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;">' +
+                        '</div>' +
+                        '<div style="position:absolute;bottom:1px;left:1px;width:1.6rem;height:1.6rem;background:#2563eb;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,0.2);">+</div>' +
+                    '</div>' +
+                    '<input type="file" id="kidEditAvatarInputGallery" accept="image/*" style="display:none;" onchange="_setKidAvatar(this)">' +
+                    '<input type="file" id="kidEditAvatarInputCamera"  accept="image/*" capture="user" style="display:none;" onchange="_setKidAvatar(this)">' +
+                    '<div id="editAvatarMenu" style="display:none;position:absolute;background:#fff;border:1px solid #e2e8f0;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:20;left:50%;transform:translateX(-50%);white-space:nowrap;">' +
+                        '<button onclick="_editAvatarPickCamera()" style="display:block;width:100%;padding:0.6rem 1.2rem;border:none;background:none;font-family:inherit;font-size:0.95rem;cursor:pointer;text-align:right;">📷 צלם תמונה</button>' +
+                        '<button onclick="_editAvatarPickGallery()" style="display:block;width:100%;padding:0.6rem 1.2rem;border:none;background:none;font-family:inherit;font-size:0.95rem;cursor:pointer;text-align:right;">🖼️ העלה מהגלריה</button>' +
+                    '</div>' +
+                    '<div style="font-size:0.78rem;color:#94a3b8;margin-top:0.3rem;">החלף תמונה</div>' +
+                '</div>' +
+
+                '<div style="margin-bottom:0.6rem;">' +
+                    '<label style="font-size:0.88rem;font-weight:700;color:#475569;display:block;margin-bottom:0.25rem;">שם</label>' +
+                    '<input id="kidEditName" type="text" dir="rtl" style="width:100%;padding:0.5rem 0.9rem;border:1.5px solid #e2e8f0;border-radius:0;font-size:1rem;box-sizing:border-box;font-family:inherit;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#2563eb\'" onblur="this.style.borderColor=\'#e2e8f0\'">' +
+                '</div>' +
+
+                '<div style="margin-bottom:0.5rem;">' +
+                    '<label style="font-size:0.88rem;font-weight:700;color:#475569;display:block;margin-bottom:0.25rem;">מין</label>' +
+                    '<div style="display:flex;gap:0;">' +
+                        '<button id="kgEditBtnM" class="gender-btn active" onclick="setKidEditGender(\'male\')">' +
+                            '<span class="gb-wrap"><span class="gb-emoji">👦🏽</span></span>זכר' +
+                        '</button>' +
+                        '<button id="kgEditBtnF" class="gender-btn" onclick="setKidEditGender(\'female\')">' +
+                            '<span class="gb-wrap"><span class="gb-emoji">👩‍🦰</span></span>נקבה' +
+                        '</button>' +
+                    '</div>' +
+                '</div>' +
+
+                '<div id="kidEditErr" style="color:#ef4444;font-size:0.88rem;margin-bottom:0.4rem;min-height:1em;text-align:center;"></div>' +
+
+                '<button onclick="_saveEditKid()" style="width:100%;padding:0.8rem;background:none;color:#0f172a;border:none;border-radius:0;font-size:1.5rem;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity 0.15s;" onmouseover="this.style.opacity=\'0.5\'" onmouseout="this.style.opacity=\'1\'">שמור שינויים ←</button>' +
+                '<button onclick="_deleteKid(_kidEditId)" style="width:100%;padding:0.5rem;background:none;color:#ef4444;border:none;border-radius:0;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:inherit;margin-top:0.3rem;transition:opacity 0.15s;" onmouseover="this.style.opacity=\'0.6\'" onmouseout="this.style.opacity=\'1\'">🗑 מחק משתמש</button>' +
+            '</div>' +
         '</div>';
     document.body.appendChild(d);
+}
+
+// ── עריכת פרופיל ────────────────────────────────────────────────
+function _showEditKidForm(id) {
+    _kidEditId = id;
+    var kids = getChildren();
+    var kid = null;
+    for (var i = 0; i < kids.length; i++) { if (kids[i].id === id) { kid = kids[i]; break; } }
+    if (!kid) return;
+    _kidPhoto  = kid.photo || '';
+    _kidGender = kid.gender || 'male';
+    document.getElementById('kidListView').style.display = 'none';
+    document.getElementById('kidFormView').style.display = 'none';
+    document.getElementById('kidEditView').style.display = 'block';
+    document.getElementById('kidEditName').value = kid.name || '';
+    document.getElementById('kidEditErr').textContent = '';
+    var av = document.getElementById('kidEditAvatarImg');
+    var em = document.getElementById('kidEditAvatarEmoji');
+    if (kid.photo) {
+        if (av) { av.src = kid.photo; av.style.display = 'block'; }
+        if (em) em.style.display = 'none';
+    } else {
+        if (av) av.style.display = 'none';
+        if (em) { em.style.display = 'block'; em.textContent = getAvatarEmoji(kid.gender, kid.age); }
+    }
+    _refreshKidEditGender();
+}
+function _refreshKidEditGender() {
+    var bm = document.getElementById('kgEditBtnM'), bf = document.getElementById('kgEditBtnF');
+    if (bm) bm.className = 'gender-btn' + (_kidGender === 'male'   ? ' active' : '');
+    if (bf) bf.className = 'gender-btn' + (_kidGender === 'female' ? ' active' : '');
+}
+function setKidEditGender(g) { _kidGender = g; _refreshKidEditGender(); }
+function _saveEditKid() {
+    var name = (document.getElementById('kidEditName').value || '').trim();
+    var err  = document.getElementById('kidEditErr');
+    if (!name) { err.textContent = 'נא להזין שם'; return; }
+    err.textContent = '';
+    var kids = getChildren();
+    var idx = -1;
+    for (var i = 0; i < kids.length; i++) { if (kids[i].id === _kidEditId) { idx = i; break; } }
+    if (idx === -1) return;
+    kids[idx].name   = name;
+    kids[idx].gender = _kidGender;
+    if (_kidPhoto) kids[idx].photo = _kidPhoto;
+    saveChildren(kids);
+    var active = getActiveKid();
+    if (active && active.id === _kidEditId) setActiveKid(kids[idx]);
+    _showKidList();
+    renderUserNav();
+}
+function _deleteKid(id) {
+    if (!confirm('למחוק את הפרופיל לצמיתות?')) return;
+    var kids = getChildren();
+    var remaining = [];
+    for (var i = 0; i < kids.length; i++) { if (kids[i].id !== id) remaining.push(kids[i]); }
+    saveChildren(remaining);
+    var active = getActiveKid();
+    if (active && active.id === id) clearActiveKid();
+    _kidEditId = '';
+    _showKidList();
+    renderUserNav();
 }
 
 // ── מודל כניסה ─────────────────────────────────────────────────
