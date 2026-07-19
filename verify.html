@@ -27,7 +27,8 @@
         <div class="v-icon">✅</div>
         <div class="v-title">האימייל אומת בהצלחה!</div>
         <div class="v-sub">החשבון שלך פעיל כעת.<br>תוכל להתחבר ולהתחיל ללמוד.</div>
-        <a href="index.html?verified=1" class="v-btn">כנס לאתר →</a>
+        <div id="vCountdown" style="font-size:0.85rem;color:#94a3b8;margin-bottom:1rem;">מועבר בעוד 3...</div>
+        <a href="index.html?verified=1" class="v-btn">כנס עכשיו →</a>
     </div>
     <div id="errorView" style="display:none">
         <div class="v-icon">⚠️</div>
@@ -58,6 +59,13 @@
     function showSuccess() {
         document.getElementById('loadingView').style.display = 'none';
         document.getElementById('successView').style.display = 'block';
+        var sec = 3;
+        var el = document.getElementById('vCountdown');
+        var t = setInterval(function() {
+            sec--;
+            if (el) el.textContent = 'מועבר בעוד ' + sec + '...';
+            if (sec <= 0) { clearInterval(t); window.location.href = 'index.html?verified=1'; }
+        }, 1000);
     }
     function showError(msg) {
         document.getElementById('loadingView').style.display = 'none';
