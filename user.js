@@ -467,18 +467,6 @@ function _buildKidPicker() {
                     '<input id="kidAge" type="number" placeholder="למשל: 12" min="1" max="120" style="width:100%;padding:0.5rem 0.9rem;border:1.5px solid #e2e8f0;border-radius:0;font-size:1rem;box-sizing:border-box;font-family:inherit;outline:none;transition:border-color 0.15s;" onfocus="this.style.borderColor=\'#2563eb\'" onblur="this.style.borderColor=\'#e2e8f0\'" onkeydown="if(event.key===\'Enter\')_saveNewKid()">' +
                 '</div>' +
 
-                '<div style="margin-bottom:0.5rem;">' +
-                    '<label style="font-size:0.88rem;font-weight:700;color:#475569;display:block;margin-bottom:0.25rem;">מין</label>' +
-                    '<div style="display:flex;gap:0;">' +
-                        '<button id="kgBtnM" class="gender-btn active" onclick="setKidGender(\'male\')">' +
-                            '<span class="gb-wrap"><span class="gb-emoji">👦🏽</span></span>זכר' +
-                        '</button>' +
-                        '<button id="kgBtnF" class="gender-btn" onclick="setKidGender(\'female\')">' +
-                            '<span class="gb-wrap"><span class="gb-emoji">👩‍🦰</span></span>נקבה' +
-                        '</button>' +
-                    '</div>' +
-                '</div>' +
-
                 '<div id="kidErr" style="color:#ef4444;font-size:0.88rem;margin-bottom:0.4rem;min-height:1em;text-align:center;"></div>' +
 
                 '<button onclick="_saveNewKid()" style="width:100%;padding:0.8rem;background:none;color:#0f172a;border:none;border-radius:0;font-size:1.5rem;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity 0.15s;letter-spacing:0.02em;" onmouseover="this.style.opacity=\'0.5\'" onmouseout="this.style.opacity=\'1\'">שמור ←</button>' +
