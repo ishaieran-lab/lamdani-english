@@ -84,8 +84,10 @@
                 showError(msgs[e.code] || ('שגיאה: ' + e.code));
             });
     } else if (mode === 'resetPassword' && oobCode) {
-        // הפנייה לדף הראשי לטיפול באיפוס סיסמה
         window.location.href = 'index.html?mode=resetPassword&oobCode=' + encodeURIComponent(oobCode);
+    } else if (!mode && !oobCode) {
+        // הגענו מדף Firebase אחרי אימות — האימות כבר בוצע
+        showSuccess();
     } else {
         showError('קישור לא תקין.');
     }
