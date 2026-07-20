@@ -320,7 +320,7 @@ function _showConfirm(opts) {
               '</div>' +
           '</div>';
     ov.innerHTML =
-        '<div style="width:min(94vw,820px);box-shadow:0 8px 32px rgba(0,0,0,0.18);overflow:hidden;">' +
+        '<div style="width:min(66vw,574px);overflow:hidden;">' +
             imgOverlay +
         '</div>';
     document.body.appendChild(ov);
