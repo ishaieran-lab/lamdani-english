@@ -294,16 +294,48 @@ document.addEventListener('click', function() {
     if (m) m.style.display = 'none';
 });
 
+function _showConfirm(opts) {
+    var existing = document.getElementById('customConfirmOv');
+    if (existing) existing.remove();
+    var ov = document.createElement('div');
+    ov.id = 'customConfirmOv';
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:30000;display:flex;align-items:center;justify-content:center;direction:rtl;';
+    ov.innerHTML =
+        '<div style="background:#fff;border-radius:1.1rem;padding:2rem 1.8rem;width:min(88vw,340px);text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.18);">' +
+            (opts.icon ? '<div style="font-size:2.4rem;margin-bottom:0.6rem;">' + opts.icon + '</div>' : '') +
+            '<div style="font-size:1.1rem;font-weight:800;color:#0f172a;margin-bottom:0.5rem;">' + opts.title + '</div>' +
+            '<div style="font-size:0.92rem;color:#475569;margin-bottom:1.5rem;line-height:1.55;">' + opts.msg + '</div>' +
+            '<div style="display:flex;gap:0.75rem;justify-content:center;">' +
+                '<button id="ccCancel" style="flex:1;padding:0.65rem;border:1.5px solid #e2e8f0;border-radius:0.6rem;background:#fff;font-size:0.95rem;font-family:inherit;cursor:pointer;color:#374151;font-weight:600;">' + (opts.cancel || 'ביטול') + '</button>' +
+                '<button id="ccOk" style="flex:1;padding:0.65rem;border:none;border-radius:0.6rem;background:' + (opts.danger ? '#ef4444' : '#2563eb') + ';color:#fff;font-size:0.95rem;font-family:inherit;cursor:pointer;font-weight:700;">' + opts.ok + '</button>' +
+            '</div>' +
+        '</div>';
+    document.body.appendChild(ov);
+    function close() { ov.remove(); }
+    document.getElementById('ccCancel').onclick = function() { close(); if (opts.onCancel) opts.onCancel(); };
+    document.getElementById('ccOk').onclick    = function() { close(); if (opts.onOk)     opts.onOk();     };
+    ov.addEventListener('click', function(e) { if (e.target === ov) close(); });
+}
+
 function uLogout() {
-    if (!confirm('להתנתק?')) return;
-    clearActiveKid();
-    clearParent();
-    if (window._firebaseAuth) {
-        window._firebaseAuth.signOut().catch(function() { renderUserNav(); });
-    } else {
-        renderUserNav();
-        if (typeof window.onProgressUpdated === 'function') window.onProgressUpdated();
-    }
+    _showConfirm({
+        icon: '🚪',
+        title: 'התנתקות',
+        msg: 'האם אתה בטוח שברצונך להתנתק?',
+        ok: 'התנתק',
+        cancel: 'ביטול',
+        danger: true,
+        onOk: function() {
+            clearActiveKid();
+            clearParent();
+            if (window._firebaseAuth) {
+                window._firebaseAuth.signOut().catch(function() { renderUserNav(); });
+            } else {
+                renderUserNav();
+                if (typeof window.onProgressUpdated === 'function') window.onProgressUpdated();
+            }
+        }
+    });
 }
 
 // ── Callbacks מ-Firebase Auth ────────────────────────────────────
@@ -578,16 +610,25 @@ function _saveEditKid() {
     renderUserNav();
 }
 function _deleteKid(id) {
-    if (!confirm('למחוק את הפרופיל לצמיתות?')) return;
-    var kids = getChildren();
-    var remaining = [];
-    for (var i = 0; i < kids.length; i++) { if (kids[i].id !== id) remaining.push(kids[i]); }
-    saveChildren(remaining);
-    var active = getActiveKid();
-    if (active && active.id === id) clearActiveKid();
-    _kidEditId = '';
-    _showKidList();
-    renderUserNav();
+    _showConfirm({
+        icon: '🗑️',
+        title: 'מחיקת פרופיל',
+        msg: 'פעולה זו תמחק את הפרופיל לצמיתות ולא ניתן לשחזרו.',
+        ok: 'מחק',
+        cancel: 'ביטול',
+        danger: true,
+        onOk: function() {
+            var kids = getChildren();
+            var remaining = [];
+            for (var i = 0; i < kids.length; i++) { if (kids[i].id !== id) remaining.push(kids[i]); }
+            saveChildren(remaining);
+            var active = getActiveKid();
+            if (active && active.id === id) clearActiveKid();
+            _kidEditId = '';
+            _showKidList();
+            renderUserNav();
+        }
+    });
 }
 
 // ── מודל כניסה ─────────────────────────────────────────────────
