@@ -278,7 +278,7 @@ function renderUserNav() {
                 '</div>' +
                 '<button class="u-menu-item" onclick="_openEditCurrentKid()">✏️ עריכת פרופיל</button>' +
                 '<button class="u-menu-item" onclick="openChildPicker()">👥 החלף משתמש</button>' +
-                '<button class="u-menu-item u-menu-logout" onclick="uLogout()">🚪 התנתק</button>' +
+                '<button class="u-menu-item u-menu-logout" onclick="uLogout()"><img src="images/ui/log-out.png" style="width:1.1rem;height:1.1rem;object-fit:contain;vertical-align:middle;"> התנתק</button>' +
             '</div>';
     }
     if (typeof window.onProgressUpdated === 'function') window.onProgressUpdated();
