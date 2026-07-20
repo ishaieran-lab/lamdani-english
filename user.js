@@ -300,15 +300,17 @@ function _showConfirm(opts) {
     var ov = document.createElement('div');
     ov.id = 'customConfirmOv';
     ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:30000;display:flex;align-items:center;justify-content:center;direction:rtl;';
-    var imgHtml = opts.img
-        ? '<img src="' + opts.img + '" style="width:100%;border-radius:0.8rem 0.8rem 0 0;display:block;max-height:220px;object-fit:cover;">'
-        : (opts.icon ? '<div style="font-size:2.4rem;margin:1rem 0 0.6rem;">' + opts.icon + '</div>' : '');
+    var topHtml = opts.img
+        ? '<img src="' + opts.img + '" style="width:100%;display:block;border-radius:1.1rem 1.1rem 0 0;">'
+        : (opts.icon ? '<div style="font-size:2.4rem;margin:1.2rem 0 0.5rem;">' + opts.icon + '</div>' : '');
+    var textHtml = opts.img ? '' :
+        '<div style="font-size:1.15rem;font-weight:800;color:#0f172a;margin-bottom:0.45rem;">' + opts.title + '</div>' +
+        '<div style="font-size:0.92rem;color:#475569;margin-bottom:1.1rem;line-height:1.55;">' + opts.msg + '</div>';
     ov.innerHTML =
         '<div style="background:#fff;border-radius:1.1rem;width:min(88vw,400px);text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.18);overflow:hidden;">' +
-            imgHtml +
-            '<div style="padding:1.4rem 1.8rem 1.6rem;">' +
-                '<div style="font-size:1.15rem;font-weight:800;color:#0f172a;margin-bottom:0.45rem;">' + opts.title + '</div>' +
-                '<div style="font-size:0.92rem;color:#475569;margin-bottom:1.4rem;line-height:1.55;">' + opts.msg + '</div>' +
+            topHtml +
+            '<div style="padding:1.2rem 1.5rem 1.4rem;">' +
+                textHtml +
                 '<div style="display:flex;gap:0.75rem;justify-content:center;">' +
                     '<button id="ccCancel" style="flex:1;padding:0.65rem;border:1.5px solid #e2e8f0;border-radius:0.6rem;background:#fff;font-size:0.95rem;font-family:inherit;cursor:pointer;color:#374151;font-weight:600;">' + (opts.cancel || 'ביטול') + '</button>' +
                     '<button id="ccOk" style="flex:1;padding:0.65rem;border:none;border-radius:0.6rem;background:' + (opts.danger ? '#ef4444' : '#2563eb') + ';color:#fff;font-size:0.95rem;font-family:inherit;cursor:pointer;font-weight:700;">' + opts.ok + '</button>' +
