@@ -303,8 +303,12 @@ function _showConfirm(opts) {
     var imgOverlay = opts.img
         ? '<div style="position:relative;display:block;width:100%;">' +
               '<img src="' + opts.img + '" style="width:100%;display:block;">' +
-              '<button id="ccCancel" style="position:absolute;left:5%;bottom:8%;width:38%;height:17%;border:none;background:transparent;cursor:pointer;"></button>' +
-              '<button id="ccOk"     style="position:absolute;right:5%;bottom:8%;width:38%;height:17%;border:none;background:transparent;cursor:pointer;"></button>' +
+              '<button id="ccCancel" style="position:absolute;left:8%;bottom:12%;width:35%;border:none;background:transparent;cursor:pointer;padding:0;">' +
+                  '<img src="images/ui/כפתור ביטול.png" style="width:100%;display:block;">' +
+              '</button>' +
+              '<button id="ccOk" style="position:absolute;right:8%;bottom:12%;width:35%;border:none;background:transparent;cursor:pointer;padding:0;">' +
+                  '<img src="images/ui/כפתור התנתק.png" style="width:100%;display:block;">' +
+              '</button>' +
           '</div>'
         : '<div style="padding:1.6rem 1.8rem 1.4rem;text-align:center;">' +
               (opts.icon ? '<div style="font-size:2.4rem;margin-bottom:0.6rem;">' + opts.icon + '</div>' : '') +
