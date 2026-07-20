@@ -47,9 +47,9 @@
     // ── Email/Password ───────────────────────────────────────────────
     var _pendingEmail = '';
     var _pendingPass  = '';
-    var VERIFY_URL = 'https://ishaieran-lab.github.io/lamdani-english/?verified=1';
+    var VERIFY_URL = 'https://ishaieran-lab.github.io/lamdani-english/verify.html';
 
-    function getActionSettings() { return { url: VERIFY_URL }; }
+    function getActionSettings() { return { url: VERIFY_URL, handleCodeInApp: true }; }
 
     window._fbDoEmail = function() {
         var mode  = document.getElementById('fbModeVal').value;
