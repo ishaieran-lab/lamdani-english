@@ -21,6 +21,7 @@ function _openAvatarMenu() {
     }
 }
 function _avatarPickCamera() {
+    _editMode = false;
     document.getElementById('avatarMenu').style.display = 'none';
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         document.getElementById('kidAvatarInputCamera').click();
@@ -67,7 +68,6 @@ function _closeCameraOv() {
     if (window._camStream) { window._camStream.getTracks().forEach(function(t){t.stop();}); window._camStream=null; }
     var ov = document.getElementById('cameraOv'); if (ov) ov.remove();
 }
-function _avatarPickCamera()  { _editMode = false; document.getElementById('avatarMenu').style.display='none'; document.getElementById('kidAvatarInputCamera').click(); }
 function _avatarPickGallery() { _editMode = false; document.getElementById('avatarMenu').style.display='none'; document.getElementById('kidAvatarInputGallery').click(); }
 
 function _openEditAvatarMenu() {
@@ -84,7 +84,35 @@ function _openEditAvatarMenu() {
         }, 10);
     }
 }
-function _editAvatarPickCamera()  { _editMode = true; document.getElementById('editAvatarMenu').style.display='none'; document.getElementById('kidEditAvatarInputCamera').click(); }
+function _editAvatarPickCamera() {
+    _editMode = true;
+    document.getElementById('editAvatarMenu').style.display = 'none';
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        document.getElementById('kidEditAvatarInputCamera').click();
+        return;
+    }
+    var ov = document.createElement('div');
+    ov.id = 'cameraOv';
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:20000;display:flex;align-items:center;justify-content:center;direction:rtl;';
+    ov.innerHTML =
+        '<div style="background:#111;overflow:hidden;max-width:92vw;text-align:center;">' +
+            '<video id="camVideo" autoplay playsinline muted style="display:block;width:100%;max-width:380px;max-height:55vh;object-fit:cover;background:#000;"></video>' +
+            '<div style="padding:0.9rem;display:flex;gap:0.8rem;justify-content:center;">' +
+                '<button onclick="_capturePhoto()" style="padding:0.65rem 2rem;background:#2563eb;color:#fff;border:none;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;">📷 צלם</button>' +
+                '<button onclick="_closeCameraOv()" style="padding:0.65rem 1.4rem;background:#374151;color:#fff;border:none;font-size:1rem;cursor:pointer;font-family:inherit;">ביטול</button>' +
+            '</div>' +
+        '</div>';
+    document.body.appendChild(ov);
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+        .then(function(stream) {
+            window._camStream = stream;
+            document.getElementById('camVideo').srcObject = stream;
+        })
+        .catch(function() {
+            _closeCameraOv();
+            document.getElementById('kidEditAvatarInputCamera').click();
+        });
+}
 function _editAvatarPickGallery() { _editMode = true; document.getElementById('editAvatarMenu').style.display='none'; document.getElementById('kidEditAvatarInputGallery').click(); }
 
 function _setKidAvatar(input) {
