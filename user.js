@@ -301,14 +301,16 @@ function _showConfirm(opts) {
     ov.id = 'customConfirmOv';
     ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:30000;display:flex;align-items:center;justify-content:center;direction:rtl;';
     var imgOverlay = opts.img
-        ? '<div style="position:relative;display:block;width:100%;">' +
+        ? '<div>' +
               '<img src="' + opts.img + '" style="width:100%;display:block;">' +
-              '<button id="ccCancel" style="position:absolute;left:8%;bottom:12%;width:35%;border:none;background:transparent;cursor:pointer;padding:0;">' +
-                  '<img src="images/ui/כפתור ביטול.png" style="width:100%;display:block;">' +
-              '</button>' +
-              '<button id="ccOk" style="position:absolute;right:8%;bottom:12%;width:35%;border:none;background:transparent;cursor:pointer;padding:0;">' +
-                  '<img src="images/ui/כפתור התנתק.png" style="width:100%;display:block;">' +
-              '</button>' +
+              '<div style="display:flex;gap:1rem;padding:1rem 1.5rem 1.2rem;background:#fff;justify-content:center;">' +
+                  '<button id="ccCancel" style="flex:1;border:none;background:transparent;cursor:pointer;padding:0;">' +
+                      '<img src="images/ui/כפתור ביטול.png" style="width:100%;display:block;">' +
+                  '</button>' +
+                  '<button id="ccOk" style="flex:1;border:none;background:transparent;cursor:pointer;padding:0;">' +
+                      '<img src="images/ui/כפתור התנתק.png" style="width:100%;display:block;">' +
+                  '</button>' +
+              '</div>' +
           '</div>'
         : '<div style="padding:1.6rem 1.8rem 1.4rem;text-align:center;">' +
               (opts.icon ? '<div style="font-size:2.4rem;margin-bottom:0.6rem;">' + opts.icon + '</div>' : '') +
