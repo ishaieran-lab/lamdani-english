@@ -301,22 +301,22 @@ function _showConfirm(opts) {
     ov.id = 'customConfirmOv';
     ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:30000;display:flex;align-items:center;justify-content:center;direction:rtl;';
     var imgOverlay = opts.img
-        ? '<div style="position:relative;display:inline-block;width:100%;">' +
-              '<img src="' + opts.img + '" style="width:100%;display:block;border-radius:1.1rem;">' +
-              '<button id="ccCancel" style="position:absolute;left:8%;bottom:10%;width:36%;height:13%;border:none;background:transparent;cursor:pointer;border-radius:0.5rem;"></button>' +
-              '<button id="ccOk"     style="position:absolute;right:8%;bottom:10%;width:36%;height:13%;border:none;background:transparent;cursor:pointer;border-radius:0.5rem;"></button>' +
+        ? '<div style="position:relative;display:block;width:100%;">' +
+              '<img src="' + opts.img + '" style="width:100%;display:block;">' +
+              '<button id="ccCancel" style="position:absolute;left:5%;bottom:8%;width:38%;height:17%;border:none;background:transparent;cursor:pointer;"></button>' +
+              '<button id="ccOk"     style="position:absolute;right:5%;bottom:8%;width:38%;height:17%;border:none;background:transparent;cursor:pointer;"></button>' +
           '</div>'
         : '<div style="padding:1.6rem 1.8rem 1.4rem;text-align:center;">' +
               (opts.icon ? '<div style="font-size:2.4rem;margin-bottom:0.6rem;">' + opts.icon + '</div>' : '') +
               '<div style="font-size:1.15rem;font-weight:800;color:#0f172a;margin-bottom:0.45rem;">' + opts.title + '</div>' +
               '<div style="font-size:0.92rem;color:#475569;margin-bottom:1.2rem;line-height:1.55;">' + opts.msg + '</div>' +
               '<div style="display:flex;gap:0.75rem;">' +
-                  '<button id="ccCancel" style="flex:1;padding:0.65rem;border:1.5px solid #e2e8f0;border-radius:0.6rem;background:#fff;font-size:0.95rem;font-family:inherit;cursor:pointer;color:#374151;font-weight:600;">' + (opts.cancel || 'ביטול') + '</button>' +
-                  '<button id="ccOk" style="flex:1;padding:0.65rem;border:none;border-radius:0.6rem;background:' + (opts.danger ? '#ef4444' : '#2563eb') + ';color:#fff;font-size:0.95rem;font-family:inherit;cursor:pointer;font-weight:700;">' + opts.ok + '</button>' +
+                  '<button id="ccCancel" style="flex:1;padding:0.65rem;border:1.5px solid #e2e8f0;background:#fff;font-size:0.95rem;font-family:inherit;cursor:pointer;color:#374151;font-weight:600;">' + (opts.cancel || 'ביטול') + '</button>' +
+                  '<button id="ccOk" style="flex:1;padding:0.65rem;border:none;background:' + (opts.danger ? '#ef4444' : '#2563eb') + ';color:#fff;font-size:0.95rem;font-family:inherit;cursor:pointer;font-weight:700;">' + opts.ok + '</button>' +
               '</div>' +
           '</div>';
     ov.innerHTML =
-        '<div style="border-radius:1.1rem;width:min(88vw,400px);box-shadow:0 8px 32px rgba(0,0,0,0.18);overflow:hidden;">' +
+        '<div style="width:min(94vw,820px);box-shadow:0 8px 32px rgba(0,0,0,0.18);overflow:hidden;">' +
             imgOverlay +
         '</div>';
     document.body.appendChild(ov);
