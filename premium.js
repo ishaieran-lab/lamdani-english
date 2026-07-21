@@ -1,6 +1,11 @@
 // premium.js — ניהול גישה לתכנים
 // כדי להוסיף משתמש: הוסף את האימייל שלו לרשימה למטה
 
+// נושאים חופשיים לכולם (אינדקסים 0-based)
+var FREE_VOCAB_INDICES   = [0, 3, 6];   // כינויי גוף, מספרים, ימות השבוע
+var FREE_GRAMMAR_INDICES = [12];         // TO BE (שלב 1)
+var FREE_READING_LEVEL   = 0;            // רמה 1 — קטע ראשון בלבד
+
 var PREMIUM_EMAILS = [
     'ishaieran@gmail.com'
     // 'email2@example.com',

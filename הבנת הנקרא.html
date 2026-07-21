@@ -503,7 +503,6 @@ function buildSelectNav() {
 }
 
 function buildLevelGrid() {
-    if (!requirePremium()) return;
     var loggedIn = typeof getUser === 'function' && !!getUser();
     var p = loggedIn && typeof getProgress === 'function' ? (getProgress()['reading'] || {}) : {};
     var html = '';
@@ -511,7 +510,7 @@ function buildLevelGrid() {
         var saved = loggedIn ? (p[i] || {}) : {};
         var done  = saved.best !== undefined;
         var score = done ? saved.best : null;
-        var locked = !isPremium();
+        var locked = i > FREE_READING_LEVEL && !isPremium();
         var scoreHtml = done ? '<div class="rc-level-score">✓ ציון: ' + score + '%</div>' : '';
         var lockHtml  = locked ? '<div class="rc-level-lock">🔒 למנויים</div>' : '';
         html += '<div class="rc-level-card ' + (done ? 'done' : '') + (locked ? ' rc-level-locked' : '') + '" onclick="openLevel(' + i + ')">' +
@@ -526,7 +525,7 @@ function buildLevelGrid() {
 }
 
 function openLevel(i) {
-    if (!isPremium()) { showPaywall(); return; }
+    if (i > FREE_READING_LEVEL && !isPremium()) { showPaywall(); return; }
     curLevel   = i;
     curPassage = 0;
     levelCorrect = 0;

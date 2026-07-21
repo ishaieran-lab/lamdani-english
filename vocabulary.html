@@ -1993,7 +1993,6 @@ var selectMode = false;
 var selectedIndices = [];
 
 function initStageCards() {
-    if (!requirePremium()) return;
     var hasUser  = typeof getUser === 'function';
     var u        = hasUser ? getUser() : null;
     var vocabP   = (hasUser && typeof getProgress === 'function') ? (getProgress()['vocabulary'] || {}) : {};
@@ -2052,7 +2051,7 @@ function initStageCards() {
         var wordCountHtml = '<div class="topic-tile-count">' + s.words.length + ' מילים</div>';
         var tileExtra = score !== undefined ? (score >= 80 ? ' tile-done' : ' tile-attempted') : '';
         if (isSelected) tileExtra += ' tile-selected';
-        var isLocked  = !isPremium();
+        var isLocked  = FREE_VOCAB_INDICES.indexOf(i) === -1 && !isPremium();
         if (isLocked) tileExtra += ' tile-locked';
         var clickFn   = selectMode ? 'toggleTile(' + i + ')' : (isLocked ? 'showPaywall()' : 'selectStage(' + i + ')');
         var checkMark = selectMode ? '<div class="tile-checkbox">' + (isSelected ? '✓' : '') + '</div>' : '';
@@ -2096,7 +2095,7 @@ function toggleSelectMode() {
 }
 
 function toggleTile(i) {
-    if (!isPremium()) { showPaywall(); return; }
+    if (FREE_VOCAB_INDICES.indexOf(i) === -1 && !isPremium()) { showPaywall(); return; }
     var idx = selectedIndices.indexOf(i);
     if (idx === -1) selectedIndices.push(i);
     else selectedIndices.splice(idx, 1);
@@ -2161,7 +2160,7 @@ function startCustomQuiz() {
 var curStageIdx = 0;
 
 function selectStage(i) {
-    if (!isPremium()) { showPaywall(); return; }
+    if (FREE_VOCAB_INDICES.indexOf(i) === -1 && !isPremium()) { showPaywall(); return; }
     curStageIdx = i;
     var s = VOCAB[i];
     if (s.intro) {
