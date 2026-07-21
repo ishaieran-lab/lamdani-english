@@ -8,6 +8,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .topic-tile { position:relative; }
+        .tile-locked { cursor:default; opacity:0.78; }
+        .tile-locked:hover { transform:none; box-shadow:none; border-color:var(--gray-bdr); }
+    </style>
     <!-- Google Analytics — החלף G-XXXXXXXXXX במזהה שלך -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
@@ -1987,6 +1992,16 @@ function backToLearn()  {
 var selectMode = false;
 var selectedIndices = [];
 
+// ─ פרימיום ─────────────────────────────────────────────────────
+var FREE_VOCAB_INDICES = [0, 3, 6];
+function isPremium() {
+    if (typeof getUser !== 'function') return false;
+    var u = getUser(); if (!u) return false;
+    return ['ishaieran@gmail.com'].indexOf(u.email) !== -1;
+}
+function showPaywall() { document.getElementById('paywallOverlay').style.display = 'flex'; }
+function closePaywall() { document.getElementById('paywallOverlay').style.display = 'none'; }
+
 function initStageCards() {
     var hasUser  = typeof getUser === 'function';
     var u        = hasUser ? getUser() : null;
@@ -2046,8 +2061,11 @@ function initStageCards() {
         var wordCountHtml = '<div class="topic-tile-count">' + s.words.length + ' מילים</div>';
         var tileExtra = score !== undefined ? (score >= 80 ? ' tile-done' : ' tile-attempted') : '';
         if (isSelected) tileExtra += ' tile-selected';
-        var clickFn   = selectMode ? 'toggleTile(' + i + ')' : 'selectStage(' + i + ')';
+        var isLocked  = FREE_VOCAB_INDICES.indexOf(i) === -1 && !isPremium();
+        if (isLocked) tileExtra += ' tile-locked';
+        var clickFn   = selectMode ? 'toggleTile(' + i + ')' : (isLocked ? 'showPaywall()' : 'selectStage(' + i + ')');
         var checkMark = selectMode ? '<div class="tile-checkbox">' + (isSelected ? '✓' : '') + '</div>' : '';
+        var lockBadge = isLocked ? '<div style="position:absolute;top:6px;left:6px;background:rgba(15,23,42,0.65);color:#fff;border-radius:8px;padding:2px 7px;font-size:0.72rem;font-weight:700;pointer-events:none">🔒</div>' : '';
         var numHtml = s.combos
             ? '<div class="tile-num-row"><div class="tile-number">' + (idx + 1) + '</div><div class="tile-combos-tag">כולל תרגול</div></div>'
             : '<div class="tile-number">' + (idx + 1) + '</div>';
@@ -2059,6 +2077,7 @@ function initStageCards() {
                 '<div class="topic-tile-he">' + s.title + '</div>' +
                 '<img src="' + s.img + '" class="topic-tile-img" alt="' + s.title + '">' +
                 bottomHtml +
+                lockBadge +
             '</div>';
         }
         return '<div class="topic-tile' + tileExtra + '" onclick="' + clickFn + '">' +
@@ -2067,6 +2086,7 @@ function initStageCards() {
             '<div class="topic-tile-he">' + s.title + '</div>' +
             '<div class="topic-tile-en">' + s.desc + '</div>' +
             bottomHtml +
+            lockBadge +
         '</div>';
     }).join('');
 }
@@ -2085,6 +2105,7 @@ function toggleSelectMode() {
 }
 
 function toggleTile(i) {
+    if (FREE_VOCAB_INDICES.indexOf(i) === -1 && !isPremium()) { showPaywall(); return; }
     var idx = selectedIndices.indexOf(i);
     if (idx === -1) selectedIndices.push(i);
     else selectedIndices.splice(idx, 1);
@@ -2110,6 +2131,7 @@ function updateSelectCount() {
 }
 
 function startLearnedQuiz() {
+    if (!isPremium()) { showPaywall(); return; }
     var hasUser = typeof getUser === 'function';
     var u = hasUser ? getUser() : null;
     var vocabP = (hasUser && typeof getProgress === 'function') ? (getProgress()['vocabulary'] || {}) : {};
@@ -2127,6 +2149,7 @@ function startLearnedQuiz() {
 }
 
 function startCustomQuiz() {
+    if (!isPremium()) { showPaywall(); return; }
     if (!selectedIndices.length) return;
     var all = [];
     selectedIndices.forEach(function(i) { all = all.concat(VOCAB[i].words); });
@@ -2147,6 +2170,7 @@ function startCustomQuiz() {
 var curStageIdx = 0;
 
 function selectStage(i) {
+    if (FREE_VOCAB_INDICES.indexOf(i) === -1 && !isPremium()) { showPaywall(); return; }
     curStageIdx = i;
     var s = VOCAB[i];
     if (s.intro) {
@@ -2267,6 +2291,7 @@ function startQuiz() {
 }
 
 function startFullQuiz() {
+    if (!isPremium()) { showPaywall(); return; }
     isFullQuiz = true;
     var all = [];
     VOCAB.forEach(function(s) { if ((s.level||1)===curLevel) all = all.concat(s.words); });
@@ -2470,6 +2495,15 @@ window.onBackspace = function() {
     }
 };
 </script>
+<div id="paywallOverlay" onclick="if(event.target===this)closePaywall()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.6);align-items:center;justify-content:center">
+    <div style="background:#fff;border-radius:1.4rem;padding:2.2rem 2rem;text-align:center;max-width:340px;width:88%;box-shadow:0 8px 40px rgba(0,0,0,0.18);font-family:inherit">
+        <div style="font-size:3rem;margin-bottom:0.5rem">🔒</div>
+        <h3 style="color:#0f172a;margin:0 0 0.5rem;font-size:1.25rem;font-weight:800">פתוח למנויים בלבד</h3>
+        <p style="color:#64748b;font-size:0.95rem;line-height:1.6;margin:0 0 1.5rem">שדרג לחשבון פרימיום וקבל גישה לכל הנושאים, הבחנים והרמות.</p>
+        <a href="index.html#pricing" style="display:inline-block;background:#2563eb;color:#fff;font-weight:700;font-size:1rem;padding:0.75rem 1.8rem;border-radius:0.65rem;text-decoration:none;margin-bottom:0.8rem">שדרג עכשיו ←</a><br>
+        <button onclick="closePaywall()" style="background:none;border:none;color:#94a3b8;font-size:0.9rem;cursor:pointer;font-family:inherit;margin-top:0.5rem">סגור</button>
+    </div>
+</div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="firebase-auth.js"></script>
