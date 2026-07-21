@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>צור קשר — למדני אנגלית</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .contact-wrap { max-width: 580px; margin: 3rem auto; padding: 0 1.5rem 5rem; }
+        .contact-wrap h1 { font-size: 1.9rem; font-weight: 800; color: var(--navy); margin-bottom: 0.4rem; }
+        .contact-sub { font-size: 0.97rem; color: var(--muted); margin-bottom: 2.5rem; line-height: 1.7; }
+        .contact-form { display: flex; flex-direction: column; gap: 1.2rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-group label { font-size: 0.93rem; font-weight: 600; color: var(--navy); }
+        .form-group input,
+        .form-group textarea {
+            font-family: inherit;
+            font-size: 0.97rem;
+            color: #1e293b;
+            background: #f8fafc;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 0.6rem;
+            padding: 0.7rem 0.9rem;
+            outline: none;
+            transition: border-color 0.15s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus { border-color: var(--blue); background: #fff; }
+        .form-group textarea { min-height: 140px; resize: vertical; }
+        .submit-btn {
+            font-family: inherit;
+            font-size: 1.05rem;
+            font-weight: 700;
+            background: var(--blue);
+            color: #fff;
+            border: none;
+            border-radius: 0.6rem;
+            padding: 0.85rem 2rem;
+            cursor: pointer;
+            transition: background 0.15s;
+            align-self: flex-start;
+        }
+        .submit-btn:hover { background: #1d4ed8; }
+        .form-msg { font-size: 0.95rem; margin-top: 0.5rem; min-height: 1.4rem; }
+        .form-msg.success { color: #16a34a; }
+        .form-msg.error   { color: #ef4444; }
+    </style>
+</head>
+<body>
+
+<nav class="toolbar">
+    <a href="index.html" class="toolbar-brand"><span class="accent">Lamdani</span> English</a>
+    <div class="toolbar-nav">
+        <div class="nav-menu-wrap">
+            <button class="nav-icon-btn" id="navMenuBtn" onclick="toggleNavMenu()">
+                <img src="images/ui/menu.png" class="nav-icon-img" alt="תפריט">
+            </button>
+            <div class="nav-menu-panel" id="navMenuPanel">
+                <a href="app.html" class="nav-menu-item">דף הבית</a>
+                <a href="אודות.html" class="nav-menu-item">אודות</a>
+                <a href="צור קשר.html" class="nav-menu-item">צור קשר</a>
+            </div>
+        </div>
+        <a href="app.html" class="nav-icon-btn">
+            <img src="images/ui/home.png" class="nav-icon-img" alt="בית">
+        </a>
+        <div id="userNavArea" style="position:relative"></div>
+    </div>
+</nav>
+
+<div class="contact-wrap">
+    <h1>צור קשר</h1>
+    <p class="contact-sub">יש שאלה, הצעה או בעיה? נשמח לשמוע — נחזור אליך בהקדם.</p>
+
+    <form class="contact-form" id="contactForm">
+        <div class="form-group">
+            <label for="cf-name">שם מלא</label>
+            <input type="text" id="cf-name" name="name" placeholder="ישראל ישראלי" required>
+        </div>
+        <div class="form-group">
+            <label for="cf-email">אימייל</label>
+            <input type="email" id="cf-email" name="email" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+            <label for="cf-msg">הודעה</label>
+            <textarea id="cf-msg" name="message" placeholder="כתוב כאן את הודעתך..." required></textarea>
+        </div>
+        <button type="submit" class="submit-btn">שלח הודעה ←</button>
+        <p class="form-msg" id="formMsg"></p>
+    </form>
+</div>
+
+<script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var btn = this.querySelector('.submit-btn');
+        var msg = document.getElementById('formMsg');
+        btn.disabled = true;
+        btn.textContent = 'שולח...';
+        msg.className = 'form-msg';
+        msg.textContent = '';
+
+        fetch('https://formspree.io/f/maqrbyzr', {
+            method: 'POST',
+            headers: { 'Accept': 'application/json' },
+            body: new FormData(this)
+        })
+        .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+        .then(function(res) {
+            if (res.ok) {
+                msg.className = 'form-msg success';
+                msg.textContent = '✅ ההודעה נשלחה בהצלחה! נחזור אליך בהקדם.';
+                document.getElementById('contactForm').reset();
+            } else {
+                msg.className = 'form-msg error';
+                msg.textContent = 'שגיאה בשליחה — נסה שוב או פנה ישירות למייל.';
+            }
+        })
+        .catch(function() {
+            msg.className = 'form-msg error';
+            msg.textContent = 'שגיאת רשת — בדוק חיבור אינטרנט ונסה שוב.';
+        })
+        .finally(function() {
+            btn.disabled = false;
+            btn.textContent = 'שלח הודעה ←';
+        });
+    });
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="firebase-auth.js"></script>
+<script src="user.js"></script>
+</body>
+</html>
