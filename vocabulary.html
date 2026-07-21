@@ -2464,6 +2464,12 @@ document.addEventListener('keydown', function(e) {
     submitOrNext();
 });
 
+// ─ ברירות מחדל לאתחול סינכרוני (premium.js נטען אחר כך ומחליף) ─
+var FREE_VOCAB_INDICES = [0, 3, 6];
+function isPremium()    { return false; }
+function showPaywall()  { var el=document.getElementById('paywallOverlay'); if(el) el.style.display='flex'; }
+function closePaywall() { var el=document.getElementById('paywallOverlay'); if(el) el.style.display='none'; }
+
 // ════════════════════════════════════════════════════════════════
 initStageCards();
 var totalWords = VOCAB.reduce(function(sum,s){ return sum + s.words.length; }, 0);
