@@ -649,6 +649,10 @@ function openLoginModal(mode) {
     var ov = document.getElementById('fbLoginOv');
     if (!ov) return;
     ov.style.display = 'flex';
+    var verView = document.getElementById('fbVerifyView');
+    var formContent = document.getElementById('fbFormContent');
+    if (verView)     verView.style.display     = 'none';
+    if (formContent) formContent.style.display = 'block';
     var m = mode === 'login' ? 'login' : 'register';
     var isReg = m === 'register';
     document.getElementById('fbModeVal').value = m;

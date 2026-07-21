@@ -139,6 +139,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="firebase-auth.js"></script>
 <script src="user.js"></script>
+<script src="premium.js"></script>
 <script>
 
 // ════════════════════════════════════════════════════════════════
@@ -475,15 +476,6 @@ var levelCorrect = 0, levelTotal = 0;
 var answered    = false;
 var isDirect    = location.search.indexOf('direct=1') !== -1;
 
-// ─ פרימיום ─────────────────────────────────────────────────────
-var FREE_READING_LEVEL = 0;
-function isPremium() {
-    if (typeof getUser !== 'function') return false;
-    var u = getUser(); if (!u) return false;
-    return ['ishaieran@gmail.com'].indexOf(u.email) !== -1;
-}
-function showPaywall() { document.getElementById('paywallOverlay').style.display = 'flex'; }
-function closePaywall() { document.getElementById('paywallOverlay').style.display = 'none'; }
 
 // ════════════════════════════════════════════════════════════════
 // ניווט
@@ -511,6 +503,7 @@ function buildSelectNav() {
 }
 
 function buildLevelGrid() {
+    if (!requirePremium()) return;
     var loggedIn = typeof getUser === 'function' && !!getUser();
     var p = loggedIn && typeof getProgress === 'function' ? (getProgress()['reading'] || {}) : {};
     var html = '';
@@ -518,7 +511,7 @@ function buildLevelGrid() {
         var saved = loggedIn ? (p[i] || {}) : {};
         var done  = saved.best !== undefined;
         var score = done ? saved.best : null;
-        var locked = i > FREE_READING_LEVEL && !isPremium();
+        var locked = !isPremium();
         var scoreHtml = done ? '<div class="rc-level-score">✓ ציון: ' + score + '%</div>' : '';
         var lockHtml  = locked ? '<div class="rc-level-lock">🔒 למנויים</div>' : '';
         html += '<div class="rc-level-card ' + (done ? 'done' : '') + (locked ? ' rc-level-locked' : '') + '" onclick="openLevel(' + i + ')">' +
@@ -533,7 +526,7 @@ function buildLevelGrid() {
 }
 
 function openLevel(i) {
-    if (i > FREE_READING_LEVEL && !isPremium()) { showPaywall(); return; }
+    if (!isPremium()) { showPaywall(); return; }
     curLevel   = i;
     curPassage = 0;
     levelCorrect = 0;
@@ -744,13 +737,13 @@ window.onBackspace = function() {
 
 </script>
 
-<div id="paywallOverlay" onclick="if(event.target===this)closePaywall()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.6);align-items:center;justify-content:center">
-    <div style="background:#fff;border-radius:1.4rem;padding:2.2rem 2rem;text-align:center;max-width:340px;width:88%;box-shadow:0 8px 40px rgba(0,0,0,0.18);font-family:inherit">
+<div id="paywallOverlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.72);align-items:center;justify-content:center">
+    <div style="background:#fff;border-radius:1.4rem;padding:2.2rem 2rem;text-align:center;max-width:340px;width:88%;box-shadow:0 8px 40px rgba(0,0,0,0.22);font-family:inherit">
         <div style="font-size:3rem;margin-bottom:0.5rem">🔒</div>
         <h3 style="color:#0f172a;margin:0 0 0.5rem;font-size:1.25rem;font-weight:800">פתוח למנויים בלבד</h3>
-        <p style="color:#64748b;font-size:0.95rem;line-height:1.6;margin:0 0 1.5rem">שדרג לחשבון פרימיום וקבל גישה לכל הרמות והקטעים.</p>
-        <a href="index.html#pricing" style="display:inline-block;background:#2563eb;color:#fff;font-weight:700;font-size:1rem;padding:0.75rem 1.8rem;border-radius:0.65rem;text-decoration:none;margin-bottom:0.8rem">שדרג עכשיו ←</a><br>
-        <button onclick="closePaywall()" style="background:none;border:none;color:#94a3b8;font-size:0.9rem;cursor:pointer;font-family:inherit;margin-top:0.5rem">סגור</button>
+        <p style="color:#64748b;font-size:0.95rem;line-height:1.6;margin:0 0 1.5rem">לגישה לתכנים יש לרכוש מנוי.</p>
+        <a href="index.html#pricing" style="display:inline-block;background:#2563eb;color:#fff;font-weight:700;font-size:1rem;padding:0.75rem 1.8rem;border-radius:0.65rem;text-decoration:none;margin-bottom:0.9rem">לרכישת מנוי ←</a><br>
+        <a href="app.html" style="display:inline-block;color:#94a3b8;font-size:0.85rem;margin-top:0.5rem;text-decoration:none">חזור לדף הבית</a>
     </div>
 </div>
 </body>
