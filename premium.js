@@ -8,10 +8,12 @@ var PREMIUM_EMAILS = [
 ];
 
 function isPremium() {
-    if (typeof getUser !== 'function') return false;
-    var u = getUser();
-    if (!u) return false;
-    return PREMIUM_EMAILS.indexOf(u.email) !== -1;
+    // getParent() = ההורה הרשום — יש לו email מ-Firebase
+    if (typeof getParent === 'function') {
+        var p = getParent();
+        if (p && PREMIUM_EMAILS.indexOf(p.email) !== -1) return true;
+    }
+    return false;
 }
 
 function requirePremium() {
