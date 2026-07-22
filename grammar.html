@@ -12,17 +12,16 @@
         .city-lock-badge { position:absolute; top:22%; left:50%; transform:translateX(-50%); background:rgba(15,23,42,0.72); color:#fff; border-radius:20px; padding:4px 12px; font-size:1rem; font-weight:900; white-space:nowrap; pointer-events:none; }
         .city-area--locked:hover { background:rgba(239,68,68,0.08) !important; box-shadow:inset 0 0 0 3px rgba(239,68,68,0.35) !important; }
         /* ── Stage card grid ── */
-        .gc-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0.85rem; padding:0.5rem 0 1rem; }
-        .gc-card { background:#1e2d4a; border:2px solid rgba(255,255,255,0.07); border-radius:1rem; overflow:hidden; cursor:pointer; padding:0.7rem 0.5rem 0.65rem; text-align:center; position:relative; transition:transform 0.18s,box-shadow 0.18s; font-family:inherit; width:100%; display:flex; flex-direction:column; align-items:center; gap:0.3rem; }
-        .gc-card:hover:not(.gc-card--locked) { transform:translateY(-5px); box-shadow:0 12px 28px rgba(0,0,0,0.35); border-color:rgba(255,255,255,0.18); }
-        .gc-card--locked { opacity:0.5; cursor:not-allowed; }
-        .gc-card--done { border-color:rgba(34,197,94,0.35); }
-        .gc-img-wrap { width:100%; height:110px; display:flex; align-items:center; justify-content:center; }
-        .gc-img { max-width:100%; max-height:106px; object-fit:contain; }
-        .gc-num { font-size:0.82rem; font-weight:700; color:#94a3b8; margin-top:0.1rem; }
-        .gc-name { font-size:0.85rem; font-weight:700; color:#f1f5f9; line-height:1.3; }
-        .gc-check { position:absolute; top:8px; left:7px; width:19px; height:19px; background:#22c55e; border-radius:50%; font-size:0.6rem; font-weight:900; color:#fff; display:flex; align-items:center; justify-content:center; }
-        .gc-lock  { position:absolute; top:7px; left:6px; font-size:0.72rem; opacity:0.55; }
+        .gc-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; padding:0.5rem 0 1rem; }
+        .gc-card { background:none; border:none; border-radius:0; cursor:pointer; padding:0; text-align:center; position:relative; transition:transform 0.18s,opacity 0.18s; font-family:inherit; width:100%; display:flex; flex-direction:column; align-items:center; gap:0.3rem; }
+        .gc-card:hover:not(.gc-card--locked) { transform:translateY(-4px); opacity:0.88; }
+        .gc-card--locked { opacity:0.45; cursor:not-allowed; }
+        .gc-img-wrap { width:100%; }
+        .gc-img { width:100%; height:auto; display:block; }
+        .gc-num { font-size:0.82rem; font-weight:700; color:#94a3b8; margin-top:0.25rem; }
+        .gc-name { font-size:0.9rem; font-weight:700; color:#f1f5f9; line-height:1.3; }
+        .gc-check { position:absolute; top:6px; left:4px; width:20px; height:20px; background:#22c55e; border-radius:50%; font-size:0.62rem; font-weight:900; color:#fff; display:flex; align-items:center; justify-content:center; }
+        .gc-lock  { position:absolute; top:6px; left:4px; font-size:0.8rem; }
         @media (max-width:540px) { .gc-grid { grid-template-columns:repeat(2,1fr); } }
     </style>
     <!-- Google Analytics — החלף G-XXXXXXXXXX במזהה שלך -->
