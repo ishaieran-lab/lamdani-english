@@ -119,23 +119,137 @@ function _setKidAvatar(input) {
     if (!input.files || !input.files[0]) return;
     var reader = new FileReader();
     reader.onload = function(e) {
-        var imgEl = new Image();
-        imgEl.onload = function() {
-            var canvas = document.createElement('canvas');
-            var max = 200;
-            var scale = Math.min(max / imgEl.width, max / imgEl.height, 1);
-            canvas.width = Math.round(imgEl.width * scale);
-            canvas.height = Math.round(imgEl.height * scale);
-            canvas.getContext('2d').drawImage(imgEl, 0, 0, canvas.width, canvas.height);
-            _kidPhoto = canvas.toDataURL('image/jpeg', 0.75);
+        _showCropModal(e.target.result, function(dataUrl) {
+            _kidPhoto = dataUrl;
             var pfx = _editMode ? 'kidEditAvatar' : 'kidAvatar';
             var av = document.getElementById(pfx + 'Img'), em = document.getElementById(pfx + 'Emoji');
             if (av) { av.src = _kidPhoto; av.style.display = 'block'; }
             if (em) em.style.display = 'none';
-        };
-        imgEl.src = e.target.result;
+        });
     };
     reader.readAsDataURL(input.files[0]);
+}
+
+// ── Crop modal ──────────────────────────────────────────────────
+var _cropCb = null, _cropImg = null;
+var _cropSc = 1, _cropBaseSc = 1;
+var _cropX = 0, _cropY = 0;
+var _cropDrag = false, _cropLx = 0, _cropLy = 0, _cropPinchD = 0;
+var _CV = 280, _CO = 200;
+
+function _showCropModal(src, cb) {
+    _cropCb = cb;
+    var old = document.getElementById('__cropOv');
+    if (old) old.remove();
+
+    var ov = document.createElement('div');
+    ov.id = '__cropOv';
+    ov.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;font-family:inherit;direction:rtl;';
+    ov.innerHTML =
+        '<div style="color:#fff;font-size:0.9rem;font-weight:600;opacity:0.85;">גרור לכוון • הגדל/הקטן עם הגלגלת</div>' +
+        '<div style="position:relative;width:'+_CV+'px;height:'+_CV+'px;border-radius:50%;overflow:hidden;border:3px solid #3b82f6;cursor:grab;box-shadow:0 0 0 9999px rgba(0,0,0,0.55);">' +
+            '<canvas id="__cropCv" width="'+_CV+'" height="'+_CV+'" style="touch-action:none;display:block;"></canvas>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:0.7rem;">' +
+            '<span style="color:#fff;font-size:0.85rem;font-weight:700;">-</span>' +
+            '<input id="__cropSl" type="range" min="100" max="400" value="100" style="width:160px;">' +
+            '<span style="color:#fff;font-size:0.85rem;font-weight:700;">+</span>' +
+        '</div>' +
+        '<div style="display:flex;gap:0.8rem;">' +
+            '<button id="__cropCancel" style="padding:0.65rem 1.5rem;border-radius:0.6rem;border:2px solid rgba(255,255,255,0.6);background:none;color:#fff;font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;">ביטול</button>' +
+            '<button id="__cropOk" style="padding:0.65rem 1.5rem;border-radius:0.6rem;border:none;background:#2563eb;color:#fff;font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;">אישור ✓</button>' +
+        '</div>';
+    document.body.appendChild(ov);
+
+    document.getElementById('__cropCancel').onclick = function() { ov.remove(); };
+    document.getElementById('__cropOk').onclick = _cropConfirm;
+    document.getElementById('__cropSl').oninput = function() {
+        _cropSc = _cropBaseSc * (this.value / 100);
+        _clampCrop(); _drawCrop();
+    };
+
+    var img = new Image();
+    img.onload = function() {
+        _cropImg = img;
+        _cropBaseSc = Math.max(_CV / img.width, _CV / img.height);
+        _cropSc = _cropBaseSc;
+        _cropX = (_CV - img.width  * _cropSc) / 2;
+        _cropY = (_CV - img.height * _cropSc) / 2;
+        _drawCrop();
+        var cv = document.getElementById('__cropCv');
+        cv.addEventListener('mousedown',  _cropMd);
+        cv.addEventListener('mousemove',  _cropMm);
+        cv.addEventListener('mouseup',    _cropMu);
+        cv.addEventListener('mouseleave', _cropMu);
+        cv.addEventListener('wheel',      _cropWh, {passive:false});
+        cv.addEventListener('touchstart', _cropTs, {passive:false});
+        cv.addEventListener('touchmove',  _cropTm, {passive:false});
+        cv.addEventListener('touchend',   _cropTe);
+    };
+    img.src = src;
+}
+
+function _drawCrop() {
+    var cv = document.getElementById('__cropCv');
+    if (!cv || !_cropImg) return;
+    var ctx = cv.getContext('2d');
+    ctx.clearRect(0, 0, _CV, _CV);
+    ctx.drawImage(_cropImg, _cropX, _cropY, _cropImg.width * _cropSc, _cropImg.height * _cropSc);
+}
+
+function _clampCrop() {
+    var minSc = Math.max(_CV / _cropImg.width, _CV / _cropImg.height);
+    if (_cropSc < minSc) _cropSc = minSc;
+    var w = _cropImg.width * _cropSc, h = _cropImg.height * _cropSc;
+    if (_cropX > 0)      _cropX = 0;
+    if (_cropY > 0)      _cropY = 0;
+    if (_cropX + w < _CV) _cropX = _CV - w;
+    if (_cropY + h < _CV) _cropY = _CV - h;
+}
+
+function _cropMd(e) { _cropDrag=true; _cropLx=e.clientX; _cropLy=e.clientY; e.currentTarget.style.cursor='grabbing'; }
+function _cropMu(e) { _cropDrag=false; e.currentTarget.style.cursor='grab'; }
+function _cropMm(e) {
+    if (!_cropDrag) return;
+    _cropX += e.clientX-_cropLx; _cropY += e.clientY-_cropLy;
+    _cropLx=e.clientX; _cropLy=e.clientY;
+    _clampCrop(); _drawCrop();
+}
+function _cropWh(e) {
+    e.preventDefault();
+    _cropSc *= e.deltaY < 0 ? 1.08 : 0.92;
+    _clampCrop(); _drawCrop();
+    var sl = document.getElementById('__cropSl');
+    if (sl) sl.value = Math.round(_cropSc / _cropBaseSc * 100);
+}
+function _cropTs(e) {
+    e.preventDefault();
+    if (e.touches.length===1) { _cropDrag=true; _cropLx=e.touches[0].clientX; _cropLy=e.touches[0].clientY; }
+    else if (e.touches.length===2) { _cropDrag=false; _cropPinchD=_pinchD(e.touches); }
+}
+function _cropTm(e) {
+    e.preventDefault();
+    if (e.touches.length===1 && _cropDrag) {
+        _cropX+=e.touches[0].clientX-_cropLx; _cropY+=e.touches[0].clientY-_cropLy;
+        _cropLx=e.touches[0].clientX; _cropLy=e.touches[0].clientY;
+        _clampCrop(); _drawCrop();
+    } else if (e.touches.length===2) {
+        var d=_pinchD(e.touches); _cropSc*=d/_cropPinchD; _cropPinchD=d;
+        _clampCrop(); _drawCrop();
+    }
+}
+function _cropTe(e) { if (!e.touches.length) _cropDrag=false; }
+function _pinchD(t) { var dx=t[0].clientX-t[1].clientX, dy=t[0].clientY-t[1].clientY; return Math.sqrt(dx*dx+dy*dy); }
+
+function _cropConfirm() {
+    var cv = document.getElementById('__cropCv');
+    if (!cv) return;
+    var out = document.createElement('canvas');
+    out.width=_CO; out.height=_CO;
+    out.getContext('2d').drawImage(cv, 0,0,_CV,_CV, 0,0,_CO,_CO);
+    var url = out.toDataURL('image/jpeg', 0.82);
+    document.getElementById('__cropOv').remove();
+    if (_cropCb) _cropCb(url);
 }
 
 // ── תפריט ניווט עליון ──────────────────────────────────────────
