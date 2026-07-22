@@ -11,6 +11,20 @@
     <style>
         .city-lock-badge { position:absolute; top:22%; left:50%; transform:translateX(-50%); background:rgba(15,23,42,0.72); color:#fff; border-radius:20px; padding:4px 12px; font-size:1rem; font-weight:900; white-space:nowrap; pointer-events:none; }
         .city-area--locked:hover { background:rgba(239,68,68,0.08) !important; box-shadow:inset 0 0 0 3px rgba(239,68,68,0.35) !important; }
+        /* ── Stage card grid ── */
+        .gc-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0.85rem; padding:0.5rem 0 1rem; }
+        .gc-card { background:#1e2d4a; border:1.5px solid rgba(255,255,255,0.07); border-radius:1rem; overflow:hidden; cursor:pointer; padding:0; text-align:center; position:relative; transition:transform 0.18s,box-shadow 0.18s; font-family:inherit; width:100%; display:flex; flex-direction:column; align-items:center; }
+        .gc-card:hover:not(.gc-card--locked) { transform:translateY(-5px); box-shadow:0 12px 28px rgba(0,0,0,0.35); }
+        .gc-card--locked { opacity:0.5; cursor:not-allowed; }
+        .gc-card--done { border-color:rgba(34,197,94,0.3); }
+        .gc-top { height:6px; width:100%; flex-shrink:0; }
+        .gc-img-wrap { padding:0.55rem 0.4rem 0; height:82px; display:flex; align-items:center; justify-content:center; }
+        .gc-img { max-width:100%; max-height:76px; object-fit:contain; border-radius:6px; }
+        .gc-num { width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.78rem; font-weight:700; color:#fff; margin:0.35rem auto 0.18rem; flex-shrink:0; }
+        .gc-name { font-size:0.8rem; font-weight:600; color:#e2e8f0; padding:0 0.35rem 0.75rem; line-height:1.3; }
+        .gc-check { position:absolute; top:11px; left:7px; width:19px; height:19px; background:#22c55e; border-radius:50%; font-size:0.6rem; font-weight:900; color:#fff; display:flex; align-items:center; justify-content:center; }
+        .gc-lock  { position:absolute; top:9px; left:5px; font-size:0.72rem; opacity:0.55; }
+        @media (max-width:540px) { .gc-grid { grid-template-columns:repeat(2,1fr); } }
     </style>
     <!-- Google Analytics — החלף G-XXXXXXXXXX במזהה שלך -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
@@ -1014,6 +1028,75 @@ var GRAMMAR = [
       {q:'child → ___',       opts:['childs','childes','children'], ans:2},
       {q:'bus → ___',         opts:['buss','buse','buses'],         ans:2},
     ]
+  },
+
+  // ── שלב 17: השוואה חלק א׳ — Comparatives ──────────────────────
+  {
+    title: 'השוואה חלק א׳ — Comparatives',
+    vocab: [
+      {en:'big → bigger',      he:'גדול → גדול יותר'},
+      {en:'small → smaller',   he:'קטן → קטן יותר'},
+      {en:'fast → faster',     he:'מהיר → מהיר יותר'},
+      {en:'slow → slower',     he:'איטי → איטי יותר'},
+      {en:'tall → taller',     he:'גבוה → גבוה יותר'},
+      {en:'short → shorter',   he:'נמוך → נמוך יותר'},
+      {en:'old → older',       he:'זקן / ישן → זקן / ישן יותר'},
+      {en:'young → younger',   he:'צעיר → צעיר יותר'},
+      {en:'hot → hotter',      he:'חם → חם יותר'},
+      {en:'cold → colder',     he:'קר → קר יותר'},
+      {en:'than',              he:'מאשר / מ-'},
+    ],
+    rule: {
+      title: 'השוואה — Comparatives',
+      summary: 'מוסיפים ER לסוף תואר קצר כדי להשוות בין שניים. לפני עיצור יחיד שלפניו תנועה — מכפילים: big→bigger, hot→hotter.',
+    },
+    examples: [
+      {en:'A bus is bigger than a car.',      he:'אוטובוס גדול יותר ממכונית.'},
+      {en:'A cheetah is faster than a dog.',  he:'צ׳יטה מהירה יותר מכלב.'},
+      {en:'My brother is taller than me.',    he:'אחי גבוה יותר ממני.'},
+      {en:'Today is colder than yesterday.',  he:'היום קר יותר מאתמול.'},
+    ],
+    exercises: [
+      {q:'A whale is ___ than a fish. (big)',      opts:['biger','bigger','more big'],    ans:1},
+      {q:'A turtle is ___ than a rabbit. (slow)',  opts:['slower','slowier','more slow'], ans:0},
+      {q:'My sister is ___ than me. (tall)',       opts:['taller','tallier','more tall'], ans:0},
+      {q:'This box is ___ than that one. (small)', opts:['smaller','more small','smaler'],ans:0},
+      {q:'July is ___ than December. (hot)',       opts:['hoter','hotter','more hot'],    ans:1},
+    ]
+  },
+
+  // ── שלב 18: השוואה חלק ב׳ — Superlatives ──────────────────────
+  {
+    title: 'השוואה חלק ב׳ — Superlatives',
+    vocab: [
+      {en:'big → bigger → biggest',      he:'גדול → גדול יותר → הכי גדול'},
+      {en:'small → smaller → smallest',  he:'קטן → קטן יותר → הכי קטן'},
+      {en:'fast → faster → fastest',     he:'מהיר → מהיר יותר → הכי מהיר'},
+      {en:'slow → slower → slowest',     he:'איטי → איטי יותר → הכי איטי'},
+      {en:'tall → taller → tallest',     he:'גבוה → גבוה יותר → הכי גבוה'},
+      {en:'short → shorter → shortest',  he:'נמוך → נמוך יותר → הכי נמוך'},
+      {en:'old → older → oldest',        he:'זקן → זקן יותר → הכי זקן'},
+      {en:'young → younger → youngest',  he:'צעיר → צעיר יותר → הכי צעיר'},
+      {en:'hot → hotter → hottest',      he:'חם → חם יותר → הכי חם'},
+      {en:'cold → colder → coldest',     he:'קר → קר יותר → הכי קר'},
+    ],
+    rule: {
+      title: 'עליון — Superlatives',
+      summary: 'מוסיפים THE + EST כדי לומר "הכי". לפני עיצור יחיד שלפניו תנועה — מכפילים: big→the biggest, hot→the hottest.',
+    },
+    examples: [
+      {en:'The elephant is the biggest animal.',   he:'הפיל הוא החיה הכי גדולה.'},
+      {en:'A cheetah is the fastest animal.',      he:'צ׳יטה היא החיה הכי מהירה.'},
+      {en:'My dad is the tallest in our family.',  he:'אבא שלי הכי גבוה במשפחה שלנו.'},
+      {en:'January is the coldest month.',         he:'ינואר הוא החודש הכי קר.'},
+    ],
+    exercises: [
+      {q:'The whale is the ___ animal. (big)',    opts:['bigest','biggest','most big'],    ans:1},
+      {q:'The turtle is the ___ animal. (slow)',  opts:['slowest','slowiest','most slow'], ans:0},
+      {q:'She is the ___ in her class. (tall)',   opts:['tallest','talliest','most tall'], ans:0},
+      {q:'This is the ___ box. (small)',          opts:['smallest','most small','smalest'],ans:0},
+      {q:'August is the ___ month. (hot)',        opts:['hotest','hottest','most hot'],    ans:1},
+    ]
   }];
 
 // ════════════════════════════════════════════════════════════════
@@ -1096,43 +1179,45 @@ function initStageCards() {
         (isDirect
             ? '<button class="back-link" onclick="window.location.href=\'app.html?level=elementary\'">→ חזור לפרקים</button>'
             : '<button class="back-link" onclick="backToLevels()">→ חזור לשלבים</button>') +
-        '<h2 class="section-title" id="grammarLevelTitle">' + (isDirect ? 'שלבי הדקדוק' : 'שלב 1') + '</h2>' +
+        '<h2 class="section-title" id="grammarLevelTitle">כרטיסיות הדקדוק</h2>' +
         '</div>';
 
     var loggedIn = typeof getUser === 'function' && !!getUser();
 
-    // [grammarIndex, left%, top%, width%, height%]
-    var buildings = [
-        { gi:12, l:74, t:2,  w:26, h:35 },
-        { gi:4,  l:49, t:2,  w:25, h:35 },
-        { gi:16, l:24, t:2,  w:25, h:35 },
-        { gi:14, l:0,  t:2,  w:24, h:35 },
-        { gi:13, l:74, t:37, w:26, h:32 },
-        { gi:2,  l:49, t:37, w:25, h:32 },
-        { gi:0,  l:24, t:37, w:25, h:32 },
-        { gi:1,  l:0,  t:37, w:24, h:32 },
-        { gi:3,  l:65, t:69, w:35, h:31 },
-        { gi:5,  l:33, t:69, w:32, h:31 },
-        { gi:15, l:0,  t:69, w:33, h:31 },
+    var STAGES = [
+        { gi:12, img:'to be.png',               title:'TO BE',            color:'#3b82f6' },
+        { gi:4,  img:'תארים הסבר.png',           title:'תארים',            color:'#8b5cf6' },
+        { gi:17, img:'השוואה א.png',             title:'השוואה חלק א׳',   color:'#22c55e' },
+        { gi:16, img:'רבים הסבר.png',            title:'רבים',             color:'#f97316' },
+        { gi:14, img:'have has.png',              title:'Have / Has',       color:'#14b8a6' },
+        { gi:13, img:'there is.png',              title:'יש / אין',         color:'#ec4899' },
+        { gi:2,  img:"can can't.png",             title:"Can / Can't",      color:'#eab308' },
+        { gi:0,  img:'present simple.png',        title:'זמן הווה',         color:'#ef4444' },
+        { gi:1,  img:'do does.png',               title:'Do / Does',        color:'#6366f1' },
+        { gi:3,  img:'wh הסבר.png',              title:'מילות שאלה',       color:'#0ea5e9' },
+        { gi:5,  img:'will go הסבר.png',         title:'עתיד',             color:'#10b981' },
+        { gi:15, img:'הווה מתמשך הסבר.png',      title:'הווה מתמשך',       color:'#f59e0b' },
+        { gi:18, img:'השוואה ב.png',             title:'השוואה חלק ב׳',   color:'#a855f7' },
     ];
 
-    var overlays = buildings.map(function(b) {
-        var done = loggedIn && typeof getStageStatus === 'function' && getStageStatus('grammar', b.gi) === 'complete';
-        var locked = FREE_GRAMMAR_INDICES.indexOf(b.gi) === -1 && !isPremium();
-        var badge = done ? '<div class="city-done-badge">✓ בוצע</div>' : (locked ? '<div class="city-lock-badge">🔒</div>' : '');
-        var clickAction = locked ? 'showPaywall()' : 'openLesson(' + b.gi + ')';
-        return '<button class="city-area' + (locked ? ' city-area--locked' : '') + '" onclick="' + clickAction + '"' +
-            ' style="left:' + b.l + '%;top:' + b.t + '%;width:' + b.w + '%;height:' + b.h + '%">' +
-            badge + '</button>';
+    var cards = STAGES.map(function(s, idx) {
+        var stageNum = idx + 1;
+        var done   = loggedIn && typeof getStageStatus === 'function' && getStageStatus('grammar', s.gi) === 'complete';
+        var locked = FREE_GRAMMAR_INDICES.indexOf(s.gi) === -1 && !isPremium();
+        var click  = locked ? 'showPaywall()' : 'openLesson(' + s.gi + ')';
+        var corner = done   ? '<div class="gc-check">✓</div>'
+                   : locked ? '<div class="gc-lock">🔒</div>' : '';
+        return '<button class="gc-card' + (locked ? ' gc-card--locked' : '') + (done ? ' gc-card--done' : '') + '" onclick="' + click + '">' +
+            '<div class="gc-top" style="background:' + s.color + '"></div>' +
+            '<div class="gc-img-wrap"><img src="images/grammar/' + s.img + '" alt="' + s.title + '" class="gc-img" loading="lazy"></div>' +
+            '<div class="gc-num" style="background:' + s.color + '">' + stageNum + '</div>' +
+            '<div class="gc-name">' + s.title + '</div>' +
+            corner +
+        '</button>';
     }).join('');
 
-    var cityMap = '<div class="city-map-wrap">' +
-        '<img src="images/grammar/עיר הדקדוק.png" class="city-map-img" alt="עיר הדקדוק">' +
-        overlays +
-        '</div>';
-
     document.getElementById('grammarNav').innerHTML = stageNav;
-    document.getElementById('grammarStageCards').innerHTML = cityMap;
+    document.getElementById('grammarStageCards').innerHTML = '<div class="gc-grid">' + cards + '</div>';
 }
 function renderStageCards() { initStageCards(); }
 
