@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תרגול משפטים — למדני אנגלית</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ── Level cards ── */
+        .sent-levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.1rem;
+            margin-top: 1.5rem;
+        }
+        .sent-level-card {
+            border-radius: 16px;
+            padding: 1.5rem 1rem 1.2rem;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.18s, box-shadow 0.18s;
+            border: 2.5px solid transparent;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+        }
+        .sent-level-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.16);
+        }
+        .sent-level-emoji { font-size: 2.6rem; margin-bottom: 0.4rem; }
+        .sent-level-name  { font-size: 1.25rem; font-weight: 700; color: #0f172a; margin: 0 0 0.2rem; }
+        .sent-level-desc  { font-size: 0.88rem; color: #64748b; margin: 0 0 0.5rem; }
+        .sent-level-count { font-size: 0.82rem; color: #94a3b8; }
+        .sent-level-prog  { margin-top: 0.7rem; }
+        .sent-prog-bar    { height: 5px; border-radius: 4px; background: #e2e8f0; overflow: hidden; margin-top: 0.3rem; }
+        .sent-prog-fill   { height: 100%; border-radius: 4px; transition: width 0.3s; }
+
+        /* ── Exercise view ── */
+        .sent-wrap {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem 3rem;
+        }
+        .sent-level-label {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+        .sent-prog-row {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin-bottom: 1.4rem;
+        }
+        .sent-prog-track {
+            flex: 1;
+            height: 7px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .sent-prog-fill2 {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .sent-prog-txt {
+            font-size: 0.85rem;
+            color: #64748b;
+            white-space: nowrap;
+        }
+
+        .sent-card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.09);
+            padding: 2rem 1.5rem 1.5rem;
+        }
+        .sent-prompt {
+            font-size: 0.88rem;
+            color: #64748b;
+            margin-bottom: 0.6rem;
+            font-weight: 600;
+        }
+        .sent-en-phrase {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0f172a;
+            text-align: center;
+            padding: 1rem 0.5rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 1.4rem;
+            letter-spacing: 0.01em;
+            line-height: 1.3;
+        }
+        .sent-input-label {
+            font-size: 0.88rem;
+            color: #475569;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+        .sent-input {
+            width: 100%;
+            box-sizing: border-box;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-size: 1.15rem;
+            font-family: inherit;
+            direction: rtl;
+            transition: border-color 0.15s;
+            outline: none;
+        }
+        .sent-input:focus { border-color: #3b82f6; }
+        .sent-input:disabled { background: #f8fafc; color: #475569; }
+
+        .sent-check-btn {
+            margin-top: 1rem;
+            width: 100%;
+            padding: 0.85rem;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.15s, transform 0.1s;
+        }
+        .sent-check-btn:hover  { background: #1d4ed8; }
+        .sent-check-btn:active { transform: scale(0.98); }
+        .sent-check-btn:disabled { opacity: 0.45; cursor: default; }
+
+        .sent-feedback {
+            margin-top: 1.2rem;
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            background: #f0fdf4;
+            border: 1.5px solid #86efac;
+            display: none;
+        }
+        .sent-feedback-label {
+            font-size: 0.8rem;
+            color: #166534;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+        .sent-correct-ans {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #15803d;
+            margin-bottom: 0.9rem;
+        }
+        .sent-self-label {
+            font-size: 0.88rem;
+            color: #475569;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .sent-self-btns {
+            display: flex;
+            gap: 0.7rem;
+            direction: ltr;
+        }
+        .sent-btn-correct {
+            flex: 1;
+            padding: 0.65rem;
+            border: 2px solid #22c55e;
+            background: #fff;
+            color: #15803d;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.15s;
+        }
+        .sent-btn-correct:hover { background: #f0fdf4; }
+        .sent-btn-wrong {
+            flex: 1;
+            padding: 0.65rem;
+            border: 2px solid #f87171;
+            background: #fff;
+            color: #b91c1c;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.15s;
+        }
+        .sent-btn-wrong:hover { background: #fef2f2; }
+
+        .sent-next-btn {
+            margin-top: 1rem;
+            width: 100%;
+            padding: 0.85rem;
+            background: #0f172a;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            display: none;
+            transition: background 0.15s;
+        }
+        .sent-next-btn:hover { background: #1e293b; }
+
+        /* ── Score view ── */
+        .sent-score-card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.09);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            max-width: 460px;
+            margin: 2rem auto;
+        }
+        .sent-score-medal { font-size: 4rem; margin-bottom: 0.5rem; }
+        .sent-score-title { font-size: 1.7rem; font-weight: 700; color: #0f172a; margin: 0 0 0.3rem; }
+        .sent-score-frac  { font-size: 1.25rem; color: #475569; margin: 0 0 1rem; }
+        .sent-score-msg   { font-size: 1rem; color: #64748b; margin: 0 0 1.5rem; }
+        .sent-score-actions { display: flex; flex-direction: column; gap: 0.6rem; }
+        .sent-score-actions .btn-primary   { font-family: inherit; }
+        .sent-score-actions .btn-secondary { font-family: inherit; }
+    </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+</head>
+<body>
+
+<nav class="toolbar">
+    <a href="app.html" class="toolbar-brand"><span class="accent">Lamdani</span> English</a>
+    <div class="toolbar-nav">
+        <div class="nav-menu-wrap">
+            <button class="nav-icon-btn" id="navMenuBtn" onclick="toggleNavMenu()">
+                <img src="images/ui/menu.png" class="nav-icon-img" alt="תפריט">
+            </button>
+            <div class="nav-menu-panel" id="navMenuPanel">
+                <a href="app.html" class="nav-menu-item">דף הבית</a>
+                <a href="אודות.html" class="nav-menu-item">אודות</a>
+                <a href="צור קשר.html" class="nav-menu-item">צור קשר</a>
+            </div>
+        </div>
+        <a href="app.html" class="nav-icon-btn">
+            <img src="images/ui/home.png" class="nav-icon-img" alt="בית">
+        </a>
+        <div id="userNavArea" style="position:relative"></div>
+    </div>
+</nav>
+
+<!-- ═══ 0. בחירת רמה ════════════════════════════════════════════ -->
+<div id="viewSelect" class="reading-wrap" style="display:none">
+    <div class="breadcrumb">
+        <a href="app.html">בית</a>
+        <span class="bc-sep">‹</span>
+        <span>תרגול משפטים</span>
+    </div>
+    <h1 class="section-title">תרגול משפטים</h1>
+    <p class="section-subtitle">בחר רמה ותרגם משפטים מאנגלית לעברית</p>
+    <div class="sent-levels-grid" id="levelsGrid"></div>
+</div>
+
+<!-- ═══ 1. תרגול ══════════════════════════════════════════════════ -->
+<div id="viewExercise" style="display:none">
+    <div class="sent-wrap">
+        <button class="back-link" onclick="backToSelect()">→ חזור לרמות</button>
+        <div class="sent-level-label" id="exLevelLabel"></div>
+
+        <div class="sent-prog-row">
+            <div class="sent-prog-track">
+                <div class="sent-prog-fill2" id="exBar"></div>
+            </div>
+            <span class="sent-prog-txt" id="exProg"></span>
+        </div>
+
+        <div class="sent-card">
+            <div class="sent-prompt">תרגם לעברית:</div>
+            <div class="sent-en-phrase" id="exPhrase" dir="ltr"></div>
+
+            <label class="sent-input-label">כתוב כאן בעברית:</label>
+            <input type="text" class="sent-input" id="exInput" dir="rtl"
+                   placeholder="כתוב את התרגום שלך..."
+                   autocomplete="off" autocorrect="off" spellcheck="false">
+
+            <button class="sent-check-btn" id="exCheckBtn" onclick="checkAnswer()">בדוק ✓</button>
+
+            <div class="sent-feedback" id="exFeedback">
+                <div class="sent-feedback-label">תשובה נכונה:</div>
+                <div class="sent-correct-ans" id="exCorrectAns"></div>
+                <div class="sent-self-label">האם הצלחת?</div>
+                <div class="sent-self-btns">
+                    <button class="sent-btn-correct" onclick="markResult(true)">✓ כן, הצלחתי</button>
+                    <button class="sent-btn-wrong"   onclick="markResult(false)">✗ לא הצלחתי</button>
+                </div>
+            </div>
+
+            <button class="sent-next-btn" id="exNextBtn" onclick="nextItem()">הבא ←</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ 2. תוצאות ══════════════════════════════════════════════════ -->
+<div id="viewScore" style="display:none">
+    <div class="sent-wrap">
+        <div class="sent-score-card">
+            <div class="sent-score-medal" id="scoreMedal"></div>
+            <h2 class="sent-score-title" id="scoreTitle"></h2>
+            <div class="sent-score-frac"  id="scoreFrac"></div>
+            <p  class="sent-score-msg"   id="scoreMsg"></p>
+            <div class="sent-score-actions">
+                <button class="btn-primary"   onclick="retryLevel()">נסה שוב</button>
+                <button class="btn-secondary" onclick="backToSelect()">רמה אחרת</button>
+                <button class="btn-secondary" onclick="window.location.href='app.html'">חזור לפרקים</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script defer src="firebase-auth.js"></script>
+<script defer src="user.js"></script>
+<script defer src="premium.js"></script>
+<script defer src="firestore-sync.js"></script>
+<script>
+/* ── נתוני רמות — placeholder בלבד, תוכן אמיתי יתווסף בנפרד ── */
+var LEVELS = [
+    {
+        id: 0,
+        name: 'צמדי מילים',
+        desc: '2 מילים',
+        color: '#3b82f6',
+        emoji: '🔤',
+        items: [
+            { en: 'big dog',   he: 'כלב גדול' },
+            { en: 'red car',   he: 'מכונית אדומה' },
+            { en: 'small cat', he: 'חתול קטן' },
+        ]
+    },
+    {
+        id: 1,
+        name: '3 מילים',
+        desc: '3 מילים',
+        color: '#8b5cf6',
+        emoji: '📝',
+        items: [
+            { en: 'a tall boy',   he: 'ילד גבוה' },
+            { en: 'my new bag',   he: 'התיק החדש שלי' },
+            { en: 'the old tree', he: 'העץ הישן' },
+        ]
+    },
+    {
+        id: 2,
+        name: 'משפטים קצרים',
+        desc: '4–5 מילים',
+        color: '#22c55e',
+        emoji: '💬',
+        items: [
+            { en: 'I have a big dog',    he: 'יש לי כלב גדול' },
+            { en: 'She likes blue cars', he: 'היא אוהבת מכוניות כחולות' },
+            { en: 'He is very tall',     he: 'הוא גבוה מאוד' },
+        ]
+    },
+    {
+        id: 3,
+        name: 'משפטים מלאים',
+        desc: '6–8 מילים',
+        color: '#f97316',
+        emoji: '📖',
+        items: [
+            { en: 'My brother is taller than me',              he: 'האח שלי גבוה ממני' },
+            { en: 'We go to school by bus every morning',      he: 'אנחנו הולכים לבית ספר באוטובוס כל בוקר' },
+            { en: 'She plays football with her friends',        he: 'היא משחקת כדורגל עם החברות שלה' },
+        ]
+    },
+];
+
+/* ── מצב נוכחי ── */
+var curLevel   = null;
+var curItems   = [];
+var curIdx     = 0;
+var scoreCorrect = 0;
+var scoreTotal   = 0;
+
+/* ── ניווט תפריט ── */
+function toggleNavMenu() {
+    var p = document.getElementById('navMenuPanel');
+    p.style.display = p.style.display === 'block' ? 'none' : 'block';
+}
+document.addEventListener('click', function(e) {
+    var wrap = document.getElementById('navMenuBtn');
+    if (wrap && !wrap.contains(e.target)) {
+        var p = document.getElementById('navMenuPanel');
+        if (p) p.style.display = 'none';
+    }
+});
+
+/* ── view helpers ── */
+function showView(id) {
+    ['viewSelect','viewExercise','viewScore'].forEach(function(v) {
+        document.getElementById(v).style.display = v === id ? '' : 'none';
+    });
+}
+
+/* ── קריאת / שמירת התקדמות ── */
+function getSentProgress() {
+    if (typeof getProgress !== 'function') return {};
+    var p = getProgress();
+    return p.sentences || {};
+}
+
+function saveSentProgress(levelId, done, correct) {
+    if (typeof getProgress !== 'function' || typeof saveProgress !== 'function') return;
+    var p = getProgress();
+    if (!p.sentences) p.sentences = {};
+    p.sentences[levelId] = { done: done, correct: correct };
+    saveProgress(p);
+}
+
+/* ── רינדור כרטיסי רמה ── */
+function renderLevels() {
+    var sp   = getSentProgress();
+    var grid = document.getElementById('levelsGrid');
+    grid.innerHTML = LEVELS.map(function(lv) {
+        var saved = sp[lv.id] || {};
+        var done  = saved.done    || 0;
+        var corr  = saved.correct || 0;
+        var total = lv.items.length;
+        var pct   = total > 0 ? Math.round(done / total * 100) : 0;
+        var progHtml = done > 0
+            ? '<div class="sent-level-prog">' +
+                '<div style="font-size:0.78rem;color:#64748b">' + corr + '/' + done + ' נכון</div>' +
+                '<div class="sent-prog-bar"><div class="sent-prog-fill" style="width:' + pct + '%;background:' + lv.color + '"></div></div>' +
+              '</div>'
+            : '';
+        return '<div class="sent-level-card" onclick="selectLevel(' + lv.id + ')" ' +
+               'style="border-color:' + lv.color + '">' +
+               '<div class="sent-level-emoji">' + lv.emoji + '</div>' +
+               '<div class="sent-level-name">' + lv.name + '</div>' +
+               '<div class="sent-level-desc">' + lv.desc + '</div>' +
+               '<div class="sent-level-count">' + total + ' ביטויים</div>' +
+               progHtml +
+               '</div>';
+    }).join('');
+}
+
+/* ── בחירת רמה ── */
+function selectLevel(id) {
+    curLevel  = LEVELS.find(function(l) { return l.id === id; });
+    if (!curLevel) return;
+    curItems  = curLevel.items.slice();
+    curIdx    = 0;
+    scoreCorrect = 0;
+    scoreTotal   = 0;
+    showView('viewExercise');
+    renderExercise();
+}
+
+/* ── תרגיל ── */
+function renderExercise() {
+    var item  = curItems[curIdx];
+    var total = curItems.length;
+    var pct   = Math.round(curIdx / total * 100);
+    var color = curLevel.color;
+
+    document.getElementById('exLevelLabel').textContent = curLevel.name;
+    document.getElementById('exLevelLabel').style.background = color;
+    document.getElementById('exBar').style.width    = pct + '%';
+    document.getElementById('exBar').style.background = color;
+    document.getElementById('exProg').textContent  = (curIdx + 1) + ' / ' + total;
+    document.getElementById('exPhrase').textContent = item.en;
+
+    var input = document.getElementById('exInput');
+    input.value    = '';
+    input.disabled = false;
+    input.focus();
+
+    document.getElementById('exCheckBtn').style.display = '';
+    document.getElementById('exCheckBtn').disabled      = false;
+    document.getElementById('exFeedback').style.display = 'none';
+    document.getElementById('exNextBtn').style.display  = 'none';
+    document.getElementById('exCorrectAns').textContent = '';
+}
+
+function checkAnswer() {
+    var input = document.getElementById('exInput');
+    if (!input.value.trim()) {
+        input.focus();
+        return;
+    }
+    input.disabled = true;
+    document.getElementById('exCheckBtn').style.display = 'none';
+
+    var item = curItems[curIdx];
+    document.getElementById('exCorrectAns').textContent = item.he;
+    document.getElementById('exFeedback').style.display = '';
+}
+
+function markResult(isCorrect) {
+    scoreTotal++;
+    if (isCorrect) scoreCorrect++;
+
+    document.getElementById('exFeedback').querySelector('.sent-self-btns').innerHTML =
+        '<span style="font-size:1.1rem;font-weight:700;color:' + (isCorrect ? '#15803d' : '#b91c1c') + '">' +
+        (isCorrect ? '✓ מעולה!' : '✗ ממשיך...') + '</span>';
+
+    document.getElementById('exNextBtn').style.display = '';
+}
+
+function nextItem() {
+    curIdx++;
+    if (curIdx >= curItems.length) {
+        showScore();
+    } else {
+        renderExercise();
+    }
+}
+
+/* ── תוצאות ── */
+function showScore() {
+    saveSentProgress(curLevel.id, scoreTotal, scoreCorrect);
+
+    var pct = scoreTotal > 0 ? Math.round(scoreCorrect / scoreTotal * 100) : 0;
+    var medal, title, msg;
+    if (pct === 100)      { medal = '🏆'; title = 'מושלם!';      msg = 'תרגמת הכל נכון — כל הכבוד!'; }
+    else if (pct >= 70)   { medal = '⭐'; title = 'כמעט מושלם!'; msg = 'עוד קצת ותגיע ל-100%.'; }
+    else if (pct >= 40)   { medal = '💪'; title = 'יפה!';         msg = 'ממשיכים להתאמן — אתה משתפר!'; }
+    else                  { medal = '📚'; title = 'ממשיכים!';     msg = 'תרגיל נוסף יעזור לך.'; }
+
+    document.getElementById('scoreMedal').textContent = medal;
+    document.getElementById('scoreTitle').textContent = title;
+    document.getElementById('scoreFrac').textContent  = scoreCorrect + ' מתוך ' + scoreTotal + ' נכון';
+    document.getElementById('scoreMsg').textContent   = msg;
+
+    showView('viewScore');
+    if (typeof fsyncProgress === 'function') fsyncProgress();
+}
+
+function retryLevel() {
+    selectLevel(curLevel.id);
+}
+
+function backToSelect() {
+    renderLevels();
+    showView('viewSelect');
+}
+
+/* ── Enter key on input ── */
+document.addEventListener('DOMContentLoaded', function() {
+    var inp = document.getElementById('exInput');
+    if (inp) {
+        inp.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                var btn = document.getElementById('exCheckBtn');
+                if (btn && btn.style.display !== 'none' && !btn.disabled) btn.click();
+            }
+        });
+    }
+});
+
+/* ── Auth / כניסה ── */
+window.onUserLogin = function() {
+    renderLevels();
+    showView('viewSelect');
+};
+
+/* ── Initial render (before auth — mirrors grammar.html pattern) ── */
+renderLevels();
+showView('viewSelect');
+</script>
+</body>
+</html>
