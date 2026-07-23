@@ -298,21 +298,8 @@
             <button class="sent-check-btn" id="exCheckBtn" onclick="checkAnswer()">בדוק ✓</button>
 
             <div class="sent-feedback" id="exFeedback">
-                <div class="sent-feedback-label">תשובה נכונה:</div>
-                <div class="sent-correct-ans" id="exCorrectAns"></div>
-
-                <div id="selfAssessArea">
-                    <div class="sent-self-label">האם הצלחת?</div>
-                    <div class="sent-self-btns">
-                        <button class="sent-btn-correct" onclick="markResult(true)">✓ כן, הצלחתי</button>
-                        <button class="sent-btn-wrong"   onclick="markResult(false)">✗ לא הצלחתי</button>
-                    </div>
-                </div>
-
-                <div id="resultArea" style="display:none">
-                    <div id="resultMsg" style="font-size:1.1rem;font-weight:700;margin-bottom:0.8rem"></div>
-                    <button class="sent-next-btn" onclick="nextItem()" style="display:block;margin-top:0">הבא ←</button>
-                </div>
+                <div id="feedbackMsg"></div>
+                <button class="sent-next-btn" id="exNextBtn" onclick="nextItem()">הבא ←</button>
             </div>
         </div>
     </div>
@@ -495,45 +482,48 @@ function renderExercise() {
     input.disabled = false;
     input.focus();
 
-    document.getElementById('exCheckBtn').style.display = '';
-    document.getElementById('exCheckBtn').disabled      = false;
-    document.getElementById('exFeedback').style.display = 'none';
-    document.getElementById('exFeedback').style.background  = '';
+    document.getElementById('exCheckBtn').style.display    = '';
+    document.getElementById('exCheckBtn').disabled         = false;
+    document.getElementById('exFeedback').style.display    = 'none';
+    document.getElementById('exFeedback').style.background = '';
     document.getElementById('exFeedback').style.borderColor = '';
-    document.getElementById('exCorrectAns').textContent     = '';
-    document.getElementById('selfAssessArea').style.display = '';
-    document.getElementById('resultArea').style.display     = 'none';
+    document.getElementById('feedbackMsg').innerHTML        = '';
+    document.getElementById('exNextBtn').style.display     = 'none';
+}
+
+function normalize(s) {
+    return s.trim().toLowerCase().replace(/[.,!?'"״׳]/g, '').replace(/\s+/g, ' ');
 }
 
 function checkAnswer() {
     var input = document.getElementById('exInput');
-    if (!input.value.trim()) {
-        input.focus();
-        return;
-    }
+    if (!input.value.trim()) { input.focus(); return; }
+
     input.disabled = true;
     document.getElementById('exCheckBtn').style.display = 'none';
 
-    var item = curItems[curIdx];
-    document.getElementById('exCorrectAns').textContent = item.he;
-    document.getElementById('exFeedback').style.display = 'block';
-}
+    var item      = curItems[curIdx];
+    var isCorrect = normalize(input.value) === normalize(item.he);
 
-function markResult(isCorrect) {
     scoreTotal++;
     if (isCorrect) scoreCorrect++;
 
-    document.getElementById('selfAssessArea').style.display = 'none';
+    var fb  = document.getElementById('exFeedback');
+    var msg = document.getElementById('feedbackMsg');
 
-    var msg = document.getElementById('resultMsg');
-    msg.textContent = isCorrect ? '✓ מעולה!' : '✗ לא נכון — ממשיכים!';
-    msg.style.color = isCorrect ? '#15803d' : '#b91c1c';
+    if (isCorrect) {
+        fb.style.background  = '#f0fdf4';
+        fb.style.borderColor = '#86efac';
+        msg.innerHTML = '<span style="color:#15803d;font-size:1.2rem;font-weight:700">✓ תשובה נכונה!</span>';
+    } else {
+        fb.style.background  = '#fef2f2';
+        fb.style.borderColor = '#fca5a5';
+        msg.innerHTML = '<span style="color:#b91c1c;font-size:1.05rem;font-weight:700">' +
+            'כמעט, התשובה הנכונה היא: <span style="color:#0f172a">' + item.he + '</span></span>';
+    }
 
-    var fb = document.getElementById('exFeedback');
-    fb.style.background   = isCorrect ? '#f0fdf4' : '#fef2f2';
-    fb.style.borderColor  = isCorrect ? '#86efac' : '#fca5a5';
-
-    document.getElementById('resultArea').style.display = 'block';
+    fb.style.display = 'block';
+    document.getElementById('exNextBtn').style.display = 'block';
 }
 
 function nextItem() {
