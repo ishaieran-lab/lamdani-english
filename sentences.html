@@ -235,6 +235,23 @@
         .sent-score-actions { display: flex; flex-direction: column; gap: 0.6rem; }
         .sent-score-actions .btn-primary   { font-family: inherit; }
         .sent-score-actions .btn-secondary { font-family: inherit; }
+
+        /* ── Mode pills ── */
+        .sent-mode-row { display:flex; gap:0.5rem; margin-bottom:0.7rem; flex-wrap:wrap; }
+        .sent-mode-pill {
+            display: flex; align-items: center; gap: 0.3rem;
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; font-family: inherit;
+            border: 2px solid #e2e8f0;
+            background: #f8fafc; color: #64748b;
+            transition: all 0.15s;
+        }
+        .sent-mode-pill.active { background:#eff6ff; border-color:#3b82f6; color:#1d4ed8; }
+        .sent-mode-pill:disabled { opacity:0.35; cursor:default; }
+        .sent-mode-check { opacity:0; font-size:0.85rem; }
+        .sent-mode-pill.active .sent-mode-check { opacity:1; }
     </style>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
@@ -278,6 +295,15 @@
     <div class="sent-wrap">
         <button class="back-link" onclick="backToSelect()">→ חזור לרמות</button>
         <div class="sent-level-label" id="exLevelLabel"></div>
+
+        <div class="sent-mode-row" id="modeRow" style="display:none">
+            <button class="sent-mode-pill active" id="modeUnBtn" onclick="switchMode('unanswered')">
+                <span class="sent-mode-check">✓</span> שאלות שלא נענו
+            </button>
+            <button class="sent-mode-pill" id="modeAllBtn" onclick="switchMode('all')">
+                <span class="sent-mode-check">✓</span> כל השאלות
+            </button>
+        </div>
 
         <div class="sent-prog-row">
             <div class="sent-prog-track">
@@ -400,11 +426,13 @@ var LEVELS = [
 ];
 
 /* ── מצב נוכחי ── */
-var curLevel   = null;
-var curItems   = [];
-var curIdx     = 0;
-var scoreCorrect = 0;
-var scoreTotal   = 0;
+var curLevel       = null;
+var curItems       = [];
+var curItemIndices = [];
+var curMode        = 'all';
+var curIdx         = 0;
+var scoreCorrect   = 0;
+var scoreTotal     = 0;
 
 /* ── ניווט תפריט ── */
 function toggleNavMenu() {
@@ -427,33 +455,31 @@ function showView(id) {
 }
 
 /* ── קריאת / שמירת התקדמות ── */
-function getSentProgress() {
-    if (typeof getProgress !== 'function') return {};
-    var p = getProgress();
-    return p.sentences || {};
+function getSentCorrect(levelId) {
+    if (typeof getProgress !== 'function') return [];
+    var s = (getProgress().sentences || {})[levelId] || {};
+    return s.correct || [];
 }
 
-function saveSentProgress(levelId, done, correct) {
+function addSentCorrect(levelId, origIdx) {
     if (typeof getProgress !== 'function' || typeof saveProgress !== 'function') return;
     var p = getProgress();
     if (!p.sentences) p.sentences = {};
-    p.sentences[levelId] = { done: done, correct: correct };
-    saveProgress(p);
+    if (!p.sentences[levelId]) p.sentences[levelId] = { correct: [] };
+    var arr = p.sentences[levelId].correct;
+    if (arr.indexOf(origIdx) === -1) { arr.push(origIdx); saveProgress(p); }
 }
 
 /* ── רינדור כרטיסי רמה ── */
 function renderLevels() {
-    var sp   = getSentProgress();
     var grid = document.getElementById('levelsGrid');
     grid.innerHTML = LEVELS.map(function(lv) {
-        var saved = sp[lv.id] || {};
-        var done  = saved.done    || 0;
-        var corr  = saved.correct || 0;
+        var corr  = getSentCorrect(lv.id).length;
         var total = lv.items.length;
-        var pct   = total > 0 ? Math.round(done / total * 100) : 0;
-        var progHtml = done > 0
+        var pct   = total > 0 ? Math.round(corr / total * 100) : 0;
+        var progHtml = corr > 0
             ? '<div class="sent-level-prog">' +
-                '<div style="font-size:0.78rem;color:#64748b">' + corr + '/' + done + ' נכון</div>' +
+                '<div style="font-size:0.78rem;color:#64748b">' + corr + ' / ' + total + ' נכון</div>' +
                 '<div class="sent-prog-bar"><div class="sent-prog-fill" style="width:' + pct + '%;background:' + lv.color + '"></div></div>' +
               '</div>'
             : '';
@@ -470,12 +496,53 @@ function renderLevels() {
 
 /* ── בחירת רמה ── */
 function selectLevel(id) {
-    curLevel  = LEVELS.find(function(l) { return l.id === id; });
+    curLevel = LEVELS.find(function(l) { return l.id === id; });
     if (!curLevel) return;
-    curItems  = curLevel.items.slice();
-    curIdx    = 0;
-    scoreCorrect = 0;
-    scoreTotal   = 0;
+    var correctIndices = getSentCorrect(id);
+    var unanswered = curLevel.items.filter(function(_, i) {
+        return correctIndices.indexOf(i) === -1;
+    }).length;
+    startLevel(unanswered > 0 ? 'unanswered' : 'all');
+}
+
+function switchMode(mode) {
+    if (mode === curMode) return;
+    startLevel(mode);
+}
+
+function startLevel(mode) {
+    if (!curLevel) return;
+    curMode = mode;
+
+    var correctIndices = getSentCorrect(curLevel.id);
+    var unansweredCount = curLevel.items.filter(function(_, i) {
+        return correctIndices.indexOf(i) === -1;
+    }).length;
+
+    if (mode === 'unanswered') {
+        curItems = []; curItemIndices = [];
+        curLevel.items.forEach(function(item, i) {
+            if (correctIndices.indexOf(i) === -1) { curItems.push(item); curItemIndices.push(i); }
+        });
+    } else {
+        curItems       = curLevel.items.slice();
+        curItemIndices = curLevel.items.map(function(_, i) { return i; });
+    }
+
+    /* עדכון pills */
+    var hasProgress = correctIndices.length > 0;
+    var modeRow = document.getElementById('modeRow');
+    modeRow.style.display = hasProgress ? '' : 'none';
+    if (hasProgress) {
+        var unBtn  = document.getElementById('modeUnBtn');
+        var allBtn = document.getElementById('modeAllBtn');
+        unBtn.className  = 'sent-mode-pill' + (mode === 'unanswered' ? ' active' : '');
+        allBtn.className = 'sent-mode-pill' + (mode === 'all'        ? ' active' : '');
+        unBtn.disabled   = (unansweredCount === 0);
+        unBtn.querySelector('.sent-mode-check').style.visibility = unansweredCount === 0 ? 'hidden' : '';
+    }
+
+    curIdx = 0; scoreCorrect = 0; scoreTotal = 0;
     showView('viewExercise');
     renderExercise();
 }
@@ -523,7 +590,10 @@ function checkAnswer() {
     var isCorrect = normalize(input.value) === normalize(item.he);
 
     scoreTotal++;
-    if (isCorrect) scoreCorrect++;
+    if (isCorrect) {
+        scoreCorrect++;
+        addSentCorrect(curLevel.id, curItemIndices[curIdx]);
+    }
 
     var fb  = document.getElementById('exFeedback');
     var msg = document.getElementById('feedbackMsg');
@@ -554,7 +624,6 @@ function nextItem() {
 
 /* ── תוצאות ── */
 function showScore() {
-    saveSentProgress(curLevel.id, scoreTotal, scoreCorrect);
 
     var pct = scoreTotal > 0 ? Math.round(scoreCorrect / scoreTotal * 100) : 0;
     var medal, title, msg;
