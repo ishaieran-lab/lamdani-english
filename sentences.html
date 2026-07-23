@@ -300,14 +300,20 @@
             <div class="sent-feedback" id="exFeedback">
                 <div class="sent-feedback-label">תשובה נכונה:</div>
                 <div class="sent-correct-ans" id="exCorrectAns"></div>
-                <div class="sent-self-label">האם הצלחת?</div>
-                <div class="sent-self-btns">
-                    <button class="sent-btn-correct" onclick="markResult(true)">✓ כן, הצלחתי</button>
-                    <button class="sent-btn-wrong"   onclick="markResult(false)">✗ לא הצלחתי</button>
+
+                <div id="selfAssessArea">
+                    <div class="sent-self-label">האם הצלחת?</div>
+                    <div class="sent-self-btns">
+                        <button class="sent-btn-correct" onclick="markResult(true)">✓ כן, הצלחתי</button>
+                        <button class="sent-btn-wrong"   onclick="markResult(false)">✗ לא הצלחתי</button>
+                    </div>
+                </div>
+
+                <div id="resultArea" style="display:none">
+                    <div id="resultMsg" style="font-size:1.1rem;font-weight:700;margin-bottom:0.8rem"></div>
+                    <button class="sent-next-btn" onclick="nextItem()" style="display:block;margin-top:0">הבא ←</button>
                 </div>
             </div>
-
-            <button class="sent-next-btn" id="exNextBtn" onclick="nextItem()">הבא ←</button>
         </div>
     </div>
 </div>
@@ -492,8 +498,11 @@ function renderExercise() {
     document.getElementById('exCheckBtn').style.display = '';
     document.getElementById('exCheckBtn').disabled      = false;
     document.getElementById('exFeedback').style.display = 'none';
-    document.getElementById('exNextBtn').style.display  = 'none';
-    document.getElementById('exCorrectAns').textContent = '';
+    document.getElementById('exFeedback').style.background  = '';
+    document.getElementById('exFeedback').style.borderColor = '';
+    document.getElementById('exCorrectAns').textContent     = '';
+    document.getElementById('selfAssessArea').style.display = '';
+    document.getElementById('resultArea').style.display     = 'none';
 }
 
 function checkAnswer() {
@@ -514,11 +523,17 @@ function markResult(isCorrect) {
     scoreTotal++;
     if (isCorrect) scoreCorrect++;
 
-    document.getElementById('exFeedback').querySelector('.sent-self-btns').innerHTML =
-        '<span style="font-size:1.1rem;font-weight:700;color:' + (isCorrect ? '#15803d' : '#b91c1c') + '">' +
-        (isCorrect ? '✓ מעולה!' : '✗ ממשיך...') + '</span>';
+    document.getElementById('selfAssessArea').style.display = 'none';
 
-    document.getElementById('exNextBtn').style.display = 'block';
+    var msg = document.getElementById('resultMsg');
+    msg.textContent = isCorrect ? '✓ מעולה!' : '✗ לא נכון — ממשיכים!';
+    msg.style.color = isCorrect ? '#15803d' : '#b91c1c';
+
+    var fb = document.getElementById('exFeedback');
+    fb.style.background   = isCorrect ? '#f0fdf4' : '#fef2f2';
+    fb.style.borderColor  = isCorrect ? '#86efac' : '#fca5a5';
+
+    document.getElementById('resultArea').style.display = 'block';
 }
 
 function nextItem() {
