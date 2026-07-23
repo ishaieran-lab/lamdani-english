@@ -9,90 +9,117 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Fredoka','Segoe UI',sans-serif;background:#0b1220;color:#e2e8f0;min-height:100vh;direction:rtl}
+body{font-family:'Fredoka','Segoe UI',sans-serif;background:#f0f4f8;color:#1e293b;min-height:100vh;direction:rtl}
 
 /* ── state screens ─────────────────────────────────── */
-.state-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;text-align:center;padding:2rem}
-.state-screen h2{font-size:1.6rem;font-weight:700;color:#f1f5f9}
+.state-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;text-align:center;padding:2rem;background:#f0f4f8}
+.state-screen h2{font-size:1.6rem;font-weight:700;color:#0f172a}
 .state-screen p{color:#64748b;font-size:1rem}
+
+/* ── buttons ────────────────────────────────────────── */
 .btn-primary{background:#2563eb;color:#fff;border:none;border-radius:0.65rem;padding:0.7rem 1.8rem;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background 0.15s}
 .btn-primary:hover{background:#1d4ed8}
-.btn-sm{padding:0.3rem 0.85rem;font-size:0.82rem;border-radius:0.5rem;border:none;cursor:pointer;font-family:inherit;font-weight:600;transition:background 0.15s}
-.btn-danger{background:#ef4444;color:#fff}.btn-danger:hover{background:#dc2626}
-.btn-success{background:#22c55e;color:#fff}.btn-success:hover{background:#16a34a}
-.btn-ghost{background:rgba(255,255,255,0.08);color:#94a3b8;border:1px solid rgba(255,255,255,0.1)}.btn-ghost:hover{background:rgba(255,255,255,0.14)}
+.btn-sm{padding:0.28rem 0.8rem;font-size:0.8rem;border-radius:0.45rem;border:none;cursor:pointer;font-family:inherit;font-weight:600;transition:all 0.15s;white-space:nowrap}
+.btn-danger{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5}.btn-danger:hover{background:#fecaca}
+.btn-success{background:#dcfce7;color:#16a34a;border:1px solid #86efac}.btn-success:hover{background:#bbf7d0}
+.btn-ghost{background:#fff;color:#64748b;border:1px solid #e2e8f0}.btn-ghost:hover{background:#f8fafc}
+.btn-save{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;padding:0.28rem 0.75rem;font-size:0.8rem;border-radius:0.45rem;cursor:pointer;font-family:inherit;font-weight:600;transition:background 0.15s;white-space:nowrap}
+.btn-save:hover{background:#dbeafe}
+.btn-delete{background:none;border:1px solid #fca5a5;color:#dc2626;border-radius:0.5rem;padding:0.32rem 0.9rem;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s}
+.btn-delete:hover{background:#fee2e2}
 
-/* ── top bar ────────────────────────────────────────── */
-.topbar{background:#111827;border-bottom:1px solid rgba(255,255,255,0.07);padding:0 1.5rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.topbar-logo{font-size:1.15rem;font-weight:700;color:#f1f5f9;display:flex;align-items:center;gap:0.5rem}
-.topbar-logo span{color:#3b82f6}
+/* ── topbar ─────────────────────────────────────────── */
+.topbar{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 1.5rem;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.topbar-brand{display:flex;align-items:center;gap:0.6rem;font-size:1.15rem;font-weight:700;color:#0f172a}
+.topbar-brand .icon{width:32px;height:32px;background:#2563eb;border-radius:0.5rem;display:flex;align-items:center;justify-content:center;font-size:1rem}
 .topbar-right{display:flex;align-items:center;gap:0.75rem}
-.topbar-user{font-size:0.85rem;color:#64748b}
+.topbar-user{font-size:0.82rem;color:#64748b}
 
-/* ── page layout ────────────────────────────────────── */
-.page{max-width:1100px;margin:0 auto;padding:1.5rem 1rem 3rem}
-.section-title{font-size:1.05rem;font-weight:700;color:#94a3b8;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:0.75rem}
+/* ── page ────────────────────────────────────────────── */
+.page{max-width:1140px;margin:0 auto;padding:1.75rem 1.25rem 3rem}
+.section-title{font-size:0.72rem;font-weight:700;color:#94a3b8;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.7rem}
 
 /* ── stat cards ─────────────────────────────────────── */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.75rem}
-.stat-card{background:#151f35;border-radius:0.9rem;padding:1.1rem 1.25rem;border:1px solid rgba(255,255,255,0.06)}
-.stat-val{font-size:2.1rem;font-weight:700;line-height:1;color:#f1f5f9}
-.stat-lbl{font-size:0.8rem;color:#64748b;margin-top:0.3rem}
-.stat-card.blue .stat-val{color:#60a5fa}
-.stat-card.green .stat-val{color:#4ade80}
-.stat-card.yellow .stat-val{color:#fbbf24}
-.stat-card.purple .stat-val{color:#c084fc}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.stat-card{background:#fff;border-radius:1rem;padding:1.25rem 1.4rem;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.stat-icon{width:36px;height:36px;border-radius:0.6rem;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:0.75rem}
+.stat-val{font-size:2rem;font-weight:700;line-height:1;color:#0f172a}
+.stat-lbl{font-size:0.78rem;color:#64748b;margin-top:0.25rem}
+.stat-card.blue .stat-icon{background:#eff6ff}
+.stat-card.green .stat-icon{background:#f0fdf4}
+.stat-card.yellow .stat-icon{background:#fefce8}
+.stat-card.purple .stat-icon{background:#faf5ff}
+.stat-card.blue .stat-val{color:#2563eb}
+.stat-card.green .stat-val{color:#16a34a}
+.stat-card.yellow .stat-val{color:#ca8a04}
+.stat-card.purple .stat-val{color:#7c3aed}
 
-/* ── users table ─────────────────────────────────────── */
-.table-wrap{background:#111827;border-radius:1rem;border:1px solid rgba(255,255,255,0.07);overflow:hidden}
-table{width:100%;border-collapse:collapse;font-size:0.9rem}
-thead tr{background:#0f1729}
-th{padding:0.8rem 1rem;text-align:right;font-size:0.75rem;font-weight:700;color:#475569;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap}
-td{padding:0.8rem 1rem;border-top:1px solid rgba(255,255,255,0.05);vertical-align:middle}
-tr:hover td{background:rgba(255,255,255,0.02)}
-.user-name{font-weight:700;color:#f1f5f9;font-size:0.95rem}
-.user-email{font-size:0.78rem;color:#64748b;direction:ltr;text-align:right;margin-top:0.15rem}
-.badge{display:inline-block;padding:0.2rem 0.6rem;border-radius:1rem;font-size:0.75rem;font-weight:700}
-.badge-premium{background:rgba(251,191,36,0.15);color:#fbbf24}
-.badge-free{background:rgba(100,116,139,0.15);color:#64748b}
-.date-cell{font-size:0.8rem;color:#94a3b8;white-space:nowrap}
+/* ── table ───────────────────────────────────────────── */
+.table-card{background:#fff;border-radius:1rem;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04);overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:0.88rem}
+thead tr{background:#f8fafc;border-bottom:1px solid #e2e8f0}
+th{padding:0.75rem 1rem;text-align:right;font-size:0.7rem;font-weight:700;color:#94a3b8;letter-spacing:0.07em;text-transform:uppercase;white-space:nowrap}
+td{padding:0.8rem 1rem;border-top:1px solid #f1f5f9;vertical-align:middle}
+.data-row:hover td{background:#fafbfc;cursor:pointer}
+.user-name{font-weight:700;color:#0f172a;font-size:0.92rem}
+.user-email{font-size:0.76rem;color:#94a3b8;direction:ltr;text-align:right;margin-top:0.1rem}
+.badge{display:inline-flex;flex-direction:column;padding:0.2rem 0.6rem;border-radius:0.4rem;font-size:0.73rem;font-weight:700;line-height:1.3}
+.badge-premium{background:#fefce8;color:#a16207;border:1px solid #fde68a}
+.badge-free{background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0}
+.badge-expiry{font-size:0.65rem;font-weight:400;color:#a16207;margin-top:0.1rem}
+.date-cell{font-size:0.78rem;color:#64748b;white-space:nowrap}
+.note-preview{font-size:0.78rem;color:#64748b;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* ── kids detail ─────────────────────────────────────── */
-.detail-row td{padding:0;background:#0d1628 !important}
-.detail-inner{padding:0.75rem 1rem 0.75rem 1.5rem;border-top:none}
-.kids-list{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.4rem}
-.kid-chip{background:#1e293b;border-radius:0.5rem;padding:0.35rem 0.75rem;font-size:0.8rem;color:#cbd5e1;display:flex;align-items:center;gap:0.4rem}
-.kid-chip .stages-done{color:#4ade80;font-size:0.72rem;font-weight:700}
+/* ── toolbar ─────────────────────────────────────────── */
+.toolbar{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap}
+.search-wrap{position:relative}
+.search-wrap svg{position:absolute;right:0.6rem;top:50%;transform:translateY(-50%);pointer-events:none;color:#94a3b8}
+.search-input{background:#fff;border:1px solid #e2e8f0;border-radius:0.6rem;padding:0.45rem 2rem 0.45rem 0.8rem;color:#0f172a;font-size:0.88rem;font-family:inherit;width:220px}
+.search-input::placeholder{color:#94a3b8}
+.search-input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,0.1)}
+
+/* ── detail / management panel ──────────────────────── */
+.detail-row td{padding:0;background:#f8fafc !important;border-top:none !important}
+.detail-inner{padding:1rem 1.25rem 1.1rem 1.25rem;border-top:1px solid #e2e8f0}
+.detail-section-lbl{font-size:0.7rem;font-weight:700;color:#94a3b8;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:0.5rem}
+.kids-list{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem}
+.kid-chip{background:#fff;border:1px solid #e2e8f0;border-radius:0.5rem;padding:0.3rem 0.7rem;font-size:0.8rem;color:#334155;display:flex;align-items:center;gap:0.4rem;box-shadow:0 1px 2px rgba(0,0,0,0.04)}
+.kid-stages{font-size:0.7rem;color:#16a34a;font-weight:700}
+.mgmt-divider{border:none;border-top:1px solid #e2e8f0;margin:0.75rem 0}
+.mgmt-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:0.85rem}
+.mgmt-lbl{font-size:0.72rem;font-weight:700;color:#475569;margin-bottom:0.3rem}
+.mgmt-row{display:flex;gap:0.5rem;align-items:center}
+.mgmt-input{flex:1;background:#fff;border:1px solid #e2e8f0;border-radius:0.45rem;padding:0.38rem 0.65rem;color:#0f172a;font-size:0.83rem;font-family:inherit}
+.mgmt-input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 2px rgba(37,99,235,0.1)}
+.mgmt-feedback{font-size:0.75rem;color:#16a34a;font-weight:700;min-width:18px}
+.mgmt-footer{display:flex;justify-content:flex-end;padding-top:0.5rem}
 
 /* ── empty / loading ─────────────────────────────────── */
-.empty-row td{text-align:center;color:#475569;padding:2rem;font-size:0.9rem}
-.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.15);border-top-color:#60a5fa;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle}
+.empty-row td{text-align:center;color:#94a3b8;padding:2.5rem;font-size:0.9rem;background:#fff !important}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── search ─────────────────────────────────────────── */
-.toolbar{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap}
-.search-input{background:#151f35;border:1px solid rgba(255,255,255,0.1);border-radius:0.6rem;padding:0.5rem 0.9rem;color:#e2e8f0;font-size:0.9rem;font-family:inherit;width:220px;direction:ltr}
-.search-input::placeholder{color:#475569}
-.search-input:focus{outline:none;border-color:#3b82f6}
-.filter-label{font-size:0.82rem;color:#64748b}
-
 /* ── login modal ─────────────────────────────────────── */
-#fbLoginOv{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:9999;direction:rtl}
-.login-box{background:#fff;border-radius:1.2rem;padding:2rem 2rem 1.5rem;width:min(92vw,360px);position:relative;text-align:center;font-family:inherit}
+#fbLoginOv{position:fixed;inset:0;background:rgba(15,23,42,0.5);display:none;align-items:center;justify-content:center;z-index:9999;direction:rtl}
+.login-box{background:#fff;border-radius:1.25rem;padding:2rem 2rem 1.5rem;width:min(92vw,360px);position:relative;text-align:center;font-family:inherit;box-shadow:0 20px 60px rgba(0,0,0,0.15)}
 .login-close{position:absolute;top:0.7rem;left:0.8rem;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#94a3b8}
 .login-title{font-size:1.3rem;font-weight:800;color:#0f172a;margin-bottom:1.2rem}
 .login-field{margin-bottom:0.65rem;text-align:right}
 .login-field label{font-size:0.82rem;font-weight:600;color:#374151;display:block;margin-bottom:0.25rem}
-.login-field input{width:100%;padding:0.6rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:0.5rem;font-size:0.95rem;box-sizing:border-box}
+.login-field input{width:100%;padding:0.6rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:0.5rem;font-size:0.95rem;box-sizing:border-box;font-family:inherit}
+.login-field input:focus{outline:none;border-color:#2563eb}
 #fbErr{color:#ef4444;font-size:0.85rem;margin-bottom:0.65rem;min-height:1.1em}
 .login-submit{width:100%;padding:0.75rem;background:#2563eb;color:#fff;border:none;border-radius:0.6rem;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:0.7rem;font-family:inherit}
-.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:0.6rem;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:0.6rem;background:#fff;cursor:pointer;font-size:0.95rem;font-weight:600;margin-bottom:0.85rem;font-family:inherit}
+.login-submit:hover{background:#1d4ed8}
+.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:0.6rem;padding:0.65rem;border:1.5px solid #e2e8f0;border-radius:0.6rem;background:#fff;cursor:pointer;font-size:0.95rem;font-weight:600;margin-bottom:0.85rem;font-family:inherit}
+.google-btn:hover{background:#f8fafc}
 .divider{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.85rem}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:#e2e8f0}
 .divider span{color:#94a3b8;font-size:0.8rem}
 
 @media(max-width:700px){
   .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .mgmt-grid{grid-template-columns:1fr 1fr}
   table{font-size:0.8rem}
   th,td{padding:0.6rem 0.5rem}
   .search-input{width:160px}
@@ -100,6 +127,7 @@ tr:hover td{background:rgba(255,255,255,0.02)}
 @media(max-width:480px){
   .stats-grid{grid-template-columns:1fr 1fr}
   .topbar-user{display:none}
+  .mgmt-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -138,30 +166,35 @@ tr:hover td{background:rgba(255,255,255,0.02)}
 
 <!-- ══ Loading ══════════════════════════════════════════ -->
 <div id="stateLoading" class="state-screen">
-  <div class="spinner" style="width:36px;height:36px;border-width:3px"></div>
-  <p>טוען...</p>
+  <div class="spinner" style="width:40px;height:40px;border-width:3px"></div>
+  <p style="color:#94a3b8">טוען...</p>
 </div>
 
 <!-- ══ Login prompt ══════════════════════════════════════ -->
 <div id="stateLogin" class="state-screen" style="display:none">
-  <div style="font-size:3rem">🔐</div>
-  <h2>לוח בקרה — למדני אנגלית</h2>
+  <div style="width:56px;height:56px;background:#eff6ff;border-radius:1rem;display:flex;align-items:center;justify-content:center;font-size:1.6rem">🔐</div>
+  <h2>לוח בקרה</h2>
   <p>כניסה מורשית למנהל בלבד</p>
   <button class="btn-primary" onclick="openLoginModal()">כניסה</button>
 </div>
 
 <!-- ══ Access denied ══════════════════════════════════════ -->
 <div id="stateDenied" class="state-screen" style="display:none">
-  <div style="font-size:3rem">🚫</div>
+  <div style="width:56px;height:56px;background:#fef2f2;border-radius:1rem;display:flex;align-items:center;justify-content:center;font-size:1.6rem">🚫</div>
   <h2>אין הרשאה</h2>
   <p>דף זה זמין למנהל האתר בלבד</p>
-  <button class="btn-primary" onclick="_firebaseAuth && _firebaseAuth.signOut()">יציאה</button>
+  <button class="btn-primary" onclick="window._firebaseAuth && window._firebaseAuth.signOut()">יציאה</button>
 </div>
 
 <!-- ══ Dashboard ══════════════════════════════════════════ -->
 <div id="stateDashboard" style="display:none">
+
+  <!-- Top bar -->
   <div class="topbar">
-    <div class="topbar-logo"><span>📊</span> לוח בקרה</div>
+    <div class="topbar-brand">
+      <div class="icon">📊</div>
+      לוח בקרה
+    </div>
     <div class="topbar-right">
       <span class="topbar-user" id="adminEmailDisplay"></span>
       <button class="btn-sm btn-ghost" onclick="doLogout()">יציאה</button>
@@ -169,22 +202,27 @@ tr:hover td{background:rgba(255,255,255,0.02)}
   </div>
 
   <div class="page">
+
     <!-- Stats -->
-    <div class="section-title">סטטיסטיקות</div>
+    <div class="section-title">סקירה כללית</div>
     <div class="stats-grid">
       <div class="stat-card blue">
+        <div class="stat-icon">👤</div>
         <div class="stat-val" id="statTotal">—</div>
         <div class="stat-lbl">משתמשים רשומים</div>
       </div>
       <div class="stat-card green">
+        <div class="stat-icon">⭐</div>
         <div class="stat-val" id="statPremium">—</div>
-        <div class="stat-lbl">מנויים פרמיום</div>
+        <div class="stat-lbl">מנויי פרמיום</div>
       </div>
       <div class="stat-card yellow">
+        <div class="stat-icon">🔥</div>
         <div class="stat-val" id="statActive">—</div>
         <div class="stat-lbl">פעילים השבוע</div>
       </div>
       <div class="stat-card purple">
+        <div class="stat-icon">👦</div>
         <div class="stat-val" id="statKids">—</div>
         <div class="stat-lbl">ילדים רשומים</div>
       </div>
@@ -192,12 +230,15 @@ tr:hover td{background:rgba(255,255,255,0.02)}
 
     <!-- Users table -->
     <div class="toolbar">
-      <div class="section-title" style="margin-bottom:0">משתמשים</div>
-      <input class="search-input" type="text" id="searchInput" placeholder="חפש שם / אימייל..." oninput="filterUsers()" dir="rtl">
-      <button class="btn-sm btn-ghost" onclick="loadUsers()" title="רענן">↻ רענן</button>
+      <div class="section-title" style="margin-bottom:0;flex:1">משתמשים</div>
+      <div class="search-wrap">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="search-input" type="text" id="searchInput" placeholder="חפש שם / אימייל..." oninput="filterUsers()" dir="rtl">
+      </div>
+      <button class="btn-sm btn-ghost" onclick="loadUsers()">↻ רענן</button>
     </div>
 
-    <div class="table-wrap">
+    <div class="table-card">
       <table>
         <thead>
           <tr>
@@ -205,35 +246,34 @@ tr:hover td{background:rgba(255,255,255,0.02)}
             <th>הצטרף</th>
             <th>כניסה אחרונה</th>
             <th>ילדים</th>
-            <th>שלבים שהושלמו</th>
+            <th>שלבים</th>
+            <th>הערה</th>
             <th>סטטוס</th>
             <th></th>
           </tr>
         </thead>
         <tbody id="usersBody">
-          <tr class="empty-row"><td colspan="7"><span class="spinner"></span> טוען משתמשים...</td></tr>
+          <tr class="empty-row"><td colspan="8"><span class="spinner"></span> טוען משתמשים...</td></tr>
         </tbody>
       </table>
     </div>
+
   </div>
 </div>
 
 <script>
-var ADMIN_EMAIL = 'ishaieran@gmail.com';
-var _allUsers   = [];
+var ADMIN_EMAIL  = 'ishaieran@gmail.com';
+var _allUsers    = [];
 var _expandedUid = null;
 
-// Fallback: if Firebase auth hasn't responded in 7s, show login screen
+// Fallback: if auth hasn't resolved in 7s, show login
 setTimeout(function() {
     if (document.getElementById('stateLoading').style.display !== 'none') {
-        console.log('[admin] auth timeout — forcing login state');
         showState('stateLogin');
     }
 }, 7000);
 
-console.log('[admin] inline script loaded');
-
-// ── State helpers ────────────────────────────────────────
+// ── State ────────────────────────────────────────────────
 function showState(id) {
     ['stateLoading','stateLogin','stateDenied','stateDashboard'].forEach(function(s) {
         document.getElementById(s).style.display = s === id ? (id === 'stateDashboard' ? 'block' : 'flex') : 'none';
@@ -242,55 +282,36 @@ function showState(id) {
 
 // ── Firebase callbacks ───────────────────────────────────
 window.onFirebaseAuth = function(fbUser) {
-    console.log('[admin] onFirebaseAuth:', fbUser.email);
-    if (fbUser.email !== ADMIN_EMAIL) {
-        showState('stateDenied');
-        return;
-    }
+    if (fbUser.email !== ADMIN_EMAIL) { showState('stateDenied'); return; }
     document.getElementById('adminEmailDisplay').textContent = fbUser.email;
     showState('stateDashboard');
     loadUsers();
 };
+window.onFirebaseLogout = function() { showState('stateLogin'); };
+function doLogout() { if (window._firebaseAuth) window._firebaseAuth.signOut(); }
 
-window.onFirebaseLogout = function() {
-    console.log('[admin] onFirebaseLogout');
-    showState('stateLogin');
-};
-
-function doLogout() {
-    if (window._firebaseAuth) window._firebaseAuth.signOut();
-}
-
-// ── Load users from Firestore ────────────────────────────
+// ── Load ────────────────────────────────────────────────
 function loadUsers() {
     var db = window._firebaseDb;
     if (!db) { setTimeout(loadUsers, 500); return; }
-
     var tbody = document.getElementById('usersBody');
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="7"><span class="spinner"></span> טוען...</td></tr>';
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="8"><span class="spinner"></span> טוען...</td></tr>';
     _expandedUid = null;
-
     db.collection('users').orderBy('lastLogin', 'desc').get()
         .then(function(snap) {
             _allUsers = [];
-            snap.forEach(function(doc) {
-                var d = doc.data();
-                d._uid = doc.id;
-                _allUsers.push(d);
-            });
+            snap.forEach(function(doc) { var d = doc.data(); d._uid = doc.id; _allUsers.push(d); });
             renderStats(_allUsers);
             renderTable(_allUsers);
         })
         .catch(function(e) {
-            tbody.innerHTML = '<tr class="empty-row"><td colspan="7">שגיאה בטעינה: ' + e.message + '</td></tr>';
+            tbody.innerHTML = '<tr class="empty-row"><td colspan="8">שגיאה: ' + e.message + '</td></tr>';
         });
 }
 
 // ── Stats ────────────────────────────────────────────────
 function renderStats(users) {
-    var now     = Date.now();
-    var week    = 7 * 24 * 60 * 60 * 1000;
-    var premium = 0, active = 0, kids = 0;
+    var now = Date.now(), week = 7*24*60*60*1000, premium=0, active=0, kids=0;
     users.forEach(function(u) {
         if (u.premium) premium++;
         if (u.lastLogin && u.lastLogin.toMillis && now - u.lastLogin.toMillis() < week) active++;
@@ -305,18 +326,23 @@ function renderStats(users) {
 // ── Table ────────────────────────────────────────────────
 function filterUsers() {
     var q = (document.getElementById('searchInput').value || '').toLowerCase();
-    var filtered = _allUsers.filter(function(u) {
-        return !q ||
-            (u.name  || '').toLowerCase().includes(q) ||
-            (u.email || '').toLowerCase().includes(q);
-    });
-    renderTable(filtered);
+    renderTable(_allUsers.filter(function(u) {
+        return !q || (u.name||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q);
+    }));
 }
 
 function fmtDate(ts) {
     if (!ts || !ts.toDate) return '—';
     var d = ts.toDate();
     return d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear();
+}
+
+function fmtDateInput(ts) {
+    if (!ts || !ts.toDate) return '';
+    var d = ts.toDate();
+    var mm = ('0'+(d.getMonth()+1)).slice(-2);
+    var dd = ('0'+d.getDate()).slice(-2);
+    return d.getFullYear() + '-' + mm + '-' + dd;
 }
 
 function countDone(progress) {
@@ -326,8 +352,8 @@ function countDone(progress) {
         if (!kidP || typeof kidP !== 'object') return;
         Object.values(kidP).forEach(function(mod) {
             if (!mod || typeof mod !== 'object') return;
-            Object.values(mod).forEach(function(stage) {
-                if (stage && (stage.grammarBest !== undefined || stage.vocabBest !== undefined)) total++;
+            Object.values(mod).forEach(function(s) {
+                if (s && (s.grammarBest !== undefined || s.vocabBest !== undefined)) total++;
             });
         });
     });
@@ -337,56 +363,116 @@ function countDone(progress) {
 function renderTable(users) {
     var tbody = document.getElementById('usersBody');
     if (!users.length) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="7">לא נמצאו משתמשים</td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="8">לא נמצאו משתמשים</td></tr>';
         return;
     }
     var html = '';
     users.forEach(function(u) {
-        var uid      = u._uid;
-        var premium  = !!u.premium;
-        var kidsArr  = Array.isArray(u.kids) ? u.kids : [];
-        var done     = countDone(u.progress);
-        html += '<tr data-uid="' + uid + '" onclick="toggleExpand(\'' + uid + '\')" style="cursor:pointer">' +
-            '<td><div class="user-name">' + esc(u.name || '—') + '</div>' +
-                 '<div class="user-email">' + esc(u.email || '—') + '</div></td>' +
-            '<td class="date-cell">' + fmtDate(u.registeredAt) + '</td>' +
-            '<td class="date-cell">' + fmtDate(u.lastLogin) + '</td>' +
-            '<td>' + kidsArr.length + '</td>' +
-            '<td>' + done + '</td>' +
-            '<td><span class="badge ' + (premium ? 'badge-premium' : 'badge-free') + '">' +
-                 (premium ? '⭐ פרמיום' : 'חינמי') + '</span></td>' +
-            '<td><button class="btn-sm ' + (premium ? 'btn-danger' : 'btn-success') + '" ' +
-                 'onclick="event.stopPropagation();togglePremium(\'' + uid + '\',' + premium + ')">' +
-                 (premium ? 'בטל פרמיום' : 'הפוך פרמיום') + '</button></td>' +
+        var uid     = u._uid;
+        var premium = !!u.premium;
+        var kids    = Array.isArray(u.kids) ? u.kids : [];
+        var done    = countDone(u.progress);
+        var expiry  = u.premiumUntil ? fmtDate(u.premiumUntil) : '';
+        var note    = u.note ? esc(u.note).substring(0,24) + (u.note.length > 24 ? '…' : '') : '';
+
+        html +=
+        '<tr class="data-row" onclick="toggleExpand(\'' + uid + '\')">' +
+          '<td><div class="user-name">' + esc(u.name||'—') + '</div>' +
+               '<div class="user-email">' + esc(u.email||'—') + '</div></td>' +
+          '<td class="date-cell">' + fmtDate(u.registeredAt) + '</td>' +
+          '<td class="date-cell">' + fmtDate(u.lastLogin) + '</td>' +
+          '<td style="font-weight:600">' + kids.length + '</td>' +
+          '<td style="font-weight:600">' + done + '</td>' +
+          '<td class="note-preview">' + (note || '<span style="color:#cbd5e1">—</span>') + '</td>' +
+          '<td><span class="badge ' + (premium ? 'badge-premium' : 'badge-free') + '">' +
+               (premium ? '⭐ פרמיום' : 'חינמי') +
+               (expiry ? '<span class="badge-expiry">עד ' + expiry + '</span>' : '') +
+          '</span></td>' +
+          '<td onclick="event.stopPropagation()">' +
+            '<button class="btn-sm ' + (premium ? 'btn-danger' : 'btn-success') + '" ' +
+                    'onclick="togglePremium(\'' + uid + '\',' + premium + ')">' +
+                    (premium ? 'בטל פרמיום' : 'הפוך פרמיום') + '</button>' +
+          '</td>' +
         '</tr>' +
         '<tr class="detail-row" id="detail-' + uid + '" style="display:none">' +
-            '<td colspan="7"><div class="detail-inner">' + renderKids(u) + '</div></td>' +
+          '<td colspan="8"><div class="detail-inner">' + renderDetail(u) + '</div></td>' +
         '</tr>';
     });
     tbody.innerHTML = html;
 }
 
-function renderKids(u) {
-    var kidsArr = Array.isArray(u.kids) ? u.kids : [];
-    if (!kidsArr.length) return '<span style="color:#475569;font-size:0.85rem">אין ילדים רשומים</span>';
-    var html = '<div style="font-size:0.8rem;color:#64748b;margin-bottom:0.4rem">ילדים:</div><div class="kids-list">';
-    kidsArr.forEach(function(k) {
-        var kidProgress = (u.progress && u.progress[k.id]) || {};
-        var stages = 0;
-        Object.values(kidProgress).forEach(function(mod) {
-            if (!mod || typeof mod !== 'object') return;
-            Object.values(mod).forEach(function(s) {
-                if (s && (s.grammarBest !== undefined || s.vocabBest !== undefined)) stages++;
+// ── Detail panel ─────────────────────────────────────────
+function renderDetail(u) {
+    var uid     = u._uid;
+    var kids    = Array.isArray(u.kids) ? u.kids : [];
+    var expVal  = fmtDateInput(u.premiumUntil);
+    var noteVal = esc(u.note || '');
+    var priceVal= esc(String(u.price || ''));
+
+    // Kids
+    var kidsHtml = '<div class="detail-section-lbl">ילדים</div>';
+    if (!kids.length) {
+        kidsHtml += '<p style="font-size:0.82rem;color:#94a3b8;margin-bottom:0.75rem">אין ילדים רשומים</p>';
+    } else {
+        kidsHtml += '<div class="kids-list">';
+        kids.forEach(function(k) {
+            var kidP = (u.progress && u.progress[k.id]) || {};
+            var stages = 0;
+            Object.values(kidP).forEach(function(mod) {
+                if (!mod || typeof mod !== 'object') return;
+                Object.values(mod).forEach(function(s) {
+                    if (s && (s.grammarBest !== undefined || s.vocabBest !== undefined)) stages++;
+                });
             });
+            var emoji = k.gender === 'female' ? '👧' : '👦';
+            kidsHtml += '<div class="kid-chip">' + emoji + ' ' + esc(k.name) +
+                        ' <span class="kid-stages">' + stages + ' שלבים</span></div>';
         });
-        var emoji = (k.gender === 'female') ? '👧' : '👦';
-        html += '<div class="kid-chip">' + emoji + ' ' + esc(k.name) +
-                ' <span class="stages-done">(' + stages + ' שלבים)</span></div>';
-    });
-    html += '</div>';
-    return html;
+        kidsHtml += '</div>';
+    }
+
+    // Management fields
+    var mgmt =
+    '<hr class="mgmt-divider">' +
+    '<div class="detail-section-lbl">ניהול</div>' +
+    '<div class="mgmt-grid">' +
+
+      '<div>' +
+        '<div class="mgmt-lbl">הערה</div>' +
+        '<div class="mgmt-row">' +
+          '<input class="mgmt-input" id="note-' + uid + '" type="text" value="' + noteVal + '" placeholder="הערה חופשית...">' +
+          '<button class="btn-save" onclick="saveField(\'' + uid + '\',\'note\',\'note-' + uid + '\',\'fb-note-' + uid + '\')">שמור</button>' +
+          '<span class="mgmt-feedback" id="fb-note-' + uid + '"></span>' +
+        '</div>' +
+      '</div>' +
+
+      '<div>' +
+        '<div class="mgmt-lbl">מחיר ששולם (₪)</div>' +
+        '<div class="mgmt-row">' +
+          '<input class="mgmt-input" id="price-' + uid + '" type="number" min="0" value="' + priceVal + '" placeholder="0" style="max-width:100px">' +
+          '<button class="btn-save" onclick="saveFieldNum(\'' + uid + '\',\'price\',\'price-' + uid + '\',\'fb-price-' + uid + '\')">שמור</button>' +
+          '<span class="mgmt-feedback" id="fb-price-' + uid + '"></span>' +
+        '</div>' +
+      '</div>' +
+
+      '<div>' +
+        '<div class="mgmt-lbl">פרמיום עד תאריך</div>' +
+        '<div class="mgmt-row">' +
+          '<input class="mgmt-input" id="exp-' + uid + '" type="date" value="' + expVal + '">' +
+          '<button class="btn-save" onclick="savePremiumExpiry(\'' + uid + '\')">קבע</button>' +
+          '<span class="mgmt-feedback" id="fb-exp-' + uid + '"></span>' +
+        '</div>' +
+      '</div>' +
+
+    '</div>' +
+    '<div class="mgmt-footer">' +
+      '<button class="btn-delete" onclick="deleteUser(\'' + uid + '\',\'' + esc(u.name||u.email||'?') + '\')">🗑 מחק משתמש</button>' +
+    '</div>';
+
+    return kidsHtml + mgmt;
 }
 
+// ── Expand/collapse ──────────────────────────────────────
 function toggleExpand(uid) {
     var row = document.getElementById('detail-' + uid);
     if (!row) return;
@@ -394,36 +480,98 @@ function toggleExpand(uid) {
         var prev = document.getElementById('detail-' + _expandedUid);
         if (prev) prev.style.display = 'none';
     }
-    var isOpen = row.style.display !== 'none';
-    row.style.display = isOpen ? 'none' : 'table-row';
-    _expandedUid = isOpen ? null : uid;
+    var open = row.style.display !== 'none';
+    row.style.display = open ? 'none' : 'table-row';
+    _expandedUid = open ? null : uid;
 }
 
 // ── Premium toggle ───────────────────────────────────────
-function togglePremium(uid, currentPremium) {
+function togglePremium(uid, current) {
     var db = window._firebaseDb;
     if (!db) return;
-    db.collection('users').doc(uid).update({ premium: !currentPremium })
+    db.collection('users').doc(uid).update({ premium: !current })
         .then(function() { loadUsers(); })
         .catch(function(e) {
-            if (e.code === 'permission-denied') {
-                alert('⚠️ נדרש עדכון הרשאות Firestore.\nעדכן את החוקים כך שהמנהל יוכל לכתוב.');
-            } else {
-                alert('שגיאה: ' + e.message);
-            }
+            if (e.code === 'permission-denied') alert('⚠️ עדכן הרשאות Firestore — המנהל צריך הרשאת כתיבה.');
+            else alert('שגיאה: ' + e.message);
         });
 }
 
-function esc(s) {
-    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// ── Save field ───────────────────────────────────────────
+function saveField(uid, field, inputId, fbId) {
+    var db = window._firebaseDb;
+    if (!db) return;
+    var val = document.getElementById(inputId).value;
+    var update = {}; update[field] = val;
+    db.collection('users').doc(uid).update(update)
+        .then(function() { showFb(fbId); reloadUser(uid); })
+        .catch(function(e) { alert('שגיאה: ' + e.message); });
 }
 
-// ── Login modal helpers (same as index.html) ─────────────
+function saveFieldNum(uid, field, inputId, fbId) {
+    var db = window._firebaseDb;
+    if (!db) return;
+    var val = parseFloat(document.getElementById(inputId).value) || 0;
+    var update = {}; update[field] = val;
+    db.collection('users').doc(uid).update(update)
+        .then(function() { showFb(fbId); reloadUser(uid); })
+        .catch(function(e) { alert('שגיאה: ' + e.message); });
+}
+
+function savePremiumExpiry(uid) {
+    var db = window._firebaseDb;
+    if (!db) return;
+    var dateVal = document.getElementById('exp-' + uid).value;
+    if (!dateVal) return;
+    var ts = firebase.firestore.Timestamp.fromDate(new Date(dateVal));
+    db.collection('users').doc(uid).update({ premium: true, premiumUntil: ts })
+        .then(function() { showFb('fb-exp-' + uid); reloadUser(uid); })
+        .catch(function(e) { alert('שגיאה: ' + e.message); });
+}
+
+// ── Delete user ──────────────────────────────────────────
+function deleteUser(uid, name) {
+    if (!confirm('למחוק את המשתמש "' + name + '"?\n\nהפעולה תמחק את הנתונים מהמערכת (לא תסגור את חשבון Firebase).')) return;
+    var db = window._firebaseDb;
+    if (!db) return;
+    db.collection('users').doc(uid).delete()
+        .then(function() { loadUsers(); })
+        .catch(function(e) { alert('שגיאה: ' + e.message); });
+}
+
+// ── Helpers ──────────────────────────────────────────────
+function showFb(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = '✓';
+    setTimeout(function() { el.textContent = ''; }, 2000);
+}
+
+function reloadUser(uid) {
+    var db = window._firebaseDb;
+    if (!db) return;
+    db.collection('users').doc(uid).get().then(function(doc) {
+        if (!doc.exists) return;
+        var d = doc.data(); d._uid = uid;
+        for (var i = 0; i < _allUsers.length; i++) {
+            if (_allUsers[i]._uid === uid) { _allUsers[i] = d; break; }
+        }
+        renderStats(_allUsers);
+        renderTable(_allUsers);
+        // Re-open the expanded row
+        var row = document.getElementById('detail-' + uid);
+        if (row) { row.style.display = 'table-row'; _expandedUid = uid; }
+    });
+}
+
+function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Login helpers ────────────────────────────────────────
 function openLoginModal() {
     document.getElementById('fbLoginOv').style.display = 'flex';
-    document.getElementById('fbModeVal').value = 'login';
-    var err = document.getElementById('fbErr');
-    if (err) { err.textContent = ''; }
+    document.getElementById('fbErr').textContent = '';
 }
 function closeLoginModal() { document.getElementById('fbLoginOv').style.display = 'none'; }
 function fbSignInGoogle() {
@@ -435,9 +583,7 @@ function fbSubmitEmail() {
     if (window._fbDoEmail) window._fbDoEmail();
     else document.getElementById('fbErr').textContent = 'Firebase לא מוכן — נסה שוב';
 }
-// stubs required by firebase-auth.js
-function closeLoginModal2() {}
-window.fbShowVerifyView     = function() {};
+window.fbShowVerifyView      = function() {};
 window.fbStartResendCountdown = function() {};
 </script>
 
