@@ -581,20 +581,15 @@ function backToSelect() {
     showView('viewSelect');
 }
 
-/* ── Enter key on input ── */
-document.addEventListener('DOMContentLoaded', function() {
-    var inp = document.getElementById('exInput');
-    if (inp) {
-        inp.addEventListener('keydown', function(e) {
-            if (e.key !== 'Enter') return;
-            var checkBtn = document.getElementById('exCheckBtn');
-            var nextBtn  = document.getElementById('exNextBtn');
-            if (checkBtn && checkBtn.style.display !== 'none' && !checkBtn.disabled) {
-                checkBtn.click();
-            } else if (nextBtn && nextBtn.style.display !== 'none') {
-                nextBtn.click();
-            }
-        });
+/* ── Enter key ── */
+document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    var checkBtn = document.getElementById('exCheckBtn');
+    var nextBtn  = document.getElementById('exNextBtn');
+    if (checkBtn && checkBtn.style.display !== 'none' && !checkBtn.disabled) {
+        checkBtn.click();
+    } else if (nextBtn && nextBtn.style.display === 'block') {
+        nextBtn.click();
     }
 });
 
