@@ -223,6 +223,16 @@ var ADMIN_EMAIL = 'ishaieran@gmail.com';
 var _allUsers   = [];
 var _expandedUid = null;
 
+// Fallback: if Firebase auth hasn't responded in 7s, show login screen
+setTimeout(function() {
+    if (document.getElementById('stateLoading').style.display !== 'none') {
+        console.log('[admin] auth timeout — forcing login state');
+        showState('stateLogin');
+    }
+}, 7000);
+
+console.log('[admin] inline script loaded');
+
 // ── State helpers ────────────────────────────────────────
 function showState(id) {
     ['stateLoading','stateLogin','stateDenied','stateDashboard'].forEach(function(s) {
@@ -232,6 +242,7 @@ function showState(id) {
 
 // ── Firebase callbacks ───────────────────────────────────
 window.onFirebaseAuth = function(fbUser) {
+    console.log('[admin] onFirebaseAuth:', fbUser.email);
     if (fbUser.email !== ADMIN_EMAIL) {
         showState('stateDenied');
         return;
@@ -242,6 +253,7 @@ window.onFirebaseAuth = function(fbUser) {
 };
 
 window.onFirebaseLogout = function() {
+    console.log('[admin] onFirebaseLogout');
     showState('stateLogin');
 };
 
