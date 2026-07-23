@@ -507,7 +507,7 @@ function checkAnswer() {
 
     var item = curItems[curIdx];
     document.getElementById('exCorrectAns').textContent = item.he;
-    document.getElementById('exFeedback').style.display = '';
+    document.getElementById('exFeedback').style.display = 'block';
 }
 
 function markResult(isCorrect) {
@@ -518,7 +518,7 @@ function markResult(isCorrect) {
         '<span style="font-size:1.1rem;font-weight:700;color:' + (isCorrect ? '#15803d' : '#b91c1c') + '">' +
         (isCorrect ? '✓ מעולה!' : '✗ ממשיך...') + '</span>';
 
-    document.getElementById('exNextBtn').style.display = '';
+    document.getElementById('exNextBtn').style.display = 'block';
 }
 
 function nextItem() {
