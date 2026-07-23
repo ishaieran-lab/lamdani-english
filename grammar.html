@@ -11,18 +11,45 @@
     <style>
         .city-lock-badge { position:absolute; top:22%; left:50%; transform:translateX(-50%); background:rgba(15,23,42,0.72); color:#fff; border-radius:20px; padding:4px 12px; font-size:1rem; font-weight:900; white-space:nowrap; pointer-events:none; }
         .city-area--locked:hover { background:rgba(239,68,68,0.08) !important; box-shadow:inset 0 0 0 3px rgba(239,68,68,0.35) !important; }
-        /* ── Stage card grid ── */
-        .gc-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; padding:0.5rem 0 1rem; }
-        .gc-card { background:none; border:none; border-radius:0; cursor:pointer; padding:0; text-align:center; position:relative; transition:transform 0.18s,opacity 0.18s; font-family:inherit; width:100%; display:flex; flex-direction:column; align-items:center; gap:0.3rem; }
-        .gc-card:hover:not(.gc-card--locked) { transform:translateY(-4px); opacity:0.88; }
-        .gc-card--locked { opacity:0.45; cursor:not-allowed; }
-        .gc-img-wrap { width:100%; }
-        .gc-img { width:100%; height:auto; display:block; }
-        .gc-num { font-size:0.82rem; font-weight:700; color:#94a3b8; margin-top:0.25rem; }
-        .gc-name { font-size:0.9rem; font-weight:700; color:#f1f5f9; line-height:1.3; }
-        .gc-check { position:absolute; top:6px; left:4px; width:20px; height:20px; background:#22c55e; border-radius:50%; font-size:0.62rem; font-weight:900; color:#fff; display:flex; align-items:center; justify-content:center; }
-        .gc-lock  { position:absolute; top:6px; left:4px; font-size:0.8rem; }
-        @media (max-width:540px) { .gc-grid { grid-template-columns:repeat(2,1fr); } }
+        /* ── Progress map ── */
+        .map-wrap { position:relative; width:100%; overflow-x:auto; }
+        .map-container { position:relative; min-width:520px; }
+        .map-bg { width:100%; height:auto; display:block; }
+        .map-btn {
+            position:absolute;
+            width:6.8%;
+            aspect-ratio:1;
+            border-radius:50%;
+            transform:translate(-50%,-50%);
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            gap:0; padding:0;
+            cursor:pointer;
+            transition:transform 0.2s ease, box-shadow 0.2s ease;
+            background:rgba(255,255,255,0.92);
+            border:2.5px solid #fff;
+            font-family:inherit;
+            box-shadow:0 3px 12px rgba(0,0,0,0.3);
+            text-align:center;
+            z-index:2;
+        }
+        .map-btn:hover:not(.map-btn--locked) {
+            transform:translate(-50%,-50%) scale(1.22) translateY(-5px);
+            box-shadow:0 10px 28px rgba(0,0,0,0.4);
+            z-index:10;
+        }
+        .map-btn--locked { opacity:0.52; cursor:not-allowed; background:rgba(180,180,180,0.75); }
+        .map-btn--done   { background:rgba(220,252,231,0.95); }
+        .map-btn-num  { font-size:1.15em; font-weight:900; color:#0f172a; line-height:1; }
+        .map-btn-name { font-size:0.48em; font-weight:700; color:#1e293b; line-height:1.2; padding:0 3px; }
+        .map-btn-badge {
+            position:absolute; top:-5%; right:-5%;
+            width:26%; aspect-ratio:1;
+            border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            font-size:0.55em; font-weight:900; line-height:1;
+        }
+        .map-btn-badge--done { background:#22c55e; color:#fff; }
+        .map-btn-badge--lock { background:#94a3b8; color:#fff; font-size:0.5em; }
     </style>
     <!-- Google Analytics — החלף G-XXXXXXXXXX במזהה שלך -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
@@ -1177,44 +1204,50 @@ function initStageCards() {
         (isDirect
             ? '<button class="back-link" onclick="window.location.href=\'app.html?level=elementary\'">→ חזור לפרקים</button>'
             : '<button class="back-link" onclick="backToLevels()">→ חזור לשלבים</button>') +
-        '<h2 class="section-title" id="grammarLevelTitle">כרטיסיות הדקדוק</h2>' +
+        '<h2 class="section-title" id="grammarLevelTitle">מפת ההתקדמות</h2>' +
         '</div>';
 
     var loggedIn = typeof getUser === 'function' && !!getUser();
 
+    // left/top = % מרכז העיגול בתמונה (1672×941)
     var STAGES = [
-        { gi:12, img:'תצוגה/1.png',              title:'TO BE',            color:'#3b82f6' },
-        { gi:4,  img:'תצוגה/2.png',              title:'תארים',            color:'#8b5cf6' },
-        { gi:17, img:'תצוגה/3.png',              title:'השוואה חלק א׳',   color:'#22c55e' },
-        { gi:16, img:'תצוגה/4.png',              title:'רבים',             color:'#f97316' },
-        { gi:14, img:'have has.png',              title:'Have / Has',       color:'#14b8a6' },
-        { gi:13, img:'there is.png',              title:'יש / אין',         color:'#ec4899' },
-        { gi:2,  img:"can can't.png",             title:"Can / Can't",      color:'#eab308' },
-        { gi:0,  img:'present simple.png',        title:'זמן הווה',         color:'#ef4444' },
-        { gi:1,  img:'do does.png',               title:'Do / Does',        color:'#6366f1' },
-        { gi:3,  img:'wh הסבר.png',              title:'מילות שאלה',       color:'#0ea5e9' },
-        { gi:5,  img:'will go הסבר.png',         title:'עתיד',             color:'#10b981' },
-        { gi:15, img:'הווה מתמשך הסבר.png',      title:'הווה מתמשך',       color:'#f59e0b' },
-        { gi:18, img:'השוואה ב.png',             title:'השוואה חלק ב׳',   color:'#a855f7' },
+        { gi:12, title:'TO BE',          color:'#3b82f6', left:14.1, top:23.5 },
+        { gi:4,  title:'תארים',          color:'#8b5cf6', left:32.1, top:19.5 },
+        { gi:17, title:'השוואה א׳',      color:'#22c55e', left:50.0, top:17.5 },
+        { gi:16, title:'רבים',           color:'#f97316', left:67.0, top:19.5 },
+        { gi:14, title:'Have / Has',     color:'#14b8a6', left:83.7, top:23.5 },
+        { gi:13, title:'יש / אין',       color:'#ec4899', left: 9.3, top:49.7 },
+        { gi:2,  title:"Can / Can't",    color:'#eab308', left:27.5, top:45.7 },
+        { gi:0,  title:'זמן הווה',       color:'#ef4444', left:46.1, top:49.0 },
+        { gi:1,  title:'Do / Does',      color:'#6366f1', left:64.0, top:46.8 },
+        { gi:3,  title:'מילות שאלה',    color:'#0ea5e9', left: 9.5, top:75.0 },
+        { gi:5,  title:'עתיד',           color:'#10b981', left:34.3, top:77.0 },
+        { gi:15, title:'הווה מתמשך',    color:'#f59e0b', left:54.2, top:75.0 },
+        { gi:18, title:'השוואה ב׳',      color:'#a855f7', left:73.7, top:76.5 },
     ];
 
-    var cards = STAGES.map(function(s, idx) {
+    var buttons = STAGES.map(function(s, idx) {
         var stageNum = idx + 1;
         var done   = loggedIn && typeof getStageStatus === 'function' && getStageStatus('grammar', s.gi) === 'complete';
         var locked = FREE_GRAMMAR_INDICES.indexOf(s.gi) === -1 && !isPremium();
         var click  = locked ? 'showPaywall()' : 'openLesson(' + s.gi + ')';
-        var corner = done   ? '<div class="gc-check">✓</div>'
-                   : locked ? '<div class="gc-lock">🔒</div>' : '';
-        return '<button class="gc-card' + (locked ? ' gc-card--locked' : '') + (done ? ' gc-card--done' : '') + '" onclick="' + click + '">' +
-            '<div class="gc-img-wrap"><img src="images/grammar/' + s.img + '" alt="' + s.title + '" class="gc-img" loading="lazy"></div>' +
-            '<div class="gc-num">' + stageNum + '</div>' +
-            '<div class="gc-name">' + s.title + '</div>' +
-            corner +
+        var cls    = 'map-btn' + (locked ? ' map-btn--locked' : '') + (done ? ' map-btn--done' : '');
+        var badge  = done   ? '<div class="map-btn-badge map-btn-badge--done">✓</div>'
+                   : locked ? '<div class="map-btn-badge map-btn-badge--lock">🔒</div>' : '';
+        var style  = 'left:' + s.left + '%;top:' + s.top + '%;border-color:' + s.color + ';';
+        return '<button class="' + cls + '" onclick="' + click + '" style="' + style + '">' +
+            badge +
+            '<div class="map-btn-num">' + stageNum + '</div>' +
+            '<div class="map-btn-name">' + s.title + '</div>' +
         '</button>';
     }).join('');
 
     document.getElementById('grammarNav').innerHTML = stageNav;
-    document.getElementById('grammarStageCards').innerHTML = '<div class="gc-grid">' + cards + '</div>';
+    document.getElementById('grammarStageCards').innerHTML =
+        '<div class="map-wrap"><div class="map-container">' +
+        '<img src="images/grammar/מפת התקדמות.png" class="map-bg" alt="מפת התקדמות">' +
+        buttons +
+        '</div></div>';
 }
 function renderStageCards() { initStageCards(); }
 
