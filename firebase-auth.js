@@ -16,6 +16,10 @@
     var auth = firebase.auth();
     window._firebaseAuth = auth;
 
+    if (typeof firebase.firestore === 'function') {
+        window._firebaseDb = firebase.firestore();
+    }
+
     // ── Auth State ───────────────────────────────────────────────────
     // emailVerified check: prevents redirect during registration (Firebase auto-signs in
     // the new user before our code can call signOut + sendEmailVerification)

@@ -314,6 +314,7 @@ function saveProgress(p) {
     var kid = getActiveKid();
     var k = kid ? PROG_KEY + '_' + kid.id : PROG_KEY;
     localStorage.setItem(k, JSON.stringify(p));
+    if (typeof fsyncProgress === 'function') fsyncProgress();
 }
 
 // ── compat stubs ─────────────────────────────────────────────────
@@ -468,6 +469,7 @@ function uLogout() {
 // ── Callbacks מ-Firebase Auth ────────────────────────────────────
 window.onFirebaseAuth = function(fbUser) {
     saveParent({ uid: fbUser.uid, email: fbUser.email, name: fbUser.displayName || fbUser.email.split('@')[0] });
+    if (typeof fsyncUserLogin === 'function') fsyncUserLogin(fbUser);
     var kids = getChildren();
     if (kids.length === 0 || !getActiveKid()) {
         openChildPicker();

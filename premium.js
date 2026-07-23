@@ -18,6 +18,8 @@ function isPremium() {
         var p = getParent();
         if (p && PREMIUM_EMAILS.indexOf(p.email) !== -1) return true;
     }
+    // Firestore-based premium (set by admin dashboard or fsyncUserLogin)
+    if (window._fsUserPremium === true) return true;
     return false;
 }
 
