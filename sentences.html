@@ -360,6 +360,7 @@
 var LEVELS = [
     {
         id: 0,
+        num: 1,
         name: 'צמדי מילים',
         desc: 'צמדי מילים',
         color: '#3b82f6',
@@ -582,6 +583,7 @@ var LEVELS = [
     },
     {
         id: 1,
+        num: 2,
         name: '3 מילים',
         desc: '3 מילים',
         color: '#8b5cf6',
@@ -749,6 +751,7 @@ var LEVELS = [
     },
     {
         id: 2,
+        num: 3,
         name: 'משפטים קצרים',
         desc: '4–5 מילים',
         color: '#22c55e',
@@ -908,6 +911,7 @@ var LEVELS = [
     },
     {
         id: 3,
+        num: 4,
         name: 'משפטים מלאים',
         desc: '6–8 מילים',
         color: '#f97316',
@@ -1141,8 +1145,12 @@ function renderLevels() {
                 '<div class="sent-prog-bar"><div class="sent-prog-fill" style="width:' + pct + '%;background:' + lv.color + '"></div></div>' +
               '</div>'
             : '';
+        var numBadge = lv.num
+            ? '<div style="position:absolute;top:0.6rem;right:0.7rem;background:' + lv.color + ';color:#fff;font-size:0.72rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:20px">' + lv.num + '</div>'
+            : '<div style="position:absolute;top:0.6rem;right:0.7rem;background:#e2e8f0;color:#475569;font-size:0.7rem;font-weight:600;padding:0.15rem 0.5rem;border-radius:20px">נפרד</div>';
         return '<div class="sent-level-card" onclick="selectLevel(' + lv.id + ')" ' +
-               'style="border-color:' + lv.color + '">' +
+               'style="border-color:' + lv.color + ';position:relative">' +
+               numBadge +
                '<div class="sent-level-emoji">' + lv.emoji + '</div>' +
                '<div class="sent-level-name">' + lv.name + '</div>' +
                '<div class="sent-level-desc">' + lv.desc + '</div>' +
