@@ -385,7 +385,7 @@
 <div id="fbLoginOv" onclick="if(event.target===this)closeLoginModal()"
      style="position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:9999;direction:rtl;">
   <div onclick="event.stopPropagation()"
-       style="background:#fff;border-radius:1.2rem;padding:2rem 2rem 1.5rem;width:min(92vw,380px);position:relative;text-align:center;font-family:inherit;">
+       style="background:#fff;border-radius:1.2rem;padding:2rem 2rem 1.5rem;width:min(92vw,380px);position:relative;text-align:center;font-family:inherit;max-height:92vh;overflow-y:auto;">
     <button onclick="closeLoginModal()"
             style="position:absolute;top:0.7rem;left:0.8rem;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#94a3b8;">✕</button>
     <input type="hidden" id="fbModeVal" value="register">
@@ -456,11 +456,11 @@
 
     <div id="fbConsentRow" style="margin-bottom:0.7rem;text-align:right;display:none;">
         <label style="display:flex;align-items:flex-start;gap:0.45rem;cursor:pointer;font-size:0.82rem;color:#374151;line-height:1.5;margin-bottom:0.5rem;">
-            <input type="checkbox" id="fbTermsCheck" style="margin-top:0.2rem;flex-shrink:0;">
-            <span>קראתי ואני מסכים/ה ל<a href="תנאי שימוש.html" target="_blank" style="color:#2563eb;text-decoration:underline">תנאי השימוש</a> ול<a href="מדיניות פרטיות.html" target="_blank" style="color:#2563eb;text-decoration:underline">מדיניות הפרטיות</a></span>
+            <input type="checkbox" id="fbTermsCheck" style="margin-top:0.2rem;flex-shrink:0;" onchange="document.getElementById('fbConsentRow').style.outline='';document.getElementById('fbErr').textContent='';">
+            <span>קראתי ואני מסכים/ה ל<a href="תנאי שימוש.html" target="_blank" style="color:#2563eb;text-decoration:underline;font-weight:600;">תנאי השימוש</a> ול<a href="מדיניות פרטיות.html" target="_blank" style="color:#2563eb;text-decoration:underline;font-weight:600;">מדיניות הפרטיות</a></span>
         </label>
         <label style="display:flex;align-items:flex-start;gap:0.45rem;cursor:pointer;font-size:0.82rem;color:#374151;line-height:1.5;">
-            <input type="checkbox" id="fbParentCheck" style="margin-top:0.2rem;flex-shrink:0;">
+            <input type="checkbox" id="fbParentCheck" style="margin-top:0.2rem;flex-shrink:0;" onchange="document.getElementById('fbConsentRow').style.outline='';document.getElementById('fbErr').textContent='';">
             <span>אני הורה/אפוטרופוס ומאשר/ת לילדי להשתמש באתר</span>
         </label>
     </div>
@@ -528,12 +528,20 @@ function fbSignInGoogle() { document.getElementById('fbErr').textContent = 'טו
 function fbSubmitEmail() {
     var mode = document.getElementById('fbModeVal').value;
     if (mode === 'register') {
-        if (!document.getElementById('fbTermsCheck').checked) {
-            document.getElementById('fbErr').textContent = 'יש לאשר את תנאי השימוש ומדיניות הפרטיות כדי להמשיך';
+        var termsOk  = document.getElementById('fbTermsCheck').checked;
+        var parentOk = document.getElementById('fbParentCheck').checked;
+        var consentRow = document.getElementById('fbConsentRow');
+        consentRow.style.outline = (!termsOk || !parentOk) ? '2px solid #ef4444' : '';
+        consentRow.style.borderRadius = '8px';
+        consentRow.style.padding = (!termsOk || !parentOk) ? '0.4rem 0.5rem' : '';
+        if (!termsOk) {
+            document.getElementById('fbErr').textContent = 'יש לסמן את תיבת האישור לתנאי השימוש ומדיניות הפרטיות';
+            consentRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
-        if (!document.getElementById('fbParentCheck').checked) {
+        if (!parentOk) {
             document.getElementById('fbErr').textContent = 'יש לאשר שאתה הורה/אפוטרופוס של הילד';
+            consentRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
     }
