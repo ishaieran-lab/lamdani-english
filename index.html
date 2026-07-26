@@ -454,16 +454,12 @@
              onkeydown="if(event.key==='Enter')fbSubmitEmail()">
     </div>
 
-    <div id="fbErr" style="color:#ef4444;font-size:0.85rem;margin-bottom:0.65rem;min-height:1.1em;"></div>
+    <div id="fbErr" style="color:#ef4444;font-size:0.82rem;margin-bottom:0.45rem;min-height:1.1em;text-align:right;"></div>
 
-    <div id="fbConsentRow" style="margin-bottom:0.7rem;text-align:right;display:none;">
-        <label style="display:flex;align-items:flex-start;gap:0.45rem;cursor:pointer;font-size:0.82rem;color:#374151;line-height:1.5;margin-bottom:0.5rem;">
-            <input type="checkbox" id="fbTermsCheck" style="margin-top:0.2rem;flex-shrink:0;" onchange="document.getElementById('fbConsentRow').style.outline='';document.getElementById('fbErr').textContent='';">
-            <span>קראתי ואני מסכים/ה ל<a href="תנאי שימוש.html" target="_blank" style="color:#2563eb;text-decoration:underline;font-weight:600;">תנאי השימוש</a> ול<a href="מדיניות פרטיות.html" target="_blank" style="color:#2563eb;text-decoration:underline;font-weight:600;">מדיניות הפרטיות</a></span>
-        </label>
-        <label style="display:flex;align-items:flex-start;gap:0.45rem;cursor:pointer;font-size:0.82rem;color:#374151;line-height:1.5;">
-            <input type="checkbox" id="fbParentCheck" style="margin-top:0.2rem;flex-shrink:0;" onchange="document.getElementById('fbConsentRow').style.outline='';document.getElementById('fbErr').textContent='';">
-            <span>אני הורה/אפוטרופוס ומאשר/ת לילדי להשתמש באתר</span>
+    <div id="fbConsentRow" style="margin-bottom:0.6rem;text-align:right;display:none;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:0.6rem;padding:0.6rem 0.75rem;">
+        <label style="display:flex;align-items:flex-start;gap:0.5rem;cursor:pointer;font-size:0.8rem;color:#374151;line-height:1.5;">
+            <input type="checkbox" id="fbTermsCheck" style="margin-top:0.2rem;flex-shrink:0;width:16px;height:16px;" onchange="document.getElementById('fbConsentRow').style.borderColor=this.checked?'#86efac':'#e2e8f0';document.getElementById('fbErr').textContent='';">
+            <span>אני הורה/אפוטרופוס ומאשר/ת ל<a href="תנאי שימוש.html" target="_blank" style="color:#2563eb;text-decoration:underline;">תנאי השימוש</a> ו<a href="מדיניות פרטיות.html" target="_blank" style="color:#2563eb;text-decoration:underline;">מדיניות הפרטיות</a></span>
         </label>
     </div>
 
@@ -529,18 +525,12 @@ function fbSignInGoogle() { document.getElementById('fbErr').textContent = 'טו
 function fbSubmitEmail() {
     var mode = document.getElementById('fbModeVal').value;
     if (mode === 'register') {
-        var termsOk  = document.getElementById('fbTermsCheck').checked;
-        var parentOk = document.getElementById('fbParentCheck').checked;
-        var consentRow = document.getElementById('fbConsentRow');
-        consentRow.style.outline = (!termsOk || !parentOk) ? '2px solid #ef4444' : '';
-        consentRow.style.borderRadius = '8px';
-        consentRow.style.padding = (!termsOk || !parentOk) ? '0.4rem 0.5rem' : '';
-        if (!termsOk) {
-            document.getElementById('fbErr').textContent = 'יש לסמן את תיבת האישור לתנאי השימוש ומדיניות הפרטיות';
-            return;
-        }
-        if (!parentOk) {
-            document.getElementById('fbErr').textContent = 'יש לאשר שאתה הורה/אפוטרופוס של הילד';
+        var checked = document.getElementById('fbTermsCheck').checked;
+        var row = document.getElementById('fbConsentRow');
+        if (!checked) {
+            row.style.borderColor = '#ef4444';
+            row.style.background  = '#fff5f5';
+            document.getElementById('fbErr').textContent = 'יש לסמן את תיבת האישור כדי להמשיך';
             return;
         }
     }
