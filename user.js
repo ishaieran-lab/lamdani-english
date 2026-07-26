@@ -469,15 +469,17 @@ function uLogout() {
 // ── Callbacks מ-Firebase Auth ────────────────────────────────────
 window.onFirebaseAuth = function(fbUser) {
     saveParent({ uid: fbUser.uid, email: fbUser.email, name: fbUser.displayName || fbUser.email.split('@')[0] });
-    if (typeof fsyncUserLogin === 'function') fsyncUserLogin(fbUser);
-    var kids = getChildren();
-    if (kids.length === 0 || !getActiveKid()) {
-        openChildPicker();
-    } else {
-        renderUserNav();
-        if (typeof window.onUserLogin === 'function') window.onUserLogin();
-        if (typeof window.onProgressUpdated === 'function') window.onProgressUpdated();
-    }
+    var syncPromise = typeof fsyncUserLogin === 'function' ? fsyncUserLogin(fbUser) : Promise.resolve();
+    Promise.resolve(syncPromise).then(function() {
+        var kids = getChildren();
+        if (kids.length === 0 || !getActiveKid()) {
+            openChildPicker();
+        } else {
+            renderUserNav();
+            if (typeof window.onUserLogin === 'function') window.onUserLogin();
+            if (typeof window.onProgressUpdated === 'function') window.onProgressUpdated();
+        }
+    });
 };
 
 window.onFirebaseLogout = function() {
