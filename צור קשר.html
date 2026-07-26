@@ -136,5 +136,46 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="firebase-auth.js"></script>
 <script src="user.js"></script>
+<footer class="site-footer">
+    <div class="site-footer-inner">
+        <div class="site-footer-links">
+            <a href="תנאי שימוש.html">תנאי שימוש</a>
+            <a href="מדיניות פרטיות.html">מדיניות פרטיות</a>
+            <a href="מדיניות ביטולים.html">מדיניות ביטולים</a>
+            <a href="הצהרת נגישות.html">הצהרת נגישות</a>
+            <a href="צור קשר.html">צור קשר</a>
+        </div>
+        <div class="site-footer-copy">© 2026 למדני אנגלית · כל הזכויות שמורות</div>
+    </div>
+</footer>
+<div class="a11y-widget">
+    <button class="a11y-toggle-btn" onclick="toggleA11yPanel()" aria-label="אפשרויות נגישות" title="נגישות">♿</button>
+    <div class="a11y-panel" id="a11yPanel">
+        <div class="a11y-panel-title">נגישות</div>
+        <button onclick="a11yFontSize(2)">הגדל טקסט A﹢</button>
+        <button onclick="a11yFontSize(-2)">הקטן טקסט A﹣</button>
+        <button onclick="a11yToggleContrast()" id="a11yContrast">ניגודיות גבוהה</button>
+        <button onclick="a11yToggleLinks()" id="a11yLinks">הדגש קישורים</button>
+        <button onclick="a11yReset()">איפוס</button>
+    </div>
+</div>
+<script>
+(function() {
+    var fontSize = 0, contrast = false, links = false;
+    function applyA11y() {
+        document.documentElement.style.fontSize = fontSize ? (100 + fontSize * 10) + '%' : '';
+        document.body.classList.toggle('a11y-contrast', contrast);
+        document.body.classList.toggle('a11y-links', links);
+        document.getElementById('a11yContrast').classList.toggle('active', contrast);
+        document.getElementById('a11yLinks').classList.toggle('active', links);
+    }
+    window.toggleA11yPanel = function() { document.getElementById('a11yPanel').classList.toggle('open'); };
+    window.a11yFontSize = function(d) { fontSize = Math.max(-2, Math.min(4, fontSize + d)); applyA11y(); };
+    window.a11yToggleContrast = function() { contrast = !contrast; applyA11y(); };
+    window.a11yToggleLinks    = function() { links = !links; applyA11y(); };
+    window.a11yReset = function() { fontSize = 0; contrast = false; links = false; applyA11y(); document.getElementById('a11yPanel').classList.remove('open'); };
+    document.addEventListener('click', function(e) { var w = document.querySelector('.a11y-widget'); if (w && !w.contains(e.target)) document.getElementById('a11yPanel').classList.remove('open'); });
+})();
+</script>
 </body>
 </html>

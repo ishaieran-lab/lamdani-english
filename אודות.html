@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אודות — למדני אנגלית</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .about-wrap { max-width: 760px; margin: 2.5rem auto; padding: 0 1.5rem 4rem; }
+        .about-wrap h1 { font-size: 1.9rem; font-weight: 800; color: var(--navy); margin-bottom: 0.3rem; }
+        .about-sub { font-size: 0.95rem; color: var(--gray-txt); margin-bottom: 2.5rem; }
+        .about-section { margin-bottom: 2rem; }
+        .about-section h2 { font-size: 1.1rem; font-weight: 700; color: var(--navy); margin-bottom: 0.6rem; border-right: 3px solid var(--blue); padding-right: 0.65rem; }
+        .about-section p, .about-section li { font-size: 0.97rem; color: #374151; line-height: 1.85; }
+        .about-section ul { padding-right: 1.3rem; margin-top: 0.4rem; }
+        .about-section li { margin-bottom: 0.35rem; }
+        .module-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+        .module-pill { background: var(--blue-bg); color: var(--blue); font-weight: 700; font-size: 0.88rem; padding: 0.3rem 0.85rem; border-radius: 20px; }
+    </style>
+</head>
+<body>
+
+<nav class="toolbar">
+    <a href="index.html" class="toolbar-brand"><span class="accent">Lamdani</span> English</a>
+    <div class="toolbar-nav">
+        <div class="nav-menu-wrap">
+            <button class="nav-icon-btn" id="navMenuBtn" onclick="toggleNavMenu()">
+                <img src="images/ui/menu.png" class="nav-icon-img" alt="תפריט">
+            </button>
+            <div class="nav-menu-panel" id="navMenuPanel">
+                <a href="app.html" class="nav-menu-item">דף הבית</a>
+                <a href="אודות.html" class="nav-menu-item">אודות</a>
+                <a href="צור קשר.html" class="nav-menu-item">צור קשר</a>
+            </div>
+        </div>
+        <a href="app.html" class="nav-icon-btn">
+            <img src="images/ui/home.png" class="nav-icon-img" alt="בית">
+        </a>
+        <div id="userNavArea" style="position:relative"></div>
+    </div>
+</nav>
+
+<div class="about-wrap">
+    <h1>אודות למדני אנגלית</h1>
+    <p class="about-sub">פלטפורמת לימוד אנגלית אינטראקטיבית לתלמידי בית ספר יסודי</p>
+
+    <div class="about-section">
+        <h2>מי אנחנו?</h2>
+        <p>
+            פלטפורמת Lamdani English פותחה על ידי אנשי חינוך ואנשי מקצוע פדגוגיים בעלי ניסיון עשיר בהוראה ובניהול מערכות חינוך.
+            מתוך היכרות עמוקה עם האתגרים של תלמידי בתי הספר היסודיים ברכישת שפה שנייה,
+            זיקקנו את הניסיון המקצועי שלנו לכדי כלי דיגיטלי ממוקד, ברור וחווייתי.
+        </p>
+        <p>
+            מטרתנו לאפשר לכל ילד וילדה לבנות בסיס שפה חזק ויציב, להצליח בכיתה ולפתח ביטחון ואהבה לאנגלית — בקצב האישי שלהם.
+        </p>
+    </div>
+
+    <div class="about-section">
+        <h2>מה כולל האתר?</h2>
+        <p>האתר מציע ארבעה מסלולי לימוד משלימים:</p>
+        <div class="module-pills">
+            <span class="module-pill">אוצר מילים</span>
+            <span class="module-pill">דקדוק</span>
+            <span class="module-pill">הבנת הנקרא</span>
+            <span class="module-pill">תרגול משפטים</span>
+        </div>
+        <ul style="margin-top:1rem;">
+            <li><strong>אוצר מילים</strong> — 51 נושאים עם כרטיסיות, השמעה ובחנים</li>
+            <li><strong>דקדוק</strong> — חוקי השפה עם הסבר בעברית ותרגול אינטראקטיבי</li>
+            <li><strong>הבנת הנקרא</strong> — 10 רמות קריאה עם שאלות הבנה</li>
+            <li><strong>תרגול משפטים</strong> — מצמדי מילים ועד משפטים מלאים, 4 רמות</li>
+        </ul>
+    </div>
+
+    <div class="about-section">
+        <h2>מותאם לתוכנית הלימודים</h2>
+        <p>
+            הפלטפורמה נבנתה בזיקה הדוקה לתוכנית הלימודים של משרד החינוך לבתי הספר היסודיים.
+            התכנים מתמקדים באוצר המילים הרלוונטי ובמבני הדקדוק המרכזיים הנדרשים בשכבות גיל אלו —
+            כדי להעניק לילדים תמיכה מצוינת וביטחון להצלחה בכיתה.
+        </p>
+    </div>
+
+    <div class="about-section">
+        <h2>ממשק בעברית, ידידותי לילדים</h2>
+        <p>
+            כל הממשק, ההסברים והפידבק כתובים בעברית ברורה ופשוטה.
+            האתר מתאים לשימוש עצמאי של ילדים מגיל ו', ומאפשר להורים לעקוב אחר ההתקדמות.
+        </p>
+    </div>
+
+    <div class="about-section">
+        <h2>יצירת קשר</h2>
+        <p>לשאלות, הצעות ומשוב: <a href="צור קשר.html" style="color:var(--blue)">צור קשר</a></p>
+        <p style="margin-top:0.35rem;">שם העסק: <strong>למדני אנגלית</strong></p>
+    </div>
+</div>
+
+<footer class="site-footer">
+    <div class="site-footer-inner">
+        <div class="site-footer-links">
+            <a href="תנאי שימוש.html">תנאי שימוש</a>
+            <a href="מדיניות פרטיות.html">מדיניות פרטיות</a>
+            <a href="מדיניות ביטולים.html">מדיניות ביטולים</a>
+            <a href="הצהרת נגישות.html">הצהרת נגישות</a>
+            <a href="צור קשר.html">צור קשר</a>
+        </div>
+        <div class="site-footer-copy">© 2026 למדני אנגלית · כל הזכויות שמורות</div>
+    </div>
+</footer>
+<div class="a11y-widget">
+    <button class="a11y-toggle-btn" onclick="toggleA11yPanel()" aria-label="אפשרויות נגישות" title="נגישות">♿</button>
+    <div class="a11y-panel" id="a11yPanel">
+        <div class="a11y-panel-title">נגישות</div>
+        <button onclick="a11yFontSize(2)">הגדל טקסט A﹢</button>
+        <button onclick="a11yFontSize(-2)">הקטן טקסט A﹣</button>
+        <button onclick="a11yToggleContrast()" id="a11yContrast">ניגודיות גבוהה</button>
+        <button onclick="a11yToggleLinks()" id="a11yLinks">הדגש קישורים</button>
+        <button onclick="a11yReset()">איפוס</button>
+    </div>
+</div>
+<script>
+(function() {
+    var fontSize = 0, contrast = false, links = false;
+    function applyA11y() {
+        document.documentElement.style.fontSize = fontSize ? (100 + fontSize * 10) + '%' : '';
+        document.body.classList.toggle('a11y-contrast', contrast);
+        document.body.classList.toggle('a11y-links', links);
+        document.getElementById('a11yContrast').classList.toggle('active', contrast);
+        document.getElementById('a11yLinks').classList.toggle('active', links);
+    }
+    window.toggleA11yPanel = function() { document.getElementById('a11yPanel').classList.toggle('open'); };
+    window.a11yFontSize = function(d) { fontSize = Math.max(-2, Math.min(4, fontSize + d)); applyA11y(); };
+    window.a11yToggleContrast = function() { contrast = !contrast; applyA11y(); };
+    window.a11yToggleLinks    = function() { links = !links; applyA11y(); };
+    window.a11yReset = function() { fontSize = 0; contrast = false; links = false; applyA11y(); document.getElementById('a11yPanel').classList.remove('open'); };
+    document.addEventListener('click', function(e) { var w = document.querySelector('.a11y-widget'); if (w && !w.contains(e.target)) document.getElementById('a11yPanel').classList.remove('open'); });
+})();
+function toggleNavMenu() { document.getElementById('navMenuPanel').classList.toggle('open'); }
+document.addEventListener('click', function(e) { var p = document.getElementById('navMenuPanel'); var b = document.getElementById('navMenuBtn'); if (p && !p.contains(e.target) && b && !b.contains(e.target)) p.classList.remove('open'); });
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="firebase-auth.js"></script>
+<script src="user.js"></script>
+</body>
+</html>

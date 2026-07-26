@@ -454,6 +454,16 @@
              onkeydown="if(event.key==='Enter')fbSubmitEmail()">
     </div>
 
+    <div id="fbConsentRow" style="margin-bottom:0.7rem;text-align:right;display:none;">
+        <label style="display:flex;align-items:flex-start;gap:0.45rem;cursor:pointer;font-size:0.82rem;color:#374151;line-height:1.5;margin-bottom:0.5rem;">
+            <input type="checkbox" id="fbTermsCheck" style="margin-top:0.2rem;flex-shrink:0;">
+            <span>קראתי ואני מסכים/ה ל<a href="תנאי שימוש.html" target="_blank" style="color:#2563eb;text-decoration:underline">תנאי השימוש</a> ול<a href="מדיניות פרטיות.html" target="_blank" style="color:#2563eb;text-decoration:underline">מדיניות הפרטיות</a></span>
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:0.45rem;cursor:pointer;font-size:0.82rem;color:#374151;line-height:1.5;">
+            <input type="checkbox" id="fbParentCheck" style="margin-top:0.2rem;flex-shrink:0;">
+            <span>אני הורה/אפוטרופוס ומאשר/ת לילדי להשתמש באתר</span>
+        </label>
+    </div>
     <div id="fbErr" style="color:#ef4444;font-size:0.85rem;margin-bottom:0.65rem;min-height:1.1em;"></div>
 
     <button id="fbSubmitBtn" onclick="fbSubmitEmail()"
@@ -475,7 +485,8 @@ function openLoginModal(mode) {
     var m = mode === 'login' ? 'login' : 'register';
     document.getElementById('fbModeVal').value = m;
     var isReg = m === 'register';
-    document.getElementById('fbNameRow').style.display  = isReg ? 'block' : 'none';
+    document.getElementById('fbNameRow').style.display    = isReg ? 'block' : 'none';
+    document.getElementById('fbConsentRow').style.display = isReg ? 'block' : 'none';
     document.getElementById('fbModalTitle').textContent = isReg ? 'הרשמה' : 'כניסה';
     document.getElementById('fbSubmitBtn').textContent  = isReg ? 'הרשמה ←' : 'כנס ←';
     document.getElementById('fbToggleBtn').textContent  = isReg ? 'כבר יש לך חשבון? כנס' : 'אין לך חשבון? הירשם';
@@ -514,7 +525,20 @@ function fbChangeVerifyEmail()   {
 }
 function fbGoToLogin() { openLoginModal('login'); }
 function fbSignInGoogle() { document.getElementById('fbErr').textContent = 'טוען...'; if(window._fbDoGoogle) window._fbDoGoogle(); }
-function fbSubmitEmail()  { if(window._fbDoEmail) window._fbDoEmail(); else document.getElementById('fbErr').textContent = 'Firebase לא נטען עדיין — נסה שוב'; }
+function fbSubmitEmail() {
+    var mode = document.getElementById('fbModeVal').value;
+    if (mode === 'register') {
+        if (!document.getElementById('fbTermsCheck').checked) {
+            document.getElementById('fbErr').textContent = 'יש לאשר את תנאי השימוש ומדיניות הפרטיות כדי להמשיך';
+            return;
+        }
+        if (!document.getElementById('fbParentCheck').checked) {
+            document.getElementById('fbErr').textContent = 'יש לאשר שאתה הורה/אפוטרופוס של הילד';
+            return;
+        }
+    }
+    if (window._fbDoEmail) window._fbDoEmail(); else document.getElementById('fbErr').textContent = 'Firebase לא נטען עדיין — נסה שוב';
+}
 
 // זיהוי חזרה לאחר אימות מהמייל
 (function() {
@@ -755,6 +779,8 @@ function fbSubmitEmail()  { if(window._fbDoEmail) window._fbDoEmail(); else docu
             <h4>משפטי</h4>
             <a href="תנאי שימוש.html">תנאי שימוש</a>
             <a href="מדיניות פרטיות.html">מדיניות פרטיות</a>
+            <a href="מדיניות ביטולים.html">מדיניות ביטולים</a>
+            <a href="הצהרת נגישות.html">הצהרת נגישות</a>
         </div>
     </div>
     <div class="footer-bottom">
