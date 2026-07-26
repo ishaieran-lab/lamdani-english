@@ -454,6 +454,8 @@
              onkeydown="if(event.key==='Enter')fbSubmitEmail()">
     </div>
 
+    <div id="fbErr" style="color:#ef4444;font-size:0.85rem;margin-bottom:0.65rem;min-height:1.1em;"></div>
+
     <div id="fbConsentRow" style="margin-bottom:0.7rem;text-align:right;display:none;">
         <label style="display:flex;align-items:flex-start;gap:0.45rem;cursor:pointer;font-size:0.82rem;color:#374151;line-height:1.5;margin-bottom:0.5rem;">
             <input type="checkbox" id="fbTermsCheck" style="margin-top:0.2rem;flex-shrink:0;" onchange="document.getElementById('fbConsentRow').style.outline='';document.getElementById('fbErr').textContent='';">
@@ -464,7 +466,6 @@
             <span>אני הורה/אפוטרופוס ומאשר/ת לילדי להשתמש באתר</span>
         </label>
     </div>
-    <div id="fbErr" style="color:#ef4444;font-size:0.85rem;margin-bottom:0.65rem;min-height:1.1em;"></div>
 
     <button id="fbSubmitBtn" onclick="fbSubmitEmail()"
             style="width:100%;padding:0.75rem;background:#2563eb;color:#fff;border:none;border-radius:0.6rem;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:0.9rem;">
@@ -536,12 +537,10 @@ function fbSubmitEmail() {
         consentRow.style.padding = (!termsOk || !parentOk) ? '0.4rem 0.5rem' : '';
         if (!termsOk) {
             document.getElementById('fbErr').textContent = 'יש לסמן את תיבת האישור לתנאי השימוש ומדיניות הפרטיות';
-            consentRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
         if (!parentOk) {
             document.getElementById('fbErr').textContent = 'יש לאשר שאתה הורה/אפוטרופוס של הילד';
-            consentRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
     }
