@@ -773,6 +773,8 @@ function openLoginModal(mode) {
     var isReg = m === 'register';
     document.getElementById('fbModeVal').value = m;
     document.getElementById('fbNameRow').style.display  = isReg ? 'block' : 'none';
+    var consentRow = document.getElementById('fbConsentRow');
+    if (consentRow) consentRow.style.display = isReg ? 'block' : 'none';
     document.getElementById('fbModalTitle').textContent = isReg ? 'הרשמה' : 'כניסה';
     document.getElementById('fbSubmitBtn').textContent  = isReg ? 'הרשמה ←' : 'כנס ←';
     document.getElementById('fbToggleBtn').textContent  = isReg ? 'כבר יש לך חשבון? כנס' : 'אין לך חשבון? הירשם';
