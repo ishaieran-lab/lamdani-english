@@ -91,6 +91,7 @@
                     <img src="images/home/תרגול.png" class="stage-img" alt="תרגול משפטים">
                     <p>תרגם משפטים מאנגלית לעברית — מצמדי מילים ועד משפטים מלאים.</p>
                 </a>
+                <div class="card-prog" id="prog-sentences" style="display:none"></div>
             </div>
 
 
@@ -128,6 +129,7 @@ var MODULES = [
     { key: 'vocabulary', id: 'prog-vocabulary', total: 51 },
     { key: 'grammar',    id: 'prog-grammar',    total: 13, indices: [12,4,17,16,14,13,2,0,1,3,5,15,18] },
     { key: 'reading',    id: 'prog-reading',    total: 10 },
+    { key: 'sentences',  id: 'prog-sentences',  total: 4,  levelTotals: [200, 150, 150, 100] },
 ];
 
 function onProgressUpdated() {
@@ -168,6 +170,12 @@ function renderProgress() {
                 if (s.vocabBest !== undefined) completed++;
             } else if (m.key === 'reading') {
                 if (s.best !== undefined) completed++;
+            } else if (m.key === 'sentences') {
+                var sentCorrect = (s.correct || []).length;
+                var sentTotal   = m.levelTotals[ii];
+                if (sentCorrect >= sentTotal) completed++;
+                else if (sentCorrect > 0)     started++;
+                if (sentCorrect > 0) readingScores.push({ idx: ii + 1, sc: Math.min(100, Math.round(sentCorrect / sentTotal * 100)) });
             } else {
                 var st = getStageStatus(m.key, i);
                 if (st === 'complete') completed++;
@@ -186,10 +194,13 @@ function renderProgress() {
         }
 
         // ── טקסט שלבים ──────────────────────────────────────────
-        var isVocab   = m.key === 'vocabulary';
+        var isVocab     = m.key === 'vocabulary';
+        var isSentences = m.key === 'sentences';
         var stageWord = isVocab
-            ? (completed === 1 ? 'נושא 1' : completed + ' נושאים')
-            : (completed === 1 ? 'שלב 1'  : completed + ' שלבים');
+            ? (completed === 1 ? 'נושא 1'  : completed + ' נושאים')
+            : isSentences
+                ? (completed === 1 ? 'רמה 1'   : completed + ' רמות')
+                : (completed === 1 ? 'שלב 1'   : completed + ' שלבים');
         var mainText  = 'ביצע ' + stageWord + ' מתוך ' + m.total;
         if (!isVocab && started > 0) mainText += ' · ' + started + ' בתהליך';
 
@@ -201,7 +212,7 @@ function renderProgress() {
             var cls = avg >= 80 ? 'cp-chip-green' : avg >= 60 ? 'cp-chip-ok' : 'cp-chip';
 
             if (completed === 1 && allScores.length === 1) {
-                var lbl = isVocab ? 'נושא' : 'שלב';
+                var lbl = isVocab ? 'נושא' : isSentences ? 'רמה' : 'שלב';
                 scoreHtml = '<span class="' + cls + '">' + lbl + ' ' + allScores[0].idx + ' · ציון ' + allScores[0].sc + '%</span>';
             } else {
                 scoreHtml = '<span class="' + cls + '">ממוצע ' + avg + '%</span>';
