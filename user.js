@@ -503,6 +503,10 @@ function closeChildPicker() {
     if (ov) ov.style.display = 'none';
 }
 
+function _tryCloseChildPicker() {
+    if (getActiveKid()) closeChildPicker();
+}
+
 function _selectKid(id) {
     var kids = getChildren();
     var kid  = kids.find(function(k) { return k.id === id; });
@@ -585,7 +589,8 @@ function _saveNewKid() {
 function _buildKidPicker() {
     var d = document.createElement('div');
     d.id = 'kidPickerOv';
-    d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:10000;direction:rtl;';
+    d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:10000;direction:rtl;cursor:pointer;';
+    d.onclick = function(e) { if (e.target === d) _tryCloseChildPicker(); };
     d.innerHTML =
         '<div style="background:#fff;border-radius:0;padding:1.2rem 1.5rem;width:min(94vw,460px);position:relative;font-family:inherit;" onclick="event.stopPropagation()">' +
 
