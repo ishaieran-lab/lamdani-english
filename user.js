@@ -758,8 +758,19 @@ function _deleteKid(id) {
             var remaining = [];
             for (var i = 0; i < kids.length; i++) { if (kids[i].id !== id) remaining.push(kids[i]); }
             saveChildren(remaining);
+            localStorage.removeItem('engProgress_' + id);
             var active = getActiveKid();
             if (active && active.id === id) clearActiveKid();
+            // Sync deletion to Firestore
+            var db = typeof _fsDb === 'function' ? _fsDb() : null;
+            var parent = typeof getParent === 'function' ? getParent() : null;
+            if (db && parent && parent.uid) {
+                var kidsData = remaining.map(function(k) {
+                    return { id: k.id, name: k.name, gender: k.gender || 'male', age: k.age || '', photo: k.photo || '' };
+                });
+                db.collection('users').doc(parent.uid).update({ kids: kidsData })
+                    .catch(function(e) { console.warn('[fsync] delete kid error:', e.message); });
+            }
             _kidEditId = '';
             _showKidList();
             renderUserNav();
