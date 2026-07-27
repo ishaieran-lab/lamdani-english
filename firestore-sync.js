@@ -30,63 +30,64 @@ function fsyncUserLogin(fbUser) {
     var localKids = typeof getChildren === 'function' ? getChildren() : [];
     var userRef   = db.collection('users').doc(fbUser.uid);
 
-    _fsToast('מסנכרן נתונים... (' + localKids.length + ' מקומי)', '#475569');
+    _fsToast('מסנכרן נתונים...', '#475569');
 
     return userRef.get().then(function(doc) {
         var data = doc.exists ? doc.data() : {};
-
-        // Always pull premium status
         if (data.premium) window._fsUserPremium = true;
 
-        if (localKids.length > 0) {
-            // Local data exists — push to Firestore
-            var kidsData = localKids.map(function(k) {
-                return { id: k.id, name: k.name, gender: k.gender || 'male', age: k.age || '' };
-            });
-            var progressData = {};
-            localKids.forEach(function(k) {
-                var raw = localStorage.getItem('engProgress_' + k.id);
-                try { progressData[k.id] = raw ? JSON.parse(raw) : {}; } catch(e) { progressData[k.id] = {}; }
-            });
-            var updates = {
-                email: fbUser.email,
-                name:  fbUser.displayName || fbUser.email.split('@')[0],
-                lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-                kids: kidsData,
-                progress: progressData
-            };
-            if (!data.registeredAt) updates.registeredAt = firebase.firestore.FieldValue.serverTimestamp();
-            _fsToast('✅ שמור: ' + localKids.length + ' ילדים', '#16a34a');
-            return userRef.set(updates, { merge: true });
-        }
-
-        // No local data — restore from Firestore if available
-        if (doc.exists && data.kids && data.kids.length > 0) {
-            if (typeof saveChildren === 'function') saveChildren(data.kids);
-            if (data.progress) {
-                data.kids.forEach(function(k) {
-                    if (data.progress[k.id]) {
-                        localStorage.setItem('engProgress_' + k.id, JSON.stringify(data.progress[k.id]));
-                    }
-                });
+        // Merge local kids + Firestore kids (by id, no duplicates)
+        var fsKids = (doc.exists && data.kids) ? data.kids : [];
+        var merged = localKids.slice();
+        fsKids.forEach(function(fk) {
+            if (!merged.find(function(lk) { return lk.id === fk.id; })) {
+                merged.push(fk);
             }
-            _fsToast('✅ שוחזר: ' + data.kids.length + ' ילדים מהגיבוי', '#16a34a');
-            return userRef.set({
-                email: fbUser.email,
-                name:  fbUser.displayName || fbUser.email.split('@')[0],
-                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-        }
+        });
 
-        // Brand new user — write metadata only
-        _fsToast('משתמש חדש — אין גיבוי קודם', '#475569');
-        var newUpdates = {
+        // Merge progress: local wins for kids we have locally, Firestore fills the rest
+        var mergedProgress = {};
+        if (data.progress) {
+            Object.keys(data.progress).forEach(function(kid_id) {
+                mergedProgress[kid_id] = data.progress[kid_id];
+            });
+        }
+        merged.forEach(function(k) {
+            var raw = localStorage.getItem('engProgress_' + k.id);
+            if (raw) {
+                try { mergedProgress[k.id] = JSON.parse(raw); } catch(e) {}
+            }
+        });
+
+        // Save merged list to localStorage
+        if (typeof saveChildren === 'function') saveChildren(merged);
+        merged.forEach(function(k) {
+            if (mergedProgress[k.id]) {
+                localStorage.setItem('engProgress_' + k.id, JSON.stringify(mergedProgress[k.id]));
+            }
+        });
+
+        // Push merged data to Firestore
+        var kidsData = merged.map(function(k) {
+            return { id: k.id, name: k.name, gender: k.gender || 'male', age: k.age || '' };
+        });
+        var updates = {
             email: fbUser.email,
             name:  fbUser.displayName || fbUser.email.split('@')[0],
-            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+            lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+            kids: kidsData,
+            progress: mergedProgress
         };
-        if (!data.registeredAt) newUpdates.registeredAt = firebase.firestore.FieldValue.serverTimestamp();
-        return userRef.set(newUpdates, { merge: true });
+        if (!data.registeredAt) updates.registeredAt = firebase.firestore.FieldValue.serverTimestamp();
+
+        var added = merged.length - localKids.length;
+        if (added > 0) {
+            _fsToast('✅ מוזג: ' + merged.length + ' ילדים (' + added + ' שוחזרו)', '#16a34a');
+        } else {
+            _fsToast('✅ שמור: ' + merged.length + ' ילדים', '#16a34a');
+        }
+
+        return userRef.set(updates, { merge: true });
 
     }).catch(function(e) {
         _fsToast('❌ שגיאת Firestore: ' + e.message, '#dc2626');
