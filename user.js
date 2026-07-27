@@ -472,9 +472,6 @@ window.onFirebaseAuth = function(fbUser) {
     var syncPromise = typeof fsyncUserLogin === 'function' ? fsyncUserLogin(fbUser) : Promise.resolve();
     Promise.resolve(syncPromise).then(function() {
         var kids = getChildren();
-        setTimeout(function() {
-            if (typeof _fsToast === 'function') _fsToast('uid:' + fbUser.uid.slice(0,8) + ' | ' + kids.length + ' ילדים', '#7c3aed');
-        }, 1500);
         if (kids.length === 0 || !getActiveKid()) {
             openChildPicker();
         } else {

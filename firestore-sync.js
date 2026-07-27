@@ -3,36 +3,14 @@
 function _fsDb()  { return window._firebaseDb || null; }
 function _fsUid() { var p = typeof getParent === 'function' ? getParent() : null; return p ? p.uid : null; }
 
-function _fsToast(msg, color) {
-    var t = document.getElementById('_fsToast');
-    if (!t) {
-        t = document.createElement('div');
-        t.id = '_fsToast';
-        t.style.cssText = 'position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:0.6rem 1.2rem;border-radius:2rem;font-size:0.85rem;z-index:99999;direction:rtl;box-shadow:0 4px 12px rgba(0,0,0,0.3);transition:opacity 0.4s;font-family:inherit;';
-        document.body.appendChild(t);
-    }
-    t.textContent = msg;
-    t.style.background = color || '#1e293b';
-    t.style.opacity = '1';
-    clearTimeout(t._timer);
-    t._timer = setTimeout(function() { t.style.opacity = '0'; }, 5000);
-}
-
-// Called once on login — restores from Firestore if local is empty, otherwise pushes local → Firestore
+// Called once on login — merges local kids with Firestore and writes back
 function fsyncUserLogin(fbUser) {
-    _fsToast('uid: ' + fbUser.uid.slice(0,8) + '...', '#1e40af');
     var db = _fsDb();
-    if (!db) {
-        _fsToast('❌ Firestore לא זמין (_firebaseDb=null)', '#dc2626');
-        return Promise.resolve();
-    }
+    if (!db) return Promise.resolve();
 
     var localKids = typeof getChildren === 'function' ? getChildren() : [];
     var userRef   = db.collection('users').doc(fbUser.uid);
 
-    _fsToast('קורא מ-Firestore...', '#475569');
-
-    // Force fresh read from server (bypass cache)
     return userRef.get({ source: 'server' }).then(function(doc) {
         var data = doc.exists ? doc.data() : {};
         if (data.premium) window._fsUserPremium = true;
@@ -46,15 +24,12 @@ function fsyncUserLogin(fbUser) {
             if (localIdx === -1) {
                 merged.push(fk);
             } else {
-                // Fill in fields missing locally from Firestore (e.g. photo)
                 if (!merged[localIdx].photo && fk.photo) merged[localIdx].photo = fk.photo;
                 if (!merged[localIdx].age && fk.age) merged[localIdx].age = fk.age;
             }
         });
 
-        _fsToast('Firestore: ' + fsKids.length + ' | local: ' + localKids.length + ' | merged: ' + merged.length, '#7c3aed');
-
-        // Merge progress: local wins for kids we have locally, Firestore fills the rest
+        // Merge progress: local wins, Firestore fills the rest
         var mergedProgress = {};
         if (data.progress) {
             Object.keys(data.progress).forEach(function(kid_id) {
@@ -76,7 +51,7 @@ function fsyncUserLogin(fbUser) {
             }
         });
 
-        // Push merged data to Firestore (use ISO date string, not serverTimestamp, for compatibility)
+        // Push merged data to Firestore
         var kidsData = merged.map(function(k) {
             return { id: k.id, name: k.name, gender: k.gender || 'male', age: k.age || '', photo: k.photo || '' };
         });
@@ -88,12 +63,9 @@ function fsyncUserLogin(fbUser) {
             progress: mergedProgress
         };
 
-        return userRef.set(updates, { merge: true }).then(function() {
-            _fsToast('✅ נכתב ל-Firestore: ' + merged.length + ' ילדים', '#16a34a');
-        });
+        return userRef.set(updates, { merge: true });
 
     }).catch(function(e) {
-        _fsToast('❌ שגיאת Firestore: ' + e.message, '#dc2626');
         console.warn('[fsync] login sync error:', e.message);
     });
 }
