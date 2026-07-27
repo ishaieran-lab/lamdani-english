@@ -20,13 +20,17 @@ function _fsToast(msg, color) {
 
 // Called once on login — restores from Firestore if local is empty, otherwise pushes local → Firestore
 function fsyncUserLogin(fbUser) {
+    _fsToast('fsync נקרא...', '#475569');
     var db = _fsDb();
-    if (!db) return Promise.resolve();
+    if (!db) {
+        _fsToast('❌ Firestore לא זמין (_firebaseDb=null)', '#dc2626');
+        return Promise.resolve();
+    }
 
     var localKids = typeof getChildren === 'function' ? getChildren() : [];
     var userRef   = db.collection('users').doc(fbUser.uid);
 
-    _fsToast('מסנכרן נתונים...', '#475569');
+    _fsToast('מסנכרן נתונים... (' + localKids.length + ' מקומי)', '#475569');
 
     return userRef.get().then(function(doc) {
         var data = doc.exists ? doc.data() : {};
