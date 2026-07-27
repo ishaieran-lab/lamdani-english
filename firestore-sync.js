@@ -3,6 +3,21 @@
 function _fsDb()  { return window._firebaseDb || null; }
 function _fsUid() { var p = typeof getParent === 'function' ? getParent() : null; return p ? p.uid : null; }
 
+function _fsToast(msg, color) {
+    var t = document.getElementById('_fsToast');
+    if (!t) {
+        t = document.createElement('div');
+        t.id = '_fsToast';
+        t.style.cssText = 'position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:0.6rem 1.2rem;border-radius:2rem;font-size:0.85rem;z-index:99999;direction:rtl;box-shadow:0 4px 12px rgba(0,0,0,0.3);transition:opacity 0.4s;font-family:inherit;';
+        document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.background = color || '#1e293b';
+    t.style.opacity = '1';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function() { t.style.opacity = '0'; }, 4000);
+}
+
 // Called once on login — restores from Firestore if local is empty, otherwise pushes local → Firestore
 function fsyncUserLogin(fbUser) {
     var db = _fsDb();
@@ -10,6 +25,8 @@ function fsyncUserLogin(fbUser) {
 
     var localKids = typeof getChildren === 'function' ? getChildren() : [];
     var userRef   = db.collection('users').doc(fbUser.uid);
+
+    _fsToast('מסנכרן נתונים...', '#475569');
 
     return userRef.get().then(function(doc) {
         var data = doc.exists ? doc.data() : {};
@@ -35,6 +52,7 @@ function fsyncUserLogin(fbUser) {
                 progress: progressData
             };
             if (!data.registeredAt) updates.registeredAt = firebase.firestore.FieldValue.serverTimestamp();
+            _fsToast('✅ שמור: ' + localKids.length + ' ילדים', '#16a34a');
             return userRef.set(updates, { merge: true });
         }
 
@@ -48,7 +66,7 @@ function fsyncUserLogin(fbUser) {
                     }
                 });
             }
-            // Update only metadata — do NOT overwrite kids/progress with empty
+            _fsToast('✅ שוחזר: ' + data.kids.length + ' ילדים מהגיבוי', '#16a34a');
             return userRef.set({
                 email: fbUser.email,
                 name:  fbUser.displayName || fbUser.email.split('@')[0],
@@ -57,6 +75,7 @@ function fsyncUserLogin(fbUser) {
         }
 
         // Brand new user — write metadata only
+        _fsToast('משתמש חדש — אין גיבוי קודם', '#475569');
         var newUpdates = {
             email: fbUser.email,
             name:  fbUser.displayName || fbUser.email.split('@')[0],
@@ -65,7 +84,10 @@ function fsyncUserLogin(fbUser) {
         if (!data.registeredAt) newUpdates.registeredAt = firebase.firestore.FieldValue.serverTimestamp();
         return userRef.set(newUpdates, { merge: true });
 
-    }).catch(function(e) { console.warn('[fsync] login sync error:', e.message); });
+    }).catch(function(e) {
+        _fsToast('❌ שגיאת Firestore: ' + e.message, '#dc2626');
+        console.warn('[fsync] login sync error:', e.message);
+    });
 }
 
 // Called after every saveProgress() — writes only the active kid's progress
