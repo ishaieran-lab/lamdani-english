@@ -20,7 +20,7 @@ function _fsToast(msg, color) {
 
 // Called once on login — restores from Firestore if local is empty, otherwise pushes local → Firestore
 function fsyncUserLogin(fbUser) {
-    _fsToast('fsync נקרא...', '#475569');
+    _fsToast('uid: ' + fbUser.uid.slice(0,8) + '...', '#1e40af');
     var db = _fsDb();
     if (!db) {
         _fsToast('❌ Firestore לא זמין (_firebaseDb=null)', '#dc2626');
