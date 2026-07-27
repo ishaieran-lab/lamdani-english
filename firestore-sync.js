@@ -15,7 +15,7 @@ function _fsToast(msg, color) {
     t.style.background = color || '#1e293b';
     t.style.opacity = '1';
     clearTimeout(t._timer);
-    t._timer = setTimeout(function() { t.style.opacity = '0'; }, 4000);
+    t._timer = setTimeout(function() { t.style.opacity = '0'; }, 5000);
 }
 
 // Called once on login — restores from Firestore if local is empty, otherwise pushes local → Firestore
@@ -30,9 +30,10 @@ function fsyncUserLogin(fbUser) {
     var localKids = typeof getChildren === 'function' ? getChildren() : [];
     var userRef   = db.collection('users').doc(fbUser.uid);
 
-    _fsToast('מסנכרן נתונים...', '#475569');
+    _fsToast('קורא מ-Firestore...', '#475569');
 
-    return userRef.get().then(function(doc) {
+    // Force fresh read from server (bypass cache)
+    return userRef.get({ source: 'server' }).then(function(doc) {
         var data = doc.exists ? doc.data() : {};
         if (data.premium) window._fsUserPremium = true;
 
@@ -44,6 +45,8 @@ function fsyncUserLogin(fbUser) {
                 merged.push(fk);
             }
         });
+
+        _fsToast('Firestore: ' + fsKids.length + ' | local: ' + localKids.length + ' | merged: ' + merged.length, '#7c3aed');
 
         // Merge progress: local wins for kids we have locally, Firestore fills the rest
         var mergedProgress = {};
@@ -67,27 +70,21 @@ function fsyncUserLogin(fbUser) {
             }
         });
 
-        // Push merged data to Firestore
+        // Push merged data to Firestore (use ISO date string, not serverTimestamp, for compatibility)
         var kidsData = merged.map(function(k) {
             return { id: k.id, name: k.name, gender: k.gender || 'male', age: k.age || '' };
         });
         var updates = {
             email: fbUser.email,
             name:  fbUser.displayName || fbUser.email.split('@')[0],
-            lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+            lastLogin: new Date().toISOString(),
             kids: kidsData,
             progress: mergedProgress
         };
-        if (!data.registeredAt) updates.registeredAt = firebase.firestore.FieldValue.serverTimestamp();
 
-        var added = merged.length - localKids.length;
-        if (added > 0) {
-            _fsToast('✅ מוזג: ' + merged.length + ' ילדים (' + added + ' שוחזרו)', '#16a34a');
-        } else {
-            _fsToast('✅ שמור: ' + merged.length + ' ילדים', '#16a34a');
-        }
-
-        return userRef.set(updates, { merge: true });
+        return userRef.set(updates, { merge: true }).then(function() {
+            _fsToast('✅ נכתב ל-Firestore: ' + merged.length + ' ילדים', '#16a34a');
+        });
 
     }).catch(function(e) {
         _fsToast('❌ שגיאת Firestore: ' + e.message, '#dc2626');
