@@ -41,8 +41,14 @@ function fsyncUserLogin(fbUser) {
         var fsKids = (doc.exists && data.kids) ? data.kids : [];
         var merged = localKids.slice();
         fsKids.forEach(function(fk) {
-            if (!merged.find(function(lk) { return lk.id === fk.id; })) {
+            var localIdx = -1;
+            for (var i = 0; i < merged.length; i++) { if (merged[i].id === fk.id) { localIdx = i; break; } }
+            if (localIdx === -1) {
                 merged.push(fk);
+            } else {
+                // Fill in fields missing locally from Firestore (e.g. photo)
+                if (!merged[localIdx].photo && fk.photo) merged[localIdx].photo = fk.photo;
+                if (!merged[localIdx].age && fk.age) merged[localIdx].age = fk.age;
             }
         });
 
