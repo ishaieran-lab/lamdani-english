@@ -472,7 +472,7 @@ window.onFirebaseAuth = function(fbUser) {
     var syncPromise = typeof fsyncUserLogin === 'function' ? fsyncUserLogin(fbUser) : Promise.resolve();
     Promise.resolve(syncPromise).then(function() {
         var kids = getChildren();
-        if (typeof _fsToast === 'function') _fsToast('אחרי sync: ' + kids.length + ' ילדים בlocal', '#7c3aed');
+        if (typeof _fsToast === 'function') _fsToast('uid:' + fbUser.uid.slice(0,8) + ' | ' + kids.length + ' ילדים', '#7c3aed');
         if (kids.length === 0 || !getActiveKid()) {
             openChildPicker();
         } else {
