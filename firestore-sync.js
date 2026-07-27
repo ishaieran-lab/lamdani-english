@@ -72,7 +72,7 @@ function fsyncUserLogin(fbUser) {
 
         // Push merged data to Firestore (use ISO date string, not serverTimestamp, for compatibility)
         var kidsData = merged.map(function(k) {
-            return { id: k.id, name: k.name, gender: k.gender || 'male', age: k.age || '' };
+            return { id: k.id, name: k.name, gender: k.gender || 'male', age: k.age || '', photo: k.photo || '' };
         });
         var updates = {
             email: fbUser.email,
