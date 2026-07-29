@@ -365,17 +365,35 @@
 
         /* ── RESPONSIVE ──────────────────────── */
         @media (max-width: 768px) {
+            .nav { padding: 0 16px; }
             .nav-links a:not(.nav-cta) { display: none; }
+            .hero { padding: 1.5rem 1rem 1rem; }
+            .hero-sub { white-space: normal; font-size: 1.15rem; }
+            .hero-img-wrap { margin-top: -3rem !important; }
             .feature-wrap { grid-template-columns: 1fr; gap: 2rem; }
             .feature-section.bg-soft .feature-wrap .feature-text { order: 2; }
             .feature-section.bg-soft .feature-wrap .feature-img  { order: 1; }
-            .hero { padding: 1.5rem 1rem 1rem; }
             .feature-section { padding: 3rem 1rem; }
+            .feature-h { font-size: 1.3rem; }
             .module-card { max-width: 140px; }
+            .cta-section { padding: 3rem 1.25rem; }
+            .cta-h { font-size: 1.5rem; }
+            .pricing-section, .about-section, .contact-section { padding: 3rem 1rem; }
+            .section-hdr h2 { font-size: 1.55rem; }
+            .plan-card { max-width: 100%; }
+            .footer { padding: 2rem 1.25rem 1rem; }
+            .footer-top { flex-direction: column; gap: 1.5rem; }
         }
         @media (max-width: 480px) {
+            .nav-brand { font-size: 18px; }
             .modules-grid { gap: 0.5rem; }
             .module-card { max-width: 110px; padding: 0.5rem; }
+            .hero-badge { font-size: 1.1rem; }
+            .hero-sub { font-size: 1rem; }
+            .cta-h { font-size: 1.3rem; }
+            .section-hdr h2 { font-size: 1.35rem; }
+            .contact-card { padding: 1.25rem; }
+            .plan-card { padding: 1.5rem 1.25rem; }
         }
     </style>
 </head>
@@ -572,9 +590,9 @@ function fbSubmitEmail() {
 
 <!-- HERO -->
 <section class="hero">
-    <img src="images/landing/לוגו.png" alt="למדני" style="max-width:587px;margin:-1.5rem auto 0;display:block;">
+    <img src="images/landing/לוגו.png" alt="למדני" style="max-width:min(587px,90vw);margin:-1.5rem auto 0;display:block;">
     <div class="hero-badge">לימוד אנגלית לתלמידי בית ספר היסודי</div>
-    <p class="hero-sub" style="white-space:nowrap;">תרגול, בחינות ומעקב התקדמות — בעברית, בקצב&nbsp;שלך.</p>
+    <p class="hero-sub">תרגול, בחינות ומעקב התקדמות — בעברית, בקצב&nbsp;שלך.</p>
     <button onclick="openLoginModal()" style="position:relative;z-index:2;font-family:inherit;font-size:1.3rem;font-weight:800;background:transparent;color:#2563eb;border:2.5px solid #2563eb;padding:0.8rem 2.4rem;border-radius:2rem;cursor:pointer;margin-bottom:1.5rem;letter-spacing:0.01em;transition:background 0.15s,color 0.15s;" onmouseover="this.style.background='#2563eb';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#2563eb'">הירשם עכשיו ←</button>
     <div class="hero-img-wrap" style="margin-top:-8rem;">
         <img src="images/landing/classroom.png" alt="תלמידים לומדים אנגלית בכיתה">
