@@ -1380,6 +1380,20 @@ function backToSelect() {
     showView('viewSelect');
 }
 
+var isDirect = location.search.indexOf('direct=1') !== -1;
+
+window.onBackspace = function() {
+    var viewExercise = document.getElementById('viewExercise');
+    var viewScore    = document.getElementById('viewScore');
+    if ((viewExercise && viewExercise.style.display !== 'none') ||
+        (viewScore    && viewScore.style.display    !== 'none')) {
+        backToSelect();
+        return;
+    }
+    if (isDirect) window.location.href = 'app.html';
+    else history.back();
+};
+
 /* ── Enter key ── */
 document.addEventListener('keydown', function(e) {
     if (e.key !== 'Enter') return;

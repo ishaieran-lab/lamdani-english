@@ -498,8 +498,8 @@ function toggleNavMenu() {
 // מסך בחירת שלב
 // ════════════════════════════════════════════════════════════════
 function buildSelectNav() {
-    var backLabel = isDirect ? '→ חזור לפרקים' : '→ חזור';
-    var backAction = isDirect ? 'window.location.href=\'index.html?level=elementary\'' : 'window.history.back()';
+    var backLabel = '→ חזור לפרקים';
+    var backAction = 'window.location.href=\'app.html\'';
     document.getElementById('selectNav').innerHTML =
         '<button class="back-link" onclick="' + backAction + '" style="margin-bottom:0.8rem">' + backLabel + '</button>';
 }
@@ -736,7 +736,8 @@ window.onBackspace = function() {
     });
     if (!cur) return;
     if (cur === 'viewSelect') {
-        if (isDirect) window.location.href = 'index.html?level=elementary';
+        if (isDirect) window.location.href = 'app.html';
+        else window.history.back();
     } else {
         backToSelect();
     }
