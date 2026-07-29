@@ -1126,7 +1126,28 @@ function showView(id) {
     ['viewSelect','viewExercise','viewScore'].forEach(function(v) {
         document.getElementById(v).style.display = v === id ? '' : 'none';
     });
+    window.scrollTo({top:0, behavior:'smooth'});
+    if (id === 'viewExercise') {
+        history.pushState({sentView:'exercise'}, '');
+    } else if (id === 'viewSelect') {
+        history.replaceState({sentView:'select'}, '');
+    } else if (id === 'viewScore') {
+        history.replaceState({sentView:'score'}, '');
+    }
 }
+
+/* ── כפתור חזרה של הפלאפון ── */
+window.addEventListener('popstate', function(e) {
+    var sv = e.state && e.state.sentView;
+    if (sv === 'exercise' || sv === 'score' || sv === 'select') {
+        renderLevels();
+        ['viewSelect','viewExercise','viewScore'].forEach(function(v) {
+            document.getElementById(v).style.display = v === 'viewSelect' ? '' : 'none';
+        });
+        history.replaceState({sentView:'select'}, '');
+    }
+    // אין sv — הדפדפן יחזור לדף הקודם (app.html) באופן טבעי
+});
 
 /* ── קריאת / שמירת התקדמות ── */
 function getSentCorrect(levelId) {
