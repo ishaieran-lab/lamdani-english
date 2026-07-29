@@ -278,6 +278,12 @@
     </div>
 </nav>
 
+<div id="authLoader" style="position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:1rem;">
+    <img src="images/landing/לוגו.png" alt="למדני" style="height:80px;opacity:0.8;">
+    <div style="width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+
 <!-- ═══ 0. בחירת רמה ════════════════════════════════════════════ -->
 <div id="viewSelect" class="reading-wrap" style="display:none">
     <div class="breadcrumb">
@@ -351,10 +357,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script defer src="firebase-auth.js"></script>
-<script defer src="user.js"></script>
-<script defer src="premium.js"></script>
-<script defer src="firestore-sync.js"></script>
+<script src="firebase-auth.js"></script>
+<script src="user.js"></script>
+<script src="premium.js"></script>
+<script src="firestore-sync.js"></script>
 <script>
 /* ── נתוני רמות — placeholder בלבד, תוכן אמיתי יתווסף בנפרד ── */
 var LEVELS = [
@@ -1093,13 +1099,14 @@ var LEVELS = [
 ];
 
 /* ── מצב נוכחי ── */
-var curLevel       = null;
-var curItems       = [];
-var curItemIndices = [];
-var curMode        = 'all';
-var curIdx         = 0;
-var scoreCorrect   = 0;
-var scoreTotal     = 0;
+var curLevel        = null;
+var curItems        = [];
+var curItemIndices  = [];
+var curMode         = 'all';
+var curIdx          = 0;
+var scoreCorrect    = 0;
+var scoreTotal      = 0;
+var curLimitToFree  = false;
 
 /* ── ניווט תפריט ── */
 function toggleNavMenu() {
@@ -1150,13 +1157,21 @@ function renderLevels() {
                 '<div class="sent-prog-bar"><div class="sent-prog-fill" style="width:' + pct + '%;background:' + lv.color + '"></div></div>' +
               '</div>'
             : '';
+        var isFreeLevel   = FREE_SENTENCES_LEVELS.indexOf(lv.id) !== -1;
+        var isLocked      = !isPremium() && !isFreeLevel;
+        var isFreePartial = !isPremium() && isFreeLevel;
         var numBadge = lv.num
             ? '<div style="position:absolute;top:0.6rem;right:0.7rem;background:' + lv.color + ';color:#fff;font-size:0.72rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:20px">' + lv.num + '</div>'
             : '';
+        var statusBadge = isLocked
+            ? '<div style="position:absolute;top:0.6rem;left:0.7rem;background:rgba(0,0,0,0.55);color:#fff;font-size:0.72rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:20px">🔒 מנויים</div>'
+            : isFreePartial
+                ? '<div style="position:absolute;top:0.6rem;left:0.7rem;background:#16a34a;color:#fff;font-size:0.72rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:20px">✓ 3 חינם</div>'
+                : '';
         if (lv.img) {
             return '<div class="sent-level-card" onclick="selectLevel(' + lv.id + ')" ' +
-                   'style="border:2px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,0.15);position:relative;padding:0;overflow:hidden;height:220px">' +
-                   numBadge +
+                   'style="border:2px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,0.15);position:relative;padding:0;overflow:hidden;height:220px' + (isLocked ? ';opacity:0.72' : '') + '">' +
+                   numBadge + statusBadge +
                    '<img src="' + lv.img + '" alt="' + lv.name + '" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover">' +
                    '<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,0.93);padding:0.25rem 0.7rem 0.4rem;text-align:center">' +
                    '<div class="sent-level-name" style="font-size:1rem;margin-bottom:0.1rem">' + lv.name + '</div>' +
@@ -1168,8 +1183,8 @@ function renderLevels() {
         }
         var imgHtml = '<div class="sent-level-emoji">' + lv.emoji + '</div>';
         return '<div class="sent-level-card" onclick="selectLevel(' + lv.id + ')" ' +
-               'style="border-color:' + lv.color + ';position:relative">' +
-               numBadge +
+               'style="border-color:' + lv.color + ';position:relative' + (isLocked ? ';opacity:0.72' : '') + '">' +
+               numBadge + statusBadge +
                imgHtml +
                '<div class="sent-level-name">' + lv.name + '</div>' +
                '<div class="sent-level-desc">' + lv.desc + '</div>' +
@@ -1183,8 +1198,12 @@ function renderLevels() {
 function selectLevel(id) {
     curLevel = LEVELS.find(function(l) { return l.id === id; });
     if (!curLevel) return;
+    var isFreeLevel = FREE_SENTENCES_LEVELS.indexOf(id) !== -1;
+    if (!isPremium() && !isFreeLevel) { showPaywall(); return; }
+    curLimitToFree = !isPremium() && isFreeLevel;
+    var freeLimit  = curLimitToFree ? FREE_SENTENCES_COUNT : curLevel.items.length;
     var correctIndices = getSentCorrect(id);
-    var unanswered = curLevel.items.filter(function(_, i) {
+    var unanswered = curLevel.items.slice(0, freeLimit).filter(function(_, i) {
         return correctIndices.indexOf(i) === -1;
     }).length;
     startLevel(unanswered > 0 ? 'unanswered' : 'all');
@@ -1199,23 +1218,24 @@ function startLevel(mode) {
     if (!curLevel) return;
     curMode = mode;
 
+    var freeLimit      = curLimitToFree ? FREE_SENTENCES_COUNT : curLevel.items.length;
     var correctIndices = getSentCorrect(curLevel.id);
-    var unansweredCount = curLevel.items.filter(function(_, i) {
+    var unansweredCount = curLevel.items.slice(0, freeLimit).filter(function(_, i) {
         return correctIndices.indexOf(i) === -1;
     }).length;
 
     if (mode === 'unanswered') {
         curItems = []; curItemIndices = [];
         curLevel.items.forEach(function(item, i) {
-            if (correctIndices.indexOf(i) === -1) { curItems.push(item); curItemIndices.push(i); }
+            if (i < freeLimit && correctIndices.indexOf(i) === -1) { curItems.push(item); curItemIndices.push(i); }
         });
     } else {
-        curItems       = curLevel.items.slice();
-        curItemIndices = curLevel.items.map(function(_, i) { return i; });
+        curItems       = curLevel.items.slice(0, freeLimit);
+        curItemIndices = curLevel.items.slice(0, freeLimit).map(function(_, i) { return i; });
     }
 
     /* עדכון pills */
-    var hasProgress = correctIndices.length > 0;
+    var hasProgress = correctIndices.filter(function(i) { return i < freeLimit; }).length > 0;
     var modeRow = document.getElementById('modeRow');
     modeRow.style.display = hasProgress ? '' : 'none';
     if (hasProgress) {
@@ -1349,16 +1369,38 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-/* ── Auth / כניסה ── */
+/* ── Auth Guard ── */
+var _sentOrigAuth   = window.onFirebaseAuth;
+var _sentOrigLogout = window.onFirebaseLogout;
+
+window.onFirebaseAuth = function(fbUser) {
+    var loader = document.getElementById('authLoader');
+    if (loader) loader.style.display = 'none';
+    if (typeof _sentOrigAuth === 'function') _sentOrigAuth(fbUser);
+};
+window.onFirebaseLogout = function() {
+    if (typeof _sentOrigLogout === 'function') _sentOrigLogout();
+    window.location.href = 'index.html';
+};
+setTimeout(function() {
+    var loader = document.getElementById('authLoader');
+    if (loader && loader.style.display !== 'none') window.location.href = 'index.html';
+}, 4000);
+
 window.onUserLogin = function() {
     renderLevels();
     showView('viewSelect');
 };
-
-/* ── Initial render (before auth — mirrors grammar.html pattern) ── */
-renderLevels();
-showView('viewSelect');
 </script>
+<div id="paywallOverlay" onclick="closePaywall()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.72);align-items:center;justify-content:center">
+    <div onclick="event.stopPropagation()" style="background:#fff;border-radius:1.4rem;padding:2.2rem 2rem;text-align:center;max-width:340px;width:88%;box-shadow:0 8px 40px rgba(0,0,0,0.22);font-family:inherit">
+        <div style="font-size:3rem;margin-bottom:0.5rem">🔒</div>
+        <h3 style="color:#0f172a;margin:0 0 0.5rem;font-size:1.25rem;font-weight:800">פתוח למנויים בלבד</h3>
+        <p style="color:#64748b;font-size:0.95rem;line-height:1.6;margin:0 0 1.5rem">לגישה לכל הרמות יש לרכוש מנוי.</p>
+        <a href="index.html#pricing" style="display:inline-block;background:#2563eb;color:#fff;font-weight:700;font-size:1rem;padding:0.75rem 1.8rem;border-radius:0.65rem;text-decoration:none;margin-bottom:0.9rem">לרכישת מנוי ←</a><br>
+        <a href="app.html" style="display:inline-block;color:#94a3b8;font-size:0.85rem;margin-top:0.5rem;text-decoration:none">חזור לדף הבית</a>
+    </div>
+</div>
 <footer class="site-footer">
     <div class="site-footer-inner">
         <div class="site-footer-links">

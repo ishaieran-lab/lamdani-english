@@ -2,9 +2,11 @@
 // כדי להוסיף משתמש: הוסף את האימייל שלו לרשימה למטה
 
 // נושאים/שלבים חופשיים לכולם
-var FREE_VOCAB_INDICES   = [0, 3, 6];   // כינויי גוף, מספרים, ימות השבוע
-var FREE_GRAMMAR_INDICES = [12];          // TO BE (שלב 1)
-var FREE_READING_LEVEL   = 0;             // רמה 1 — קטע ראשון בלבד
+var FREE_VOCAB_INDICES    = [0, 3, 6];   // כינויי גוף, מספרים, ימות השבוע
+var FREE_GRAMMAR_INDICES  = [12];         // TO BE (שלב 1)
+var FREE_READING_LEVEL    = 0;            // רמה 1 — קטע ראשון בלבד
+var FREE_SENTENCES_LEVELS = [0, 4];       // צמדי מילים + מחיי היום יום
+var FREE_SENTENCES_COUNT  = 3;            // שאלות ראשונות חינם בכל רמה פתוחה
 
 var PREMIUM_EMAILS = [
     'ishaieran@gmail.com'
