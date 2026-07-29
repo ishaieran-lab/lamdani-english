@@ -830,9 +830,11 @@ document.addEventListener('DOMContentLoaded', function() {
 // ── Backspace = חזור ────────────────────────────────────────────
 document.addEventListener('keydown', function(e) {
     if (e.key !== 'Backspace') return;
-    var tag = (document.activeElement || {}).tagName || '';
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-    if (document.activeElement && document.activeElement.isContentEditable) return;
+    var activeEl = document.activeElement;
+    var tag = (activeEl || {}).tagName || '';
+    if (tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if (tag === 'INPUT' && !activeEl.disabled) return; // enabled input → delete as usual
+    if (activeEl && activeEl.isContentEditable) return;
     e.preventDefault();
     if (typeof window.onBackspace === 'function') window.onBackspace();
 });
