@@ -1130,9 +1130,15 @@ var GRAMMAR = [
 var prefVoice = null;
 function initVoices() {
     var v = speechSynthesis.getVoices();
-    prefVoice = v.find(function(x){return x.name.includes('Zira');}) ||
-                v.find(function(x){return x.lang==='en-US';}) ||
-                v.find(function(x){return x.lang.startsWith('en');}) || null;
+    prefVoice =
+        v.find(function(x){ return x.name.includes('Microsoft') && x.name.toLowerCase().includes('natural') && x.lang.startsWith('en'); }) ||
+        v.find(function(x){ return x.name.includes('Microsoft Aria') && x.lang.startsWith('en'); }) ||
+        v.find(function(x){ return x.name.includes('Microsoft Jenny') && x.lang.startsWith('en'); }) ||
+        v.find(function(x){ return x.name.includes('Microsoft Guy') && x.lang.startsWith('en'); }) ||
+        v.find(function(x){ return x.name.includes('Microsoft') && x.lang === 'en-US'; }) ||
+        v.find(function(x){ return x.name === 'Google US English'; }) ||
+        v.find(function(x){ return x.lang === 'en-US'; }) ||
+        v.find(function(x){ return x.lang.startsWith('en'); }) || null;
 }
 speechSynthesis.onvoiceschanged = initVoices;
 initVoices();
