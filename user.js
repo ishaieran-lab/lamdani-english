@@ -833,7 +833,7 @@ document.addEventListener('keydown', function(e) {
     var activeEl = document.activeElement;
     var tag = (activeEl || {}).tagName || '';
     if (tag === 'TEXTAREA' || tag === 'SELECT') return;
-    if (tag === 'INPUT' && !activeEl.disabled) return; // enabled input → delete as usual
+    if (tag === 'INPUT' && !activeEl.disabled && activeEl.value) return; // input with text → delete as usual
     if (activeEl && activeEl.isContentEditable) return;
     e.preventDefault();
     if (typeof window.onBackspace === 'function') window.onBackspace();
