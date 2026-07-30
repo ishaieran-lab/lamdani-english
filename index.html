@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>למדני אנגלית | Lamdani English — לימוד אנגלית בעברית</title>
     <meta name="description" content="למדני אנגלית — פלטפורמת לימוד אנגלית אינטראקטיבית בעברית. אוצר מילים, דקדוק, הבנת הנקרא ושיחון לבית ספר יסודי.">
+    <script>
+    // אם Firebase שמר session בלוקאל סטורג' — הסטודנט כבר מחובר, דלג ישירות לדף הבית
+    (function() {
+        var keys = Object.keys(localStorage);
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i].indexOf('firebase:authUser:') === 0) {
+                window.location.replace('app.html');
+                break;
+            }
+        }
+    })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">

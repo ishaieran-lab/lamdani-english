@@ -1250,10 +1250,22 @@ function initStageCards() {
 
     document.getElementById('grammarNav').innerHTML = stageNav;
     document.getElementById('grammarStageCards').innerHTML =
-        '<div class="map-wrap"><div class="map-container">' +
+        '<div class="map-wrap"><div class="map-container" id="mapContainer" onclick="mapDebugClick(event)">' +
         '<img src="images/grammar/progress-map.png" class="map-bg" alt="מפת התקדמות">' +
+        '<div id="mapDebugLabel" style="display:none;position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:0.5rem 1.2rem;border-radius:8px;font-size:1.1rem;font-weight:700;z-index:999;pointer-events:none"></div>' +
         buttons +
         '</div></div>';
+
+    function mapDebugClick(e) {
+        var c = document.getElementById('mapContainer');
+        var r = c.getBoundingClientRect();
+        var lx = ((e.clientX - r.left) / r.width * 100).toFixed(1);
+        var ty = ((e.clientY - r.top)  / r.height * 100).toFixed(1);
+        var lbl = document.getElementById('mapDebugLabel');
+        lbl.textContent = 'left:' + lx + '%  top:' + ty + '%';
+        lbl.style.display = 'block';
+        setTimeout(function(){ lbl.style.display='none'; }, 4000);
+    }
 }
 function renderStageCards() { initStageCards(); }
 
