@@ -25,8 +25,10 @@
     // the new user before our code can call signOut + sendEmailVerification)
     auth.onAuthStateChanged(function(user) {
         if (user && user.emailVerified) {
+            localStorage.setItem('lmd_auth', '1');
             if (typeof window.onFirebaseAuth   === 'function') window.onFirebaseAuth(user);
         } else if (!user) {
+            localStorage.removeItem('lmd_auth');
             if (typeof window.onFirebaseLogout === 'function') window.onFirebaseLogout();
         }
     });

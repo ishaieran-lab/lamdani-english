@@ -6,16 +6,8 @@
     <title>למדני אנגלית | Lamdani English — לימוד אנגלית בעברית</title>
     <meta name="description" content="למדני אנגלית — פלטפורמת לימוד אנגלית אינטראקטיבית בעברית. אוצר מילים, דקדוק, הבנת הנקרא ושיחון לבית ספר יסודי.">
     <script>
-    // אם Firebase שמר session בלוקאל סטורג' — הסטודנט כבר מחובר, דלג ישירות לדף הבית
-    (function() {
-        var keys = Object.keys(localStorage);
-        for (var i = 0; i < keys.length; i++) {
-            if (keys[i].indexOf('firebase:authUser:') === 0) {
-                window.location.replace('app.html');
-                break;
-            }
-        }
-    })();
+    // אם המשתמש כבר מחובר — דלג ישירות לדף הבית בלי להציג דף נחיתה
+    if (localStorage.getItem('lmd_auth') === '1') { window.location.replace('app.html'); }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

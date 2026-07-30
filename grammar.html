@@ -15,41 +15,12 @@
         .map-wrap { position:relative; width:100%; overflow-x:auto; }
         .map-container { position:relative; min-width:520px; }
         .map-bg { width:100%; height:auto; display:block; }
-        .map-btn {
-            position:absolute;
-            width:9.5%;
-            aspect-ratio:1;
-            border-radius:50%;
-            transform:translate(-50%,-50%);
-            display:flex; flex-direction:column; align-items:center; justify-content:center;
-            gap:0; padding:0;
-            cursor:pointer;
-            transition:transform 0.2s ease, box-shadow 0.2s ease;
-            background:rgba(255,255,255,0.92);
-            border:2.5px solid #fff;
-            font-family:inherit;
-            box-shadow:0 3px 12px rgba(0,0,0,0.3);
-            text-align:center;
-            z-index:2;
-        }
-        .map-btn:hover:not(.map-btn--locked) {
-            transform:translate(-50%,-50%) scale(1.22) translateY(-5px);
-            box-shadow:0 10px 28px rgba(0,0,0,0.4);
-            z-index:10;
-        }
-        .map-btn--locked { opacity:0.52; cursor:not-allowed; background:rgba(180,180,180,0.75); }
-        .map-btn--done   { background:rgba(220,252,231,0.95); }
-        .map-btn-num  { font-size:1.15em; font-weight:900; color:#0f172a; line-height:1; }
-        .map-btn-name { font-size:0.48em; font-weight:700; color:#1e293b; line-height:1.2; padding:0 3px; }
-        .map-btn-badge {
-            position:absolute; top:-5%; right:-5%;
-            width:26%; aspect-ratio:1;
-            border-radius:50%;
-            display:flex; align-items:center; justify-content:center;
-            font-size:0.55em; font-weight:900; line-height:1;
-        }
-        .map-btn-badge--done { background:#22c55e; color:#fff; }
-        .map-btn-badge--lock { background:#94a3b8; color:#fff; font-size:0.5em; }
+        .map-svg { position:absolute; top:0; left:0; width:100%; height:100%; overflow:visible; }
+        .map-svg .ms-btn { cursor:pointer; transition:transform 0.2s ease, filter 0.2s ease; transform-box:fill-box; transform-origin:center; }
+        .map-svg .ms-btn:hover .ms-circle { filter:drop-shadow(0 8px 16px rgba(0,0,0,0.45)); }
+        .map-svg .ms-btn:hover { transform:scale(1.18) translateY(-4px); }
+        .map-svg .ms-locked { cursor:not-allowed; opacity:0.52; }
+        .map-svg .ms-locked:hover { transform:none; }
     </style>
     <!-- Google Analytics — החלף G-XXXXXXXXXX במזהה שלך -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
@@ -1215,57 +1186,58 @@ function initStageCards() {
 
     var loggedIn = typeof getUser === 'function' && !!getUser();
 
-    // left/top = % מרכז העיגול בתמונה (1672×941)
+    // cx/cy = מרכז הטבעת בפיקסלים בתמונה המקורית (1672×941)
     var STAGES = [
-        { gi:12, title:'TO BE',          color:'#3b82f6', left:13.5, top:27.0 },
-        { gi:4,  title:'תארים',          color:'#8b5cf6', left:27.5, top:22.5 },
-        { gi:17, title:'השוואה א׳',      color:'#22c55e', left:41.0, top:21.0 },
-        { gi:16, title:'רבים',           color:'#f97316', left:57.0, top:22.5 },
-        { gi:14, title:'Have / Has',     color:'#14b8a6', left:72.0, top:27.0 },
-        { gi:13, title:'יש / אין',       color:'#ec4899', left: 5.0, top:52.0 },
-        { gi:2,  title:"Can / Can't",    color:'#eab308', left:22.0, top:50.0 },
-        { gi:0,  title:'זמן הווה',       color:'#ef4444', left:35.5, top:50.0 },
-        { gi:1,  title:'Do / Does',      color:'#6366f1', left:50.5, top:48.5 },
-        { gi:3,  title:'מילות שאלה',    color:'#0ea5e9', left: 5.0, top:73.5 },
-        { gi:5,  title:'עתיד',           color:'#10b981', left:22.0, top:75.0 },
-        { gi:15, title:'הווה מתמשך',    color:'#f59e0b', left:37.0, top:75.5 },
-        { gi:18, title:'השוואה ב׳',      color:'#a855f7', left:53.0, top:76.0 },
+        { gi:12, title:'TO BE',          color:'#3b82f6', cx:228,  cy:263 },
+        { gi:4,  title:'תארים',          color:'#8b5cf6', cx:468,  cy:236 },
+        { gi:17, title:'השוואה א׳',      color:'#22c55e', cx:706,  cy:220 },
+        { gi:16, title:'רבים',           color:'#f97316', cx:960,  cy:236 },
+        { gi:14, title:'Have / Has',     color:'#14b8a6', cx:1198, cy:263 },
+        { gi:13, title:'יש / אין',       color:'#ec4899', cx:120,  cy:506 },
+        { gi:2,  title:"Can / Can't",    color:'#eab308', cx:386,  cy:484 },
+        { gi:0,  title:'זמן הווה',       color:'#ef4444', cx:598,  cy:488 },
+        { gi:1,  title:'Do / Does',      color:'#6366f1', cx:846,  cy:466 },
+        { gi:3,  title:'מילות שאלה',    color:'#0ea5e9', cx:120,  cy:703 },
+        { gi:5,  title:'עתיד',           color:'#10b981', cx:386,  cy:716 },
+        { gi:15, title:'הווה מתמשך',    color:'#f59e0b', cx:638,  cy:720 },
+        { gi:18, title:'השוואה ב׳',      color:'#a855f7', cx:896,  cy:720 },
     ];
 
-    var buttons = STAGES.map(function(s, idx) {
+    var R = 72; // רדיוס הכפתור בפיקסלי SVG (תמונה 1672×941)
+    var svgBtns = STAGES.map(function(s, idx) {
         var stageNum = idx + 1;
         var done   = loggedIn && typeof getStageStatus === 'function' && getStageStatus('grammar', s.gi) === 'complete';
         var locked = FREE_GRAMMAR_INDICES.indexOf(s.gi) === -1 && !isPremium();
         var click  = locked ? 'showPaywall()' : 'openLesson(' + s.gi + ')';
-        var cls    = 'map-btn' + (locked ? ' map-btn--locked' : '') + (done ? ' map-btn--done' : '');
-        var badge  = done   ? '<div class="map-btn-badge map-btn-badge--done">✓</div>'
-                   : locked ? '<div class="map-btn-badge map-btn-badge--lock">🔒</div>' : '';
-        var style  = 'left:' + s.left + '%;top:' + s.top + '%;border-color:' + s.color + ';';
-        return '<button class="' + cls + '" onclick="' + click + '" style="' + style + '">' +
+        var fill   = done ? 'rgba(220,252,231,0.95)' : 'rgba(255,255,255,0.92)';
+        var stroke = locked ? '#94a3b8' : s.color;
+        var cls    = 'ms-btn' + (locked ? ' ms-locked' : '');
+        var badge  = done
+            ? '<circle cx="' + (s.cx+50) + '" cy="' + (s.cy-50) + '" r="20" fill="#22c55e"/>' +
+              '<text x="' + (s.cx+50) + '" y="' + (s.cy-44) + '" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="20" font-weight="900" font-family="inherit">✓</text>'
+            : locked
+            ? '<circle cx="' + (s.cx+50) + '" cy="' + (s.cy-50) + '" r="20" fill="#94a3b8"/>' +
+              '<text x="' + (s.cx+50) + '" y="' + (s.cy-44) + '" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="15" font-family="inherit">🔒</text>'
+            : '';
+        return '<g class="' + cls + '" onclick="' + click + '">' +
+            '<circle class="ms-circle" cx="' + s.cx + '" cy="' + s.cy + '" r="' + R + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="7" filter="url(#ms-shadow)"/>' +
             badge +
-            '<div class="map-btn-num">' + stageNum + '</div>' +
-            '<div class="map-btn-name">' + s.title + '</div>' +
-        '</button>';
+            '<text x="' + s.cx + '" y="' + (s.cy - 6) + '" text-anchor="middle" dominant-baseline="middle" fill="#0f172a" font-size="36" font-weight="900" font-family="inherit">' + stageNum + '</text>' +
+            '<text x="' + s.cx + '" y="' + (s.cy + 26) + '" text-anchor="middle" dominant-baseline="middle" fill="#1e293b" font-size="14" font-weight="700" font-family="inherit">' + s.title + '</text>' +
+        '</g>';
     }).join('');
+
+    var svg = '<svg class="map-svg" viewBox="0 0 1672 941" xmlns="http://www.w3.org/2000/svg">' +
+        '<defs><filter id="ms-shadow" x="-20%" y="-20%" width="140%" height="140%">' +
+        '<feDropShadow dx="0" dy="3" stdDeviation="6" flood-opacity="0.3"/></filter></defs>' +
+        svgBtns + '</svg>';
 
     document.getElementById('grammarNav').innerHTML = stageNav;
     document.getElementById('grammarStageCards').innerHTML =
-        '<div class="map-wrap"><div class="map-container" id="mapContainer" onclick="mapDebugClick(event)">' +
+        '<div class="map-wrap"><div class="map-container">' +
         '<img src="images/grammar/progress-map.png" class="map-bg" alt="מפת התקדמות">' +
-        '<div id="mapDebugLabel" style="display:none;position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:0.5rem 1.2rem;border-radius:8px;font-size:1.1rem;font-weight:700;z-index:999;pointer-events:none"></div>' +
-        buttons +
+        svg +
         '</div></div>';
-
-    function mapDebugClick(e) {
-        var c = document.getElementById('mapContainer');
-        var r = c.getBoundingClientRect();
-        var lx = ((e.clientX - r.left) / r.width * 100).toFixed(1);
-        var ty = ((e.clientY - r.top)  / r.height * 100).toFixed(1);
-        var lbl = document.getElementById('mapDebugLabel');
-        lbl.textContent = 'left:' + lx + '%  top:' + ty + '%';
-        lbl.style.display = 'block';
-        setTimeout(function(){ lbl.style.display='none'; }, 4000);
-    }
 }
 function renderStageCards() { initStageCards(); }
 
