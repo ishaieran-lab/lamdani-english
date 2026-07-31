@@ -1189,42 +1189,56 @@ function initStageCards() {
     // cx/cy = מרכז הטבעת בפיקסלים בתמונה המקורית (1672×941)
     // ✓ = כויל ידנית, ~ = אינטרפולציה
     var STAGES = [
-        { gi:12, title:'TO BE',          color:'#3b82f6', cx: 334, cy:199 }, // ✓
-        { gi:4,  title:'תארים',          color:'#8b5cf6', cx: 624, cy:202 }, // ✓
-        { gi:17, title:'השוואה א׳',      color:'#22c55e', cx: 929, cy:205 }, // ~
-        { gi:16, title:'רבים',           color:'#f97316', cx:1179, cy:213 }, // ~
-        { gi:14, title:'Have / Has',     color:'#14b8a6', cx:1433, cy:267 }, // ✓
-        { gi:13, title:'יש / אין',       color:'#ec4899', cx: 298, cy:516 }, // ✓
-        { gi:2,  title:"Can / Can't",    color:'#eab308', cx: 589, cy:497 }, // ~
-        { gi:0,  title:'זמן הווה',       color:'#ef4444', cx: 895, cy:491 }, // ~
-        { gi:1,  title:'Do / Does',      color:'#6366f1', cx:1216, cy:500 }, // ✓
-        { gi:3,  title:'מילות שאלה',    color:'#0ea5e9', cx: 308, cy:759 }, // ✓
-        { gi:5,  title:'עתיד',           color:'#10b981', cx: 610, cy:767 }, // ~
-        { gi:15, title:'הווה מתמשך',    color:'#f59e0b', cx: 927, cy:776 }, // ~
-        { gi:18, title:'השוואה ב׳',      color:'#a855f7', cx:1259, cy:784 }, // ✓
+        { gi:12, title:'TO BE',          label:'הפועל TO BE',  emoji:'🧺', color:'#3b82f6', cx: 334, cy:199 }, // ✓
+        { gi:4,  title:'תארים',          label:'תארים',         emoji:'🎁', color:'#8b5cf6', cx: 624, cy:202 }, // ✓
+        { gi:17, title:'השוואה א׳',      label:'השוואה א׳',     emoji:'🏆', color:'#22c55e', cx: 929, cy:205 }, // ~
+        { gi:16, title:'רבים',           label:'רבים',          emoji:'⭐', color:'#f97316', cx:1179, cy:213 }, // ~
+        { gi:14, title:'Have / Has',     label:'Have / Has',    emoji:'💎', color:'#14b8a6', cx:1433, cy:267 }, // ✓
+        { gi:13, title:'יש / אין',       label:'יש / אין',      emoji:'💡', color:'#ec4899', cx: 298, cy:516 }, // ✓
+        { gi:2,  title:"Can / Can't",    label:"Can / Can't",   emoji:'💪', color:'#eab308', cx: 589, cy:497 }, // ~
+        { gi:0,  title:'זמן הווה',       label:'זמן הווה',      emoji:'☀️', color:'#ef4444', cx: 895, cy:491 }, // ~
+        { gi:1,  title:'Do / Does',      label:'Do / Does',     emoji:'⚡', color:'#6366f1', cx:1216, cy:500 }, // ✓
+        { gi:3,  title:'מילות שאלה',    label:'מילות שאלה',    emoji:'🤔', color:'#0ea5e9', cx: 308, cy:759 }, // ✓
+        { gi:5,  title:'עתיד',           label:'עתיד',          emoji:'🚀', color:'#10b981', cx: 610, cy:767 }, // ~
+        { gi:15, title:'הווה מתמשך',    label:'הווה מתמשך',    emoji:'🔄', color:'#f59e0b', cx: 927, cy:776 }, // ~
+        { gi:18, title:'השוואה ב׳',      label:'השוואה ב׳',     emoji:'🥇', color:'#a855f7', cx:1259, cy:784 }, // ✓
     ];
 
-    var R = 72; // רדיוס הכפתור בפיקסלי SVG (תמונה 1672×941)
+    var R = 72;
     var svgBtns = STAGES.map(function(s, idx) {
         var stageNum = idx + 1;
         var done   = loggedIn && typeof getStageStatus === 'function' && getStageStatus('grammar', s.gi) === 'complete';
         var locked = FREE_GRAMMAR_INDICES.indexOf(s.gi) === -1 && !isPremium();
         var click  = locked ? 'showPaywall()' : 'openLesson(' + s.gi + ')';
-        var fill   = done ? 'rgba(220,252,231,0.95)' : 'rgba(255,255,255,0.92)';
-        var stroke = locked ? '#94a3b8' : s.color;
         var cls    = 'ms-btn' + (locked ? ' ms-locked' : '');
-        var badge  = done
-            ? '<circle cx="' + (s.cx+50) + '" cy="' + (s.cy-50) + '" r="20" fill="#22c55e"/>' +
-              '<text x="' + (s.cx+50) + '" y="' + (s.cy-44) + '" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="20" font-weight="900" font-family="inherit">✓</text>'
-            : locked
-            ? '<circle cx="' + (s.cx+50) + '" cy="' + (s.cy-50) + '" r="20" fill="#94a3b8"/>' +
-              '<text x="' + (s.cx+50) + '" y="' + (s.cy-44) + '" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="15" font-family="inherit">🔒</text>'
+        var fill   = locked ? '#94a3b8' : s.color;
+        var emoji  = locked ? '🔒' : s.emoji;
+
+        // צל מאחורי הכפתור
+        var shadow = '<circle cx="' + s.cx + '" cy="' + (s.cy+6) + '" r="' + R + '" fill="rgba(0,0,0,0.22)"/>';
+        // עיגול ראשי צבעוני
+        var circle = '<circle class="ms-circle" cx="' + s.cx + '" cy="' + s.cy + '" r="' + R + '" fill="' + fill + '"/>';
+        // הבהרה בראש (אפקט 3D)
+        var shine  = '<ellipse cx="' + s.cx + '" cy="' + (s.cy - R*0.38) + '" rx="' + (R*0.48) + '" ry="' + (R*0.27) + '" fill="rgba(255,255,255,0.32)"/>';
+        // אמוג'י גדול במרכז
+        var emojiEl = '<text x="' + s.cx + '" y="' + (s.cy + 7) + '" text-anchor="middle" dominant-baseline="middle" font-size="52" font-family="inherit">' + emoji + '</text>';
+        // מספר שלב — עיגול קטן שמאל עליון
+        var bx = s.cx - R*0.62, by = s.cy - R*0.62;
+        var numBadge = '<circle cx="' + bx + '" cy="' + by + '" r="17" fill="rgba(255,255,255,0.92)"/>' +
+            '<text x="' + bx + '" y="' + by + '" text-anchor="middle" dominant-baseline="middle" fill="' + fill + '" font-size="14" font-weight="900" font-family="inherit">' + stageNum + '</text>';
+        // ✓ אם הסתיים — עיגול ירוק ימין עליון
+        var doneBadge = done
+            ? '<circle cx="' + (s.cx + R*0.62) + '" cy="' + (s.cy - R*0.62) + '" r="17" fill="#22c55e"/>' +
+              '<text x="' + (s.cx + R*0.62) + '" y="' + (s.cy - R*0.62) + '" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="16" font-weight="900" font-family="inherit">✓</text>'
             : '';
+        // תווית מעל הטבעת — pill לבן
+        var lY  = s.cy - R - 16;
+        var lw  = Math.max(s.label.length * 12 + 32, 90);
+        var lbl = '<rect x="' + (s.cx - lw/2) + '" y="' + (lY - 15) + '" width="' + lw + '" height="30" rx="15" fill="rgba(255,255,255,0.92)"/>' +
+            '<text x="' + s.cx + '" y="' + lY + '" text-anchor="middle" dominant-baseline="middle" fill="#0f172a" font-size="20" font-weight="700" font-family="inherit">' + s.label + '</text>';
+
         return '<g class="' + cls + '" onclick="' + click + '">' +
-            '<circle class="ms-circle" cx="' + s.cx + '" cy="' + s.cy + '" r="' + R + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="7" filter="url(#ms-shadow)"/>' +
-            badge +
-            '<text x="' + s.cx + '" y="' + (s.cy - 6) + '" text-anchor="middle" dominant-baseline="middle" fill="#0f172a" font-size="36" font-weight="900" font-family="inherit">' + stageNum + '</text>' +
-            '<text x="' + s.cx + '" y="' + (s.cy + 26) + '" text-anchor="middle" dominant-baseline="middle" fill="#1e293b" font-size="14" font-weight="700" font-family="inherit">' + s.title + '</text>' +
+            shadow + circle + shine + emojiEl + numBadge + doneBadge + lbl +
         '</g>';
     }).join('');
 
