@@ -1227,10 +1227,36 @@ function initStageCards() {
         '</g>';
     }).join('');
 
-    var svg = '<svg class="map-svg" viewBox="0 0 1672 941" xmlns="http://www.w3.org/2000/svg">' +
+    var svg = '<svg class="map-svg" viewBox="0 0 1672 941" xmlns="http://www.w3.org/2000/svg" id="mapSvg">' +
         '<defs><filter id="ms-shadow" x="-20%" y="-20%" width="140%" height="140%">' +
         '<feDropShadow dx="0" dy="3" stdDeviation="6" flood-opacity="0.3"/></filter></defs>' +
-        svgBtns + '</svg>';
+        '<rect id="svgCalibOverlay" x="0" y="0" width="1672" height="941" fill="rgba(0,0,0,0.01)" style="display:none;cursor:crosshair"/>' +
+        svgBtns + '</svg>' +
+        '<div style="text-align:center;margin-top:0.5rem">' +
+        '<button onclick="toggleMapCalib()" id="calibBtn" style="background:#0f172a;color:#fff;border:none;border-radius:8px;padding:0.4rem 1rem;font-size:0.8rem;cursor:pointer;opacity:0.5">🎯 מצב כיול (לשימוש פנימי)</button>' +
+        '<div id="calibLabel" style="display:none;margin-top:0.4rem;background:#0f172a;color:#fff;padding:0.4rem 1rem;border-radius:8px;font-size:1rem;font-weight:700;display:inline-block"></div>' +
+        '</div>';
+
+    window.toggleMapCalib = function() {
+        var overlay = document.getElementById('svgCalibOverlay');
+        var btn = document.getElementById('calibBtn');
+        var isOn = overlay && overlay.style.display !== 'none';
+        if (overlay) overlay.style.display = isOn ? 'none' : 'block';
+        if (btn) { btn.style.opacity = isOn ? '0.5' : '1'; btn.style.background = isOn ? '#0f172a' : '#2563eb'; }
+    };
+    window.svgCalibClick = function(e) {
+        var svg = document.getElementById('mapSvg');
+        if (!svg) return;
+        var pt = svg.createSVGPoint();
+        pt.x = e.clientX; pt.y = e.clientY;
+        var p = pt.matrixTransform(svg.getScreenCTM().inverse());
+        var lbl = document.getElementById('calibLabel');
+        if (lbl) {
+            lbl.textContent = 'cx:' + Math.round(p.x) + '  cy:' + Math.round(p.y);
+            lbl.style.display = 'inline-block';
+        }
+    };
+    document.getElementById('svgCalibOverlay').addEventListener('click', window.svgCalibClick);
 
     document.getElementById('grammarNav').innerHTML = stageNav;
     document.getElementById('grammarStageCards').innerHTML =
