@@ -1237,6 +1237,13 @@ function initStageCards() {
         '<div id="calibLabel" style="display:none;margin-top:0.4rem;background:#0f172a;color:#fff;padding:0.4rem 1rem;border-radius:8px;font-size:1rem;font-weight:700;display:inline-block"></div>' +
         '</div>';
 
+    document.getElementById('grammarNav').innerHTML = stageNav;
+    document.getElementById('grammarStageCards').innerHTML =
+        '<div class="map-wrap"><div class="map-container">' +
+        '<img src="images/grammar/progress-map.png" class="map-bg" alt="מפת התקדמות">' +
+        svg +
+        '</div></div>';
+
     window.toggleMapCalib = function() {
         var overlay = document.getElementById('svgCalibOverlay');
         var btn = document.getElementById('calibBtn');
@@ -1256,14 +1263,8 @@ function initStageCards() {
             lbl.style.display = 'inline-block';
         }
     };
-    document.getElementById('svgCalibOverlay').addEventListener('click', window.svgCalibClick);
-
-    document.getElementById('grammarNav').innerHTML = stageNav;
-    document.getElementById('grammarStageCards').innerHTML =
-        '<div class="map-wrap"><div class="map-container">' +
-        '<img src="images/grammar/progress-map.png" class="map-bg" alt="מפת התקדמות">' +
-        svg +
-        '</div></div>';
+    var overlay = document.getElementById('svgCalibOverlay');
+    if (overlay) overlay.addEventListener('click', window.svgCalibClick);
 }
 function renderStageCards() { initStageCards(); }
 
