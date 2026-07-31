@@ -1198,8 +1198,8 @@ function initStageCards() {
     // cx/cy = מרכז הטבעת בפיקסלים בתמונה המקורית (1672×941)
     // ✓ = כויל ידנית, ~ = אינטרפולציה
     var STAGES = [
-        { gi:12, title:'TO BE',          label:'הפועל TO BE',  emoji:'🧺', color:'#3b82f6', cx: 334, cy:199 }, // ✓
-        { gi:4,  title:'תארים',          label:'תארים',         emoji:'🎁', color:'#8b5cf6', cx: 624, cy:202 }, // ✓
+        { gi:12, title:'TO BE',          label:'הפועל TO BE',  emoji:'🧺', color:'#3b82f6', cx: 334, cy:199, icon:'images/grammar/icons/1.png' }, // ✓
+        { gi:4,  title:'תארים',          label:'תארים',         emoji:'🎁', color:'#8b5cf6', cx: 624, cy:202, icon:'images/grammar/icons/2.png' }, // ✓
         { gi:17, title:'השוואה א׳',      label:'השוואה א׳',     emoji:'🏆', color:'#22c55e', cx: 929, cy:205 }, // ~
         { gi:16, title:'רבים',           label:'רבים',          emoji:'⭐', color:'#f97316', cx:1179, cy:213 }, // ~
         { gi:14, title:'Have / Has',     label:'Have / Has',    emoji:'💎', color:'#14b8a6', cx:1433, cy:267 }, // ✓
@@ -1225,8 +1225,11 @@ function initStageCards() {
         // שטח לחיצה שקוף — תואם לצורת הטבעת ברקע
         var hitArea = '<ellipse cx="' + s.cx + '" cy="' + s.cy + '" rx="' + R + '" ry="' + (R*0.82) + '" fill="rgba(255,255,255,0.08)"/>';
 
-        // אמוג'י במרכז
-        var emojiEl = '<text x="' + s.cx + '" y="' + (s.cy + 8) + '" text-anchor="middle" dominant-baseline="middle" font-size="48" font-family="inherit" opacity="' + (locked ? '0.5' : '1') + '">' + emoji + '</text>';
+        // תמונה או אמוג'י במרכז
+        var iSize = R * 1.5, iHalf = iSize / 2;
+        var emojiEl = (s.icon && !locked)
+            ? '<image href="' + s.icon + '" x="' + (s.cx - iHalf) + '" y="' + (s.cy - iHalf) + '" width="' + iSize + '" height="' + iSize + '" preserveAspectRatio="xMidYMid meet"/>'
+            : '<text x="' + s.cx + '" y="' + (s.cy + 8) + '" text-anchor="middle" dominant-baseline="middle" font-size="48" font-family="inherit" opacity="' + (locked ? '0.5' : '1') + '">' + emoji + '</text>';
 
         // מספר שלב — pill קטן שמאל עליון
         var bx = s.cx - R*0.58, by = s.cy - R*0.6;
