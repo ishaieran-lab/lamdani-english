@@ -17,10 +17,9 @@
         .map-bg { width:100%; height:auto; display:block; }
         .map-svg { position:absolute; top:0; left:0; width:100%; height:100%; overflow:visible; }
         .map-svg .ms-btn { cursor:pointer; transition:transform 0.2s ease, filter 0.2s ease; transform-box:fill-box; transform-origin:center; }
-        .map-svg .ms-btn:hover .ms-circle { filter:drop-shadow(0 8px 16px rgba(0,0,0,0.45)); }
-        .map-svg .ms-btn:hover { transform:scale(1.18) translateY(-4px); }
-        .map-svg .ms-locked { cursor:not-allowed; opacity:0.52; }
-        .map-svg .ms-locked:hover { transform:none; }
+        .map-svg .ms-btn:hover { transform:scale(1.12) translateY(-5px); filter:drop-shadow(0 8px 18px rgba(0,0,0,0.4)); }
+        .map-svg .ms-locked { cursor:not-allowed; opacity:0.55; }
+        .map-svg .ms-locked:hover { transform:none; filter:none; }
     </style>
     <!-- Google Analytics — החלף G-XXXXXXXXXX במזהה שלך -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
@@ -1211,34 +1210,33 @@ function initStageCards() {
         var locked = FREE_GRAMMAR_INDICES.indexOf(s.gi) === -1 && !isPremium();
         var click  = locked ? 'showPaywall()' : 'openLesson(' + s.gi + ')';
         var cls    = 'ms-btn' + (locked ? ' ms-locked' : '');
-        var fill   = locked ? '#94a3b8' : s.color;
         var emoji  = locked ? '🔒' : s.emoji;
 
-        // צל מאחורי הכפתור
-        var shadow = '<circle cx="' + s.cx + '" cy="' + (s.cy+6) + '" r="' + R + '" fill="rgba(0,0,0,0.22)"/>';
-        // עיגול ראשי צבעוני
-        var circle = '<circle class="ms-circle" cx="' + s.cx + '" cy="' + s.cy + '" r="' + R + '" fill="' + fill + '"/>';
-        // הבהרה בראש (אפקט 3D)
-        var shine  = '<ellipse cx="' + s.cx + '" cy="' + (s.cy - R*0.38) + '" rx="' + (R*0.48) + '" ry="' + (R*0.27) + '" fill="rgba(255,255,255,0.32)"/>';
-        // אמוג'י גדול במרכז
-        var emojiEl = '<text x="' + s.cx + '" y="' + (s.cy + 7) + '" text-anchor="middle" dominant-baseline="middle" font-size="52" font-family="inherit">' + emoji + '</text>';
-        // מספר שלב — עיגול קטן שמאל עליון
-        var bx = s.cx - R*0.62, by = s.cy - R*0.62;
-        var numBadge = '<circle cx="' + bx + '" cy="' + by + '" r="17" fill="rgba(255,255,255,0.92)"/>' +
-            '<text x="' + bx + '" y="' + by + '" text-anchor="middle" dominant-baseline="middle" fill="' + fill + '" font-size="14" font-weight="900" font-family="inherit">' + stageNum + '</text>';
-        // ✓ אם הסתיים — עיגול ירוק ימין עליון
+        // שטח לחיצה שקוף — תואם לצורת הטבעת ברקע
+        var hitArea = '<ellipse cx="' + s.cx + '" cy="' + s.cy + '" rx="' + R + '" ry="' + (R*0.82) + '" fill="rgba(255,255,255,0.08)"/>';
+
+        // אמוג'י במרכז
+        var emojiEl = '<text x="' + s.cx + '" y="' + (s.cy + 8) + '" text-anchor="middle" dominant-baseline="middle" font-size="48" font-family="inherit" opacity="' + (locked ? '0.5' : '1') + '">' + emoji + '</text>';
+
+        // מספר שלב — pill קטן שמאל עליון
+        var bx = s.cx - R*0.58, by = s.cy - R*0.6;
+        var numBadge = '<rect x="' + (bx-14) + '" y="' + (by-12) + '" width="28" height="24" rx="12" fill="rgba(15,23,42,0.75)"/>' +
+            '<text x="' + bx + '" y="' + by + '" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="14" font-weight="900" font-family="inherit">' + stageNum + '</text>';
+
+        // ✓ ירוק אם הסתיים
         var doneBadge = done
-            ? '<circle cx="' + (s.cx + R*0.62) + '" cy="' + (s.cy - R*0.62) + '" r="17" fill="#22c55e"/>' +
-              '<text x="' + (s.cx + R*0.62) + '" y="' + (s.cy - R*0.62) + '" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="16" font-weight="900" font-family="inherit">✓</text>'
+            ? '<circle cx="' + (s.cx + R*0.6) + '" cy="' + (s.cy - R*0.6) + '" r="16" fill="#22c55e"/>' +
+              '<text x="' + (s.cx + R*0.6) + '" y="' + (s.cy - R*0.6) + '" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="15" font-weight="900" font-family="inherit">✓</text>'
             : '';
+
         // תווית מעל הטבעת — pill לבן
-        var lY  = s.cy - R - 16;
-        var lw  = Math.max(s.label.length * 12 + 32, 90);
-        var lbl = '<rect x="' + (s.cx - lw/2) + '" y="' + (lY - 15) + '" width="' + lw + '" height="30" rx="15" fill="rgba(255,255,255,0.92)"/>' +
-            '<text x="' + s.cx + '" y="' + lY + '" text-anchor="middle" dominant-baseline="middle" fill="#0f172a" font-size="20" font-weight="700" font-family="inherit">' + s.label + '</text>';
+        var lY = s.cy - R - 14;
+        var lw = Math.max(s.label.length * 12 + 28, 88);
+        var lbl = '<rect x="' + (s.cx - lw/2) + '" y="' + (lY - 14) + '" width="' + lw + '" height="28" rx="14" fill="rgba(255,255,255,0.93)" filter="url(#ms-shadow)"/>' +
+            '<text x="' + s.cx + '" y="' + lY + '" text-anchor="middle" dominant-baseline="middle" fill="#0f172a" font-size="19" font-weight="700" font-family="inherit">' + s.label + '</text>';
 
         return '<g class="' + cls + '" onclick="' + click + '">' +
-            shadow + circle + shine + emojiEl + numBadge + doneBadge + lbl +
+            hitArea + emojiEl + numBadge + doneBadge + lbl +
         '</g>';
     }).join('');
 
