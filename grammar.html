@@ -1212,7 +1212,7 @@ function initStageCards() {
         { gi:18, cx:4106, cy:2615  }, // 13
     ];
 
-    var R = 195;
+    var R = 156;
     var svgBtns = STAGES.map(function(s, idx) {
         var stageNum = idx + 1;
         var locked = FREE_GRAMMAR_INDICES.indexOf(s.gi) === -1 && !isPremium();
@@ -1220,7 +1220,7 @@ function initStageCards() {
         var cls    = 'ms-btn' + (locked ? ' ms-locked' : '');
         return '<g class="' + cls + '" onclick="' + click + '">' +
             '<circle cx="' + s.cx + '" cy="' + s.cy + '" r="' + R + '" fill="rgba(255,255,255,0.82)"/>' +
-            '<text x="' + s.cx + '" y="' + s.cy + '" text-anchor="middle" dominant-baseline="middle" font-size="150" font-weight="900" fill="#1e3a5f" font-family="inherit">' + stageNum + '</text>' +
+            '<text x="' + s.cx + '" y="' + s.cy + '" text-anchor="middle" dominant-baseline="middle" font-size="120" font-weight="900" fill="#1e3a5f" font-family="inherit">' + stageNum + '</text>' +
         '</g>';
     }).join('');
 
