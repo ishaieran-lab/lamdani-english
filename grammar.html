@@ -549,17 +549,18 @@ var GRAMMAR = [
       img: 'images/grammar/תארים הסבר.png'
     },
     examples: [
-      {en:'She is taller than her brother.',                he:'היא גבוהה יותר מאחיה.'},
-      {en:'This is the most expensive car in the store.',   he:'זאת המכונית היקרה ביותר בחנות.'},
-      {en:'He is a fast runner.',                           he:'הוא רץ מהיר.'},
-      {en:'Today is better than yesterday.',                he:'היום טוב יותר מאתמול.'},
+      {en:'The garden is beautiful.',    he:'הגן יפה.'},
+      {en:'My dog is fast.',             he:'הכלב שלי מהיר.'},
+      {en:'This car is expensive.',      he:'המכונית הזאת יקרה.'},
+      {en:'The book is interesting.',    he:'הספר מעניין.'},
+      {en:'He is a young teacher.',      he:'הוא מורה צעיר.'},
     ],
     exercises: [
-      {q:'She is ___ than her sister. (tall)',             opts:['tall','more tall','taller'],          ans:2},
-      {q:'This is the ___ book I read. (interesting)',     opts:['most interesting','more interesting','interestingest'],ans:0},
-      {q:'He runs ___ than me. (fast)',                    opts:['faster','more fast','fastest'],       ans:0},
-      {q:"It's a ___ day today. (beautiful)",              opts:['beautifully','more beautiful','beautiful'],ans:2},
-      {q:'This phone is ___ than mine. (expensive)',       opts:['expensiver','more expensive','most expensive'],ans:1},
+      {q:'The garden is ___. (יפה)',          opts:['beauty','beautiful','beautifull'],  ans:1},
+      {q:'My dog is very ___. (מהיר)',        opts:['fastly','fastest','fast'],          ans:2},
+      {q:'This book is ___. (מעניין)',        opts:['interest','interesting','interestly'],ans:1},
+      {q:'She is a ___ student. (צעירה)',     opts:['young','younger','youth'],          ans:0},
+      {q:'That car is very ___. (יקר)',       opts:['expensively','expense','expensive'],ans:2},
     ]
   },
 
@@ -626,6 +627,9 @@ var GRAMMAR = [
       { en:'He does not eat meat.',                opts:['הוא אוכל בשר.','הוא לא שותה.','היא לא אוכלת בשר.','הוא לא אוכל בשר.'],  ans:3 },
       { en:'Do you have a dog?',                   opts:['האם אתה כלב?','יש לך חתול?','האם יש לך כלב?','יש לו כלב?'],             ans:2 },
       { en:'We are students.',                     opts:['אנחנו מורים.','הם תלמידים.','אנחנו תלמידים.','הם מורים.'],               ans:2 },
+      { en:'The garden is beautiful.',             opts:['הגינה יפה.','הגינה גדולה.','הגינה ישנה.','הגינה מכוערת.'],              ans:0 },
+      { en:'This car is expensive.',               opts:['המכונית זולה.','המכונית מהירה.','המכונית יקרה.','המכונית ישנה.'],        ans:2 },
+      { en:'He is a young teacher.',               opts:['הוא מורה זקן.','הוא מורה צעיר.','הוא תלמיד צעיר.','היא מורה צעירה.'], ans:1 },
     ]
   },
 
