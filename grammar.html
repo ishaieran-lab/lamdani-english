@@ -1209,17 +1209,18 @@ function initStageCards() {
         { gi:3,  cx:1796, cy:2645  }, // 10
         { gi:5,  cx:2623, cy:2672  }, // 11
         { gi:15, cx:3343, cy:2658  }, // 12
-        { gi:18, cx:4106, cy:2620  }, // 13
+        { gi:18, cx:4106, cy:2620, r:164  }, // 13
     ];
 
     var R = 156;
     var svgBtns = STAGES.map(function(s, idx) {
         var stageNum = idx + 1;
+        var r = s.r || R;
         var locked = FREE_GRAMMAR_INDICES.indexOf(s.gi) === -1 && !isPremium();
         var click  = locked ? 'showPaywall()' : 'openLesson(' + s.gi + ')';
         var cls    = 'ms-btn' + (locked ? ' ms-locked' : '');
         return '<g class="' + cls + '" onclick="' + click + '">' +
-            '<circle cx="' + s.cx + '" cy="' + s.cy + '" r="' + R + '" fill="rgba(255,255,255,0.82)"/>' +
+            '<circle cx="' + s.cx + '" cy="' + s.cy + '" r="' + r + '" fill="rgba(255,255,255,0.82)"/>' +
             '<text x="' + s.cx + '" y="' + s.cy + '" text-anchor="middle" dominant-baseline="middle" font-size="120" font-weight="900" fill="#1e3a5f" font-family="inherit">' + stageNum + '</text>' +
         '</g>';
     }).join('');
