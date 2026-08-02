@@ -1195,14 +1195,14 @@ function initStageCards() {
 
     var loggedIn = typeof getUser === 'function' && !!getUser();
 
-    var svg = '<svg class="map-svg" viewBox="0 0 1536 1024" xmlns="http://www.w3.org/2000/svg" id="mapSvg">' +
-        '<rect id="svgCalibOverlay" x="0" y="0" width="1536" height="1024" fill="rgba(0,0,0,0.01)" style="display:none;cursor:crosshair"/>' +
+    var svg = '<svg class="map-svg" viewBox="0 0 4800 3200" xmlns="http://www.w3.org/2000/svg" id="mapSvg">' +
+        '<rect id="svgCalibOverlay" x="0" y="0" width="4800" height="3200" fill="rgba(0,0,0,0.01)" style="display:none;cursor:crosshair"/>' +
         '</svg>';
 
     document.getElementById('grammarNav').innerHTML = stageNav;
     document.getElementById('grammarStageCards').innerHTML =
         '<div class="map-wrap"><div class="map-container">' +
-        '<img src="images/grammar/map.png" class="map-bg" alt="מפת התקדמות">' +
+        '<img src="images/grammar/Map-new.png" class="map-bg" alt="מפת התקדמות">' +
         svg +
         '</div></div>';
 
