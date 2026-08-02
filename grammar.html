@@ -1195,9 +1195,29 @@ function initStageCards() {
 
     var loggedIn = typeof getUser === 'function' && !!getUser();
 
+    // cx/cy = מרכז עיגול בתמונה המקורית (4800×3200)
+    var STAGES = [
+        { gi:12, cx: 786, cy: 607 }, // 1
+        { gi:4,  cx:1793, cy: 627 }, // 2
+        { gi:17, cx:2889, cy: 631 }, // 3
+        { gi:16, cx:4129, cy: 627 }, // 4
+    ];
+
+    var R = 195;
+    var svgBtns = STAGES.map(function(s, idx) {
+        var stageNum = idx + 1;
+        var locked = FREE_GRAMMAR_INDICES.indexOf(s.gi) === -1 && !isPremium();
+        var click  = locked ? 'showPaywall()' : 'openLesson(' + s.gi + ')';
+        var cls    = 'ms-btn' + (locked ? ' ms-locked' : '');
+        return '<g class="' + cls + '" onclick="' + click + '">' +
+            '<circle cx="' + s.cx + '" cy="' + s.cy + '" r="' + R + '" fill="rgba(255,255,255,0.82)"/>' +
+            '<text x="' + s.cx + '" y="' + s.cy + '" text-anchor="middle" dominant-baseline="middle" font-size="150" font-weight="900" fill="#1e3a5f" font-family="inherit">' + stageNum + '</text>' +
+        '</g>';
+    }).join('');
+
     var svg = '<svg class="map-svg" viewBox="0 0 4800 3200" xmlns="http://www.w3.org/2000/svg" id="mapSvg">' +
         '<rect id="svgCalibOverlay" x="0" y="0" width="4800" height="3200" fill="rgba(0,0,0,0.01)" style="display:none;cursor:crosshair"/>' +
-        '</svg>';
+        svgBtns + '</svg>';
 
     document.getElementById('grammarNav').innerHTML = stageNav;
     document.getElementById('grammarStageCards').innerHTML =
