@@ -1195,61 +1195,9 @@ function initStageCards() {
 
     var loggedIn = typeof getUser === 'function' && !!getUser();
 
-    // cx/cy = מרכז העיגול בפיקסלים בתמונה המקורית (1536×1024)
-    // ~ = הערכה ראשונית, לכיול עם כלי הכיול
-    var STAGES = [
-        { gi:12, emoji:'🧺', cx: 240, cy:215, icon:'images/grammar/icons/1.png' }, // שלב 1
-        { gi:4,  emoji:'🎁', cx: 545, cy:215, icon:'images/grammar/icons/2.png' }, // שלב 2
-        { gi:17, emoji:'🏆', cx: 855, cy:215, icon:'images/grammar/icons/3.png' }, // שלב 3
-        { gi:16, emoji:'⭐', cx:1215, cy:215, icon:'images/grammar/icons/4.png' }, // שלב 4
-        { gi:14, emoji:'💎', cx:1295, cy:455 },                                    // שלב 5
-        { gi:13, emoji:'💡', cx: 990, cy:455 },                                    // שלב 6
-        { gi:2,  emoji:'💪', cx: 665, cy:455 },                                    // שלב 7
-        { gi:0,  emoji:'☀️', cx: 235, cy:455 },                                    // שלב 8
-        { gi:1,  emoji:'⚡', cx: 265, cy:730 },                                    // שלב 9
-        { gi:3,  emoji:'🤔', cx: 535, cy:730 },                                    // שלב 10
-        { gi:5,  emoji:'🚀', cx: 800, cy:730 },                                    // שלב 11
-        { gi:15, emoji:'🔄', cx:1060, cy:730 },                                    // שלב 12
-        { gi:18, emoji:'🥇', cx:1330, cy:730 },                                    // שלב 13
-    ];
-
-    var R = 62;
-    var svgBtns = STAGES.map(function(s) {
-        var done   = loggedIn && typeof getStageStatus === 'function' && getStageStatus('grammar', s.gi) === 'complete';
-        var locked = FREE_GRAMMAR_INDICES.indexOf(s.gi) === -1 && !isPremium();
-        var click  = locked ? 'showPaywall()' : 'openLesson(' + s.gi + ')';
-        var cls    = 'ms-btn' + (locked ? ' ms-locked' : '');
-
-        // שטח לחיצה שקוף
-        var hitArea = '<circle cx="' + s.cx + '" cy="' + s.cy + '" r="' + R + '" fill="rgba(255,255,255,0.05)"/>';
-
-        // תוכן: תמונה / אמוג'י / מנעול
-        var iSize = R * 1.55, iHalf = iSize / 2;
-        var content = locked
-            ? '<circle cx="' + s.cx + '" cy="' + s.cy + '" r="' + R + '" fill="rgba(15,23,42,0.5)"/>' +
-              '<text x="' + s.cx + '" y="' + (s.cy+8) + '" text-anchor="middle" dominant-baseline="middle" font-size="42" font-family="inherit">🔒</text>'
-            : (s.icon
-                ? '<image href="' + s.icon + '" x="' + (s.cx-iHalf) + '" y="' + (s.cy-iHalf) + '" width="' + iSize + '" height="' + iSize + '" preserveAspectRatio="xMidYMid meet"/>'
-                : '<text x="' + s.cx + '" y="' + (s.cy+8) + '" text-anchor="middle" dominant-baseline="middle" font-size="46" font-family="inherit">' + s.emoji + '</text>');
-
-        // ✓ ירוק אם הסתיים
-        var doneBadge = done
-            ? '<circle cx="' + (s.cx+R*0.65) + '" cy="' + (s.cy-R*0.65) + '" r="18" fill="#22c55e"/>' +
-              '<text x="' + (s.cx+R*0.65) + '" y="' + (s.cy-R*0.65) + '" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="15" font-weight="900" font-family="inherit">✓</text>'
-            : '';
-
-        return '<g class="' + cls + '" onclick="' + click + '">' +
-            hitArea + content + doneBadge +
-        '</g>';
-    }).join('');
-
     var svg = '<svg class="map-svg" viewBox="0 0 1536 1024" xmlns="http://www.w3.org/2000/svg" id="mapSvg">' +
         '<rect id="svgCalibOverlay" x="0" y="0" width="1536" height="1024" fill="rgba(0,0,0,0.01)" style="display:none;cursor:crosshair"/>' +
-        svgBtns + '</svg>' +
-        '<div style="text-align:center;margin-top:0.5rem">' +
-        '<button onclick="toggleMapCalib()" id="calibBtn" style="background:#0f172a;color:#fff;border:none;border-radius:8px;padding:0.4rem 1rem;font-size:0.8rem;cursor:pointer;opacity:0.5">🎯 מצב כיול (לשימוש פנימי)</button>' +
-        '<div id="calibLabel" style="display:none;margin-top:0.4rem;background:#0f172a;color:#fff;padding:0.4rem 1rem;border-radius:8px;font-size:1rem;font-weight:700;display:inline-block"></div>' +
-        '</div>';
+        '</svg>';
 
     document.getElementById('grammarNav').innerHTML = stageNav;
     document.getElementById('grammarStageCards').innerHTML =
