@@ -1063,6 +1063,19 @@ var GRAMMAR = [
       {en:'cold → colder',     he:'קר → קר יותר'},
       {en:'than',              he:'מאשר / מ-'},
     ],
+    quizVocab: [
+      {en:'bigger',  he:'גדול יותר'},
+      {en:'smaller', he:'קטן יותר'},
+      {en:'faster',  he:'מהיר יותר'},
+      {en:'slower',  he:'איטי יותר'},
+      {en:'taller',  he:'גבוה יותר'},
+      {en:'shorter', he:'נמוך יותר'},
+      {en:'older',   he:'זקן יותר', alts:['ישן יותר','זקן/ישן יותר','זקן / ישן יותר']},
+      {en:'younger', he:'צעיר יותר'},
+      {en:'hotter',  he:'חם יותר'},
+      {en:'colder',  he:'קר יותר'},
+      {en:'than',    he:'מאשר / מ-', alts:['מאשר','מ-']},
+    ],
     rule: {
       title: 'השוואה — Comparatives',
       points: [
@@ -1079,11 +1092,11 @@ var GRAMMAR = [
       {en:'Today is colder than yesterday.',  he:'היום קר יותר מאתמול.'},
     ],
     exercises: [
-      {q:'A whale is ___ than a fish. (big)',      opts:['biger','bigger','more big'],    ans:1},
-      {q:'A turtle is ___ than a rabbit. (slow)',  opts:['slower','slowier','more slow'], ans:0},
-      {q:'My sister is ___ than me. (tall)',       opts:['taller','tallier','more tall'], ans:0},
-      {q:'This box is ___ than that one. (small)', opts:['smaller','more small','smaler'],ans:0},
-      {q:'July is ___ than December. (hot)',       opts:['hoter','hotter','more hot'],    ans:1},
+      {q:'A whale is ___ than a fish.',    opts:['big','bigger','biggest'],    ans:1},
+      {q:'A turtle is ___ than a rabbit.', opts:['slow','slower','slowest'],   ans:1},
+      {q:'My sister is ___ than me.',      opts:['tall','taller','tallest'],   ans:1},
+      {q:'Winter is ___ than autumn.',     opts:['cold','colder','coldest'],   ans:1},
+      {q:'He is ___ than his brother.',    opts:['young','younger','youngest'],ans:1},
     ]
   },
 
@@ -1684,7 +1697,7 @@ var vqWords=[], vqCur=0, vqScore=0, vqMistakes=[], vqAnswered=false, vqCurWord=n
 
 function startVocabQuiz() {
     var stage = GRAMMAR[curStage];
-    var all = stage.vocab.slice();
+    var all = (stage.quizVocab || stage.vocab).slice();
     if (stage.vocabPhrases) all = all.concat(stage.vocabPhrases);
     vqWords = shuffle(all);
     vqCur = 0; vqScore = 0; vqMistakes = []; vqHistory = [];
