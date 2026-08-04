@@ -1061,8 +1061,12 @@ var GRAMMAR = [
     ],
     rule: {
       title: 'רבים של שמות עצם',
-      summary: 'ברוב המקרים מוסיפים s לסוף המילה. יש חריגים חשובים.',
-      img: 'images/grammar/רבים הסבר.png',
+      customHtml:
+        '<div style="text-align:center">' +
+          '<p style="font-size:0.85rem;color:#333;margin:0 0 1rem;line-height:1.6">ברוב המקרים מוסיפים s לסוף המילה. יש חריגים חשובים.</p>' +
+          '<img src="images/grammar/רבים הסבר.png" style="width:100%;max-width:600px;border-radius:12px;display:block;margin:0 auto 1rem">' +
+          '<img src="images/grammar/Plural.png" style="width:100%;max-width:600px;border-radius:12px;display:block;margin:0 auto">' +
+        '</div>'
     },
     examples: [
       {en:'I have two books.',             he:'יש לי שני ספרים.'},
