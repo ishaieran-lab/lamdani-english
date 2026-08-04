@@ -599,7 +599,7 @@ body {
 /* ── Stage selection (reading page) ─── */
 .section-title  { font-size: 1.75rem; font-weight: 600; margin-bottom: 0.3rem; }
 .section-subtitle { font-size: 0.85rem; color: var(--gray-txt); margin-bottom: 2rem; }
-.stage-label    { font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+.stage-label    { font-size: 0.95rem; font-weight: 700; text-transform: uppercase;
                   letter-spacing: 1px; color: var(--blue); margin-bottom: 1rem; }
 
 .back-link {
