@@ -4,6 +4,7 @@
   },
   "hosting": {
     "public": ".",
+    "releaseLimit": 5,
     "ignore": [
       "firebase.json",
       "**/.git/**",
