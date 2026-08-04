@@ -1502,7 +1502,7 @@ function buildRulePage(r) {
         }).join('');
         if (r.note) body += '<div class="rule-note">' + r.note + '</div>';
     } else if (r.img) {
-        body = '<img src="' + r.img + '" style="width:100%;border-radius:12px;display:block" alt="' + r.title + '">';
+        body = '<img src="' + r.img + '" style="width:100%;display:block" alt="' + r.title + '">';
     } else {
         body = '<ul class="rule-points-list">' +
             r.points.map(function(p){ return '<li>' + p + '</li>'; }).join('') +
@@ -1528,7 +1528,7 @@ function buildRulePage(r) {
           '</div>'
         : '';
     document.getElementById('lessonPageRule').innerHTML =
-        '<div class="rule-page">' +
+        '<div class="rule-page' + (r.img ? ' rule-page-img' : '') + '">' +
             headerHtml +
             '<div class="rule-page-body">' + body + '</div>' +
         '</div>' +

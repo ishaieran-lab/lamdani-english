@@ -1657,6 +1657,15 @@ body {
     border-radius: 16px; overflow: hidden;
     box-shadow: 0 4px 20px rgba(59,130,246,0.1);
 }
+.rule-page.rule-page-img {
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    overflow: visible;
+}
+.rule-page.rule-page-img .rule-page-body {
+    padding: 0;
+}
 .rule-page-header {
     background: linear-gradient(135deg, var(--navy) 0%, #1e40af 100%);
     color: white; padding: 1.6rem 1.75rem;
