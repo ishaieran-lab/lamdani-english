@@ -1260,22 +1260,22 @@ function initStageCards() {
 
     // cx/cy = מרכז עיגול בתמונה המקורית (4800×3200)
     var STAGES = [
-        { gi:12, cx: 786, cy: 607  }, // 1  - TO BE
-        { gi:4,  cx:1793, cy: 627  }, // 2  - תארים
-        { gi:16, cx:2889, cy: 631  }, // 3  - רבים
-        { gi:13, cx:4129, cy: 627  }, // 4  - יש/אין
-        { gi:14, cx:3743, cy:1654  }, // 5  - Have/Has  (שורה 2: ימין→שמאל)
-        { gi:2,  cx:2939, cy:1654  }, // 6  - Can/Can't
-        { gi:0,  cx:2040, cy:1654  }, // 7  - זמן הווה
-        { gi:1,  cx: 906, cy:1647  }, // 8  - Do/Does
-        { gi:3,  cx: 953, cy:2605  }, // 9  - מילות שאלה
-        { gi:5,  cx:1796, cy:2645  }, // 10 - עתיד
-        { gi:15, cx:2623, cy:2672  }, // 11 - הווה מתמשך
-        { gi:17, cx:3343, cy:2658  }, // 12 - השוואה א'
-        { gi:18, cx:4106, cy:2620, r:164  }, // 13 - השוואה ב'
+        { gi:12, cx: 634, cy: 490  }, // 1  - TO BE
+        { gi:4,  cx:1446, cy: 506  }, // 2  - תארים
+        { gi:16, cx:2330, cy: 509  }, // 3  - רבים
+        { gi:13, cx:3331, cy: 506  }, // 4  - יש/אין
+        { gi:14, cx:3019, cy:1334  }, // 5  - Have/Has  (שורה 2: ימין→שמאל)
+        { gi:2,  cx:2371, cy:1334  }, // 6  - Can/Can't
+        { gi:0,  cx:1646, cy:1334  }, // 7  - זמן הווה
+        { gi:1,  cx: 731, cy:1329  }, // 8  - Do/Does
+        { gi:3,  cx: 769, cy:2101  }, // 9  - מילות שאלה
+        { gi:5,  cx:1449, cy:2134  }, // 10 - עתיד
+        { gi:15, cx:2117, cy:2155  }, // 11 - הווה מתמשך
+        { gi:17, cx:2697, cy:2144  }, // 12 - השוואה א'
+        { gi:18, cx:3312, cy:2113, r:132  }, // 13 - השוואה ב'
     ];
 
-    var R = 156;
+    var R = 126;
     var svgBtns = STAGES.map(function(s, idx) {
         var stageNum = idx + 1;
         var r = s.r || R;
@@ -1288,14 +1288,14 @@ function initStageCards() {
         '</g>';
     }).join('');
 
-    var svg = '<svg class="map-svg" viewBox="0 0 4800 3200" xmlns="http://www.w3.org/2000/svg" id="mapSvg">' +
+    var svg = '<svg class="map-svg" viewBox="0 0 3872 2581" xmlns="http://www.w3.org/2000/svg" id="mapSvg">' +
         '<rect id="svgCalibOverlay" x="0" y="0" width="4800" height="3200" fill="rgba(0,0,0,0.01)" style="display:none;cursor:crosshair"/>' +
         svgBtns + '</svg>';
 
     document.getElementById('grammarNav').innerHTML = stageNav;
     document.getElementById('grammarStageCards').innerHTML =
         '<div class="map-wrap"><div class="map-container">' +
-        '<img src="images/grammar/map.png" class="map-bg" alt="מפת התקדמות">' +
+        '<img src="images/grammar/Map-clean.png" class="map-bg" alt="מפת התקדמות">' +
         svg +
         '</div></div>';
 
