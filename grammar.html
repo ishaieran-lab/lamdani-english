@@ -966,10 +966,10 @@ var GRAMMAR = [
       {en:'bank',         he:'בנק'},
     ],
     matchEx: [
-      {en:'There is',     he:'יש — יחיד'},
-      {en:'There are',    he:'יש — רבים'},
-      {en:"There isn't",  he:'אין — יחיד'},
-      {en:"There aren't", he:'אין — רבים'},
+      {en:'There is',     he:'יש (יחיד)'},
+      {en:'There are',    he:'יש (רבים)'},
+      {en:"There isn't",  he:'אין (יחיד)'},
+      {en:"There aren't", he:'אין (רבים)'},
     ],
     matchAfterQuiz: true
   },
@@ -1929,45 +1929,63 @@ function matchTryPair() {
 // גרירת מילים — drag match
 // ════════════════════════════════════════════════════════════════
 var dmPairs = [], dmPoolOrder = [], dmSelected = null, dmDragId = null;
+var dmSlots = {};   // slotId → chipId|null
+var dmCorrect = {}; // slotId → true when confirmed correct
 
 function startDragMatch() {
     var pairs = GRAMMAR[curStage].matchEx;
-    dmPairs = pairs.map(function(p, i) { return {en: p.en, he: p.he, id: i, placed: false}; });
-    dmPoolOrder = shuffle(pairs.map(function(p, i) { return i; }));
+    dmPairs = pairs.map(function(p, i) { return {en: p.en, he: p.he, id: i}; });
+    dmPoolOrder = shuffle(pairs.map(function(_, i) { return i; }));
     dmSelected = null; dmDragId = null;
+    dmSlots = {}; dmCorrect = {};
+    dmPairs.forEach(function(p) { dmSlots[p.id] = null; });
     document.getElementById('dmTitle').textContent = 'גרור — ' + GRAMMAR[curStage].title;
     showView('viewDragMatch');
     renderDragMatch();
 }
 
 function renderDragMatch() {
-    var ready = dmSelected !== null;
+    var hasSelected = dmSelected !== null;
     var rowsHtml = dmPairs.map(function(p) {
-        var slotCls = 'dm-slot' + (p.placed ? ' correct' : ready ? ' ready' : '');
+        var slotId = p.id;
+        var chipId = dmSlots[slotId];
+        var isCorrect = dmCorrect[slotId];
+        var slotCls = 'dm-slot' + (isCorrect ? ' correct' : chipId !== null ? ' filled' : hasSelected ? ' ready' : '');
+        var slotContent = isCorrect
+            ? '<span class="dm-placed-word">' + p.he + '</span>'
+            : chipId !== null
+                ? '<span class="dm-placed-word">' + dmPairs[chipId].he + '</span>'
+                : '';
         return '<div class="dm-row">' +
             '<div class="dm-en" dir="ltr">' + p.en + '</div>' +
-            '<div class="' + slotCls + '" data-id="' + p.id + '" ' +
+            '<div class="' + slotCls + '" data-id="' + slotId + '" ' +
                 'ondragover="dmDragOver(event)" ondragleave="dmDragLeave(event)" ondrop="dmDrop(event)" ' +
-                'onclick="dmClickSlot(' + p.id + ')">' +
-                (p.placed ? '<span class="dm-placed-word">' + p.he + '</span>' : '') +
+                'onclick="dmClickSlot(' + slotId + ')">' +
+                slotContent +
             '</div>' +
+            '<div class="dm-icon" id="dm-icon-' + slotId + '"></div>' +
         '</div>';
     }).join('');
     document.getElementById('dmRows').innerHTML = rowsHtml;
 
-    var unplaced = dmPoolOrder.filter(function(id) { return !dmPairs[id].placed; });
-    var poolHtml = unplaced.map(function(id) {
+    var usedChips = {};
+    Object.keys(dmSlots).forEach(function(sid) { if (dmSlots[sid] !== null) usedChips[dmSlots[sid]] = true; });
+    var poolHtml = dmPoolOrder.filter(function(id) {
+        return !usedChips[id] && !dmCorrect[id];
+    }).map(function(id) {
         var isSel = (dmSelected === id);
         return '<div class="dm-chip' + (isSel ? ' sel' : '') + '" ' +
             'draggable="true" data-id="' + id + '" ' +
             'ondragstart="dmDragStart(event)" ondragend="dmDragEnd(event)" ' +
             'onclick="dmClickChip(' + id + ')">' +
-            dmPairs[id].he +
-        '</div>';
+            dmPairs[id].he + '</div>';
     }).join('');
     document.getElementById('dmPool').innerHTML = poolHtml;
 
-    if (dmPairs.every(function(p) { return p.placed; })) {
+    var allCorrect = dmPairs.every(function(p) { return dmCorrect[p.id]; });
+    var allFilled = dmPairs.every(function(p) { return dmCorrect[p.id] || dmSlots[p.id] !== null; });
+
+    if (allCorrect) {
         document.getElementById('dmResult').innerHTML =
             '<div class="dm-success">מצוין! התאמת את כל הביטויים 🎉</div>' +
             '<div style="display:flex;gap:0.65rem;margin-top:1rem;flex-wrap:wrap;justify-content:center">' +
@@ -1975,6 +1993,9 @@ function renderDragMatch() {
                 '<button class="btn-secondary" onclick="startExercise()">לתרגול ←</button>' +
                 '<button class="btn-secondary" onclick="backToLesson()">חזור לשיעור</button>' +
             '</div>';
+    } else if (allFilled) {
+        document.getElementById('dmResult').innerHTML =
+            '<button class="btn-primary" onclick="dmCheckAll()" style="width:100%;margin-top:0.6rem">בדוק</button>';
     } else {
         document.getElementById('dmResult').innerHTML = '';
     }
@@ -1986,19 +2007,45 @@ function dmClickChip(id) {
 }
 
 function dmClickSlot(slotId) {
-    if (dmSelected === null || dmPairs[slotId].placed) return;
-    if (dmSelected === slotId) {
-        dmPairs[slotId].placed = true;
+    if (dmCorrect[slotId]) return;
+    if (dmSelected !== null) {
+        dmSlots[slotId] = dmSelected;
         dmSelected = null;
         renderDragMatch();
-    } else {
+    } else if (dmSlots[slotId] !== null) {
+        dmSelected = dmSlots[slotId];
+        dmSlots[slotId] = null;
+        renderDragMatch();
+    }
+}
+
+function dmCheckAll() {
+    var wrongSlots = [];
+    dmPairs.forEach(function(p) {
+        var slotId = p.id;
+        if (dmCorrect[slotId]) return;
+        var chipId = dmSlots[slotId];
+        var icon = document.getElementById('dm-icon-' + slotId);
         var slot = document.querySelector('.dm-slot[data-id="' + slotId + '"]');
-        if (slot) { slot.classList.add('wrong'); }
+        if (chipId === slotId) {
+            dmCorrect[slotId] = true;
+            dmSlots[slotId] = null;
+            if (icon) { icon.textContent = '✓'; icon.className = 'dm-icon ok'; }
+            if (slot) { slot.classList.remove('filled'); slot.classList.add('correct'); }
+        } else {
+            wrongSlots.push(slotId);
+            if (icon) { icon.textContent = '✗'; icon.className = 'dm-icon err'; }
+            if (slot) { slot.classList.remove('filled'); slot.classList.add('wrong'); }
+        }
+    });
+    if (wrongSlots.length) {
         setTimeout(function() {
-            if (slot) slot.classList.remove('wrong');
+            wrongSlots.forEach(function(slotId) { dmSlots[slotId] = null; });
             dmSelected = null;
             renderDragMatch();
-        }, 550);
+        }, 900);
+    } else {
+        renderDragMatch();
     }
 }
 
