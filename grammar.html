@@ -942,6 +942,12 @@ var GRAMMAR = [
       {q:'___ a problem. (שלילה)',         opts:['There is','There are',"There isn't"],  ans:2},
       {q:'___ any chairs? (שאלה)',         opts:['There are','Are there','There is'],    ans:1},
       {q:'___ five windows in my room.',   opts:['There is','There are','Is there'],     ans:1},
+    ],
+    matchEx: [
+      {en:'There is',     he:'יש — יחיד'},
+      {en:'There are',    he:'יש — רבים'},
+      {en:"There isn't",  he:'אין — יחיד'},
+      {en:"There aren't", he:'אין — רבים'},
     ]
   },
 
@@ -1821,7 +1827,7 @@ function startMatchEx() {
     matchEnItems = shuffle(pairs.map(function(p,i){return {text:p.en, id:i, matched:false};}));
     matchHeItems = shuffle(pairs.map(function(p,i){return {text:p.he, id:i, matched:false};}));
     matchSelEn = null; matchSelHe = null; matchMistakes = 0; matchFlashing = false;
-    document.getElementById('matchLabel').textContent = 'השוואת זמנים — ' + GRAMMAR[curStage].title;
+    document.getElementById('matchLabel').textContent = 'חיבור מילים — ' + GRAMMAR[curStage].title;
     showView('viewMatchEx');
     renderMatch();
 }
