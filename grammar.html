@@ -1837,7 +1837,7 @@ function showVocabScore() {
 
 function retryVocabQuiz() {
     var stage = GRAMMAR[curStage];
-    var all = stage.vocab.slice();
+    var all = (stage.quizVocab || stage.vocab).slice();
     if (stage.vocabPhrases) all = all.concat(stage.vocabPhrases);
     vqWords = shuffle(all);
     vqCur=0; vqScore=0; vqMistakes=[]; vqHistory=[];
