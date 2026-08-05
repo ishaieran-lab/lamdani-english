@@ -1820,7 +1820,7 @@ function vqPrev() {
     renderVq();
 }
 
-function norm(s) { return s.replace(/[\/].*$/,'').replace(/\s*-\s*/g,' ').replace(/\s+/g,' ').trim().toLowerCase(); }
+function norm(s) { return s.replace(/''/g,'"').replace(/״/g,'"').replace(/[\/].*$/,'').replace(/\s*-\s*/g,' ').replace(/\s+/g,' ').trim().toLowerCase(); }
 
 function showVocabScore() {
     var total = vqWords.length, pct = Math.min(100, Math.round(vqScore/total*100));
