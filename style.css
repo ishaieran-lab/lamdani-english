@@ -1846,60 +1846,107 @@ body {
     .match-item { font-size: 0.84rem; }
 }
 
-/* ═══ Drag Match — Premium ═════════════════════════════════════ */
-.dm-header { text-align: center; margin-bottom: 1.5rem; }
-.dm-instr {
-    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.03em;
-    color: #6366f1; margin: 0.3rem 0 0; text-transform: uppercase;
-}
-.dm-rows { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.5rem; }
-.dm-row { display: grid; grid-template-columns: 1fr 1fr 1.8rem; align-items: stretch; gap: 0; }
+/* ═══ Drag Match — Cloud & Sun ══════════════════════════════ */
+.dm-header { text-align: center; margin-bottom: 1.4rem; }
+.dm-instr { font-size: 0.78rem; font-weight: 600; color: #6b7280; margin: 0.3rem 0 0; letter-spacing: 0.02em; }
 
-.dm-en {
-    padding: 0.8rem 1rem;
-    background: #fff;
-    border: 2px solid #c7d2fe;
-    border-radius: 0;
-    font-weight: 800; font-size: 0.9rem;
-    text-align: center; direction: ltr;
-    color: #1e3a5f;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 8px rgba(99,102,241,0.07), 0 1px 2px rgba(0,0,0,0.04);
-    letter-spacing: -0.01em;
+.dm-rows {
+    display: flex; flex-direction: column;
+    gap: 1.6rem; margin-bottom: 1.5rem;
+    padding-top: 28px;
+    overflow: visible;
 }
+.dm-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 1.8rem;
+    align-items: center;
+    gap: 0.75rem;
+    overflow: visible;
+}
+
+/* ── SUN (English card) ──────────────────────────────────── */
+.dm-en {
+    position: relative; z-index: 1;
+    width: 90px; height: 90px;
+    flex-shrink: 0; justify-self: center;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 32%, #FFFCB0 0%, #FFD700 42%, #FFA500 72%, #FF6800 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.74rem;
+    color: #5a1e00; text-align: center; direction: ltr; line-height: 1.2;
+    padding: 6px; border: none;
+    box-shadow: 0 0 0 5px rgba(255,210,0,0.22), 0 0 22px rgba(255,155,0,0.32), 0 4px 14px rgba(200,80,0,0.2);
+}
+.dm-en::before {
+    content: '';
+    position: absolute; z-index: -1;
+    width: 140%; height: 140%; border-radius: 50%;
+    pointer-events: none;
+    background: conic-gradient(
+        rgba(255,215,0,0.72) 0deg,   transparent 18deg,
+        rgba(255,215,0,0.72) 26deg,  transparent 44deg,
+        rgba(255,215,0,0.72) 52deg,  transparent 70deg,
+        rgba(255,215,0,0.72) 78deg,  transparent 96deg,
+        rgba(255,215,0,0.72) 104deg, transparent 122deg,
+        rgba(255,215,0,0.72) 130deg, transparent 148deg,
+        rgba(255,215,0,0.72) 156deg, transparent 174deg,
+        rgba(255,215,0,0.72) 182deg, transparent 200deg,
+        rgba(255,215,0,0.72) 208deg, transparent 226deg,
+        rgba(255,215,0,0.72) 234deg, transparent 252deg,
+        rgba(255,215,0,0.72) 260deg, transparent 278deg,
+        rgba(255,215,0,0.72) 286deg, transparent 304deg,
+        rgba(255,215,0,0.72) 312deg, transparent 330deg,
+        rgba(255,215,0,0.72) 338deg, transparent 356deg,
+        rgba(255,215,0,0.72) 360deg
+    );
+    animation: sunSpin 24s linear infinite;
+}
+@keyframes sunSpin { to { transform: rotate(360deg); } }
+
+/* ── CLOUD SLOT ──────────────────────────────────────────── */
 .dm-slot {
-    min-height: 3rem;
-    border: 2.5px dashed #c7d2fe;
-    background: #fafbff;
-    border-radius: 0;
+    position: relative; overflow: visible;
+    min-height: 52px;
+    border: 2.5px dashed #a8c8ea;
+    background: rgba(210,230,255,0.35);
+    border-radius: 30px;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer;
     font-weight: 700; font-size: 0.88rem; color: #1e3a5f;
-    transition: all 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
-    padding: 0.3rem 0.5rem;
-    box-shadow: inset 0 2px 5px rgba(99,102,241,0.04);
+    padding: 10px 18px;
+    transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
 }
-.dm-slot.ready {
-    border-color: #6366f1; background: #eef2ff;
-    box-shadow: 0 0 0 3px rgba(99,102,241,0.13), inset 0 2px 5px rgba(99,102,241,0.06);
+.dm-slot::before {
+    content: ''; position: absolute;
+    left: 14%; top: -16px;
+    width: 36%; height: 33px;
+    background: rgba(210,230,255,0.45);
+    border: 2.5px dashed #a8c8ea;
+    border-bottom: none;
+    border-radius: 50%;
+    transition: inherit;
 }
-.dm-slot.over  { border-color: #4f46e5; background: #e0e7ff; border-style: solid; }
-.dm-slot.filled {
-    border-style: solid; border-color: #4f46e5;
-    background: #f5f3ff;
-    box-shadow: inset 0 2px 6px rgba(79,70,229,0.08);
+.dm-slot::after {
+    content: ''; position: absolute;
+    left: 38%; top: -23px;
+    width: 46%; height: 44px;
+    background: rgba(210,230,255,0.45);
+    border: 2.5px dashed #a8c8ea;
+    border-bottom: none;
+    border-radius: 50%;
+    transition: inherit;
 }
-.dm-slot.correct {
-    border-style: solid; border-color: #059669;
-    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-    color: #065f46; cursor: default;
-    box-shadow: 0 2px 10px rgba(5,150,105,0.13);
-}
-.dm-slot.wrong {
-    border-style: solid; border-color: #f87171;
-    background: #fff1f2;
-    animation: dmShake 0.5s cubic-bezier(.36,.07,.19,.97);
-}
+.dm-slot.ready { border-color: #6b9de8; background: rgba(210,230,255,0.65); box-shadow: 0 0 0 3px rgba(107,157,232,0.2); }
+.dm-slot.ready::before, .dm-slot.ready::after { border-color: #6b9de8; background: rgba(210,230,255,0.7); border-bottom: none; }
+.dm-slot.over  { border-style: solid; border-color: #4f6dd8; background: rgba(200,220,255,0.8); }
+.dm-slot.over::before, .dm-slot.over::after  { border-style: solid; border-color: #4f6dd8; background: rgba(200,220,255,0.8); border-bottom: none; }
+.dm-slot.filled { border-style: solid; border-color: #60a5fa; background: white; }
+.dm-slot.filled::before, .dm-slot.filled::after { border-style: solid; border-color: #60a5fa; background: white; border-bottom: none; }
+.dm-slot.correct { border-style: solid; border-color: #22c55e; background: #f0fdf4; cursor: default; box-shadow: 0 0 0 3px rgba(34,197,94,0.15); }
+.dm-slot.correct::before, .dm-slot.correct::after { border-style: solid; border-color: #22c55e; background: #f0fdf4; border-bottom: none; }
+.dm-slot.wrong { border-style: solid; border-color: #f87171; background: #fff5f5; animation: dmShake 0.5s cubic-bezier(.36,.07,.19,.97); }
+.dm-slot.wrong::before, .dm-slot.wrong::after { border-style: solid; border-color: #f87171; background: #fff5f5; border-bottom: none; }
+
 @keyframes dmShake {
     0%,100% { transform: translateX(0); }
     20%      { transform: translateX(-7px); }
@@ -1907,52 +1954,68 @@ body {
     75%      { transform: translateX(-4px); }
 }
 .dm-placed-word { pointer-events: none; }
-.dm-icon {
-    display: flex; align-items: center; justify-content: center;
-    width: 1.8rem; font-size: 1.05rem; font-weight: 900;
-}
-.dm-icon.ok  { color: #059669; }
+
+/* ── ICON ────────────────────────────────────────────────── */
+.dm-icon { display: flex; align-items: center; justify-content: center; width: 1.8rem; font-size: 1.1rem; font-weight: 900; }
+.dm-icon.ok  { color: #16a34a; }
 .dm-icon.err { color: #f43f5e; }
 
+/* ── SKY POOL + CLOUD CHIPS ──────────────────────────────── */
 .dm-pool-wrap {
-    background: #1e3a5f;
+    background: linear-gradient(180deg, #7ab8e8 0%, #a8d4f0 40%, #c8e8f8 100%);
     border: none; border-radius: 0;
-    padding: 1.1rem 0.85rem; min-height: 4.5rem;
-    box-shadow: 0 4px 16px rgba(30,58,95,0.18);
+    padding: 32px 0.85rem 1.2rem;
+    min-height: 5.5rem;
+    overflow: visible;
 }
-.dm-pool { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; }
+.dm-pool { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; justify-content: center; overflow: visible; }
+
 .dm-chip {
-    padding: 0.65rem 1.2rem; border-radius: 0;
-    background: #fff;
-    border: none;
+    position: relative;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: white; border: none; border-radius: 28px;
+    padding: 10px 22px;
+    margin-top: 24px;
+    min-width: 88px;
     color: #1e3a5f;
     font-weight: 800; font-size: 0.88rem;
     cursor: grab; user-select: none;
-    transition: all 0.18s cubic-bezier(0.34, 1.5, 0.64, 1);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.22), 0 1px 3px rgba(0,0,0,0.14);
-    letter-spacing: 0.01em;
+    filter: drop-shadow(0 5px 10px rgba(50,90,160,0.22));
+    transition: filter 0.15s, transform 0.15s cubic-bezier(0.34,1.5,0.64,1);
 }
-.dm-chip:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 9px 22px rgba(0,0,0,0.28), 0 2px 6px rgba(0,0,0,0.14);
+.dm-chip::before {
+    content: ''; position: absolute;
+    left: 15%; top: -18px;
+    width: 36%; height: 34px;
+    background: white; border-radius: 50%;
 }
+.dm-chip::after {
+    content: ''; position: absolute;
+    left: 38%; top: -24px;
+    width: 47%; height: 45px;
+    background: white; border-radius: 50%;
+}
+.dm-chip:hover { transform: translateY(-5px); filter: drop-shadow(0 12px 20px rgba(50,90,160,0.3)); }
 .dm-chip.sel {
-    background: #6366f1; color: #fff;
-    transform: translateY(-5px) scale(1.07);
-    box-shadow: 0 14px 32px rgba(99,102,241,0.45), 0 4px 10px rgba(0,0,0,0.14);
+    background: #3b6fd4; color: white;
+    transform: translateY(-7px) scale(1.09);
+    filter: drop-shadow(0 16px 28px rgba(59,111,212,0.48));
     cursor: grabbing;
 }
-.dm-chip.dragging { opacity: 0.25; }
+.dm-chip.sel::before, .dm-chip.sel::after { background: #3b6fd4; }
+.dm-chip.dragging { opacity: 0.2; }
 
+/* ── SUCCESS ─────────────────────────────────────────────── */
 .dm-success {
-    margin-top: 1.3rem; padding: 0.9rem 1rem; border-radius: 0;
+    margin-top: 1.3rem; padding: 0.9rem 1rem;
     font-weight: 800; font-size: 1rem; text-align: center;
-    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-    color: #065f46; border-right: 4px solid #059669;
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    color: #065f46; border-right: 4px solid #22c55e;
 }
 @media (max-width: 480px) {
-    .dm-row { grid-template-columns: 1fr 1fr 1.8rem; gap: 0; }
-    .dm-en, .dm-slot, .dm-chip { font-size: 0.82rem; }
+    .dm-row { grid-template-columns: 75px 1fr 1.8rem; gap: 0.5rem; }
+    .dm-en  { width: 75px; height: 75px; font-size: 0.68rem; }
+    .dm-chip, .dm-slot { font-size: 0.82rem; }
 }
 
 /* ════════════════════════════════════════════════════════════════
