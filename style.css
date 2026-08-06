@@ -1372,7 +1372,7 @@ body {
 }
 
 .quiz-en {
-    font-size: 4.5rem;
+    font-size: clamp(2rem, 9vw, 4.5rem);
     font-weight: 700;
     font-family: var(--serif);
     color: var(--navy);
