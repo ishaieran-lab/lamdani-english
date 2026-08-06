@@ -1035,17 +1035,18 @@ var GRAMMAR = [
   // ── Present Continuous ─────────────────────────────────────
   {
     title: 'הווה מתמשך — Present Continuous',
+    vocabHeader: 'הפעלים הבאים מורים על פעולה עכשווית',
     vocab: [
-      {en:'running',  he:'רץ / רצה (עכשיו)'},
-      {en:'eating',   he:'אוכל / אוכלת (עכשיו)'},
-      {en:'reading',  he:'קורא / קוראת (עכשיו)'},
-      {en:'sleeping', he:'ישן / ישנה (עכשיו)'},
-      {en:'talking',  he:'מדבר / מדברת (עכשיו)'},
-      {en:'writing',  he:'כותב / כותבת (עכשיו)'},
-      {en:'watching', he:'צופה (עכשיו)'},
-      {en:'playing',  he:'משחק / משחקת (עכשיו)'},
-      {en:'sitting',  he:'יושב / יושבת (עכשיו)'},
-      {en:'swimming', he:'שוחה (עכשיו)'},
+      {en:'running',  he:'רץ/רצה',   alts:['רצה','רץ רצה','רץ עכשיו','רצה עכשיו']},
+      {en:'eating',   he:'אוכל/ת',   alts:['אוכלת','אוכל אוכלת','אוכל עכשיו','אוכלת עכשיו']},
+      {en:'reading',  he:'קורא/ת',   alts:['קוראת','קורא קוראת','קורא עכשיו','קוראת עכשיו']},
+      {en:'sleeping', he:'ישן/ישנה',  alts:['ישנה','ישן ישנה','ישן עכשיו','ישנה עכשיו']},
+      {en:'talking',  he:'מדבר/ת',   alts:['מדברת','מדבר מדברת','מדבר עכשיו','מדברת עכשיו']},
+      {en:'writing',  he:'כותב/ת',   alts:['כותבת','כותב כותבת','כותב עכשיו','כותבת עכשיו']},
+      {en:'watching', he:'צופה',      alts:['צופה עכשיו']},
+      {en:'playing',  he:'משחק/ת',   alts:['משחקת','משחק משחקת','משחק עכשיו','משחקת עכשיו']},
+      {en:'sitting',  he:'יושב/ת',   alts:['יושבת','יושב יושבת','יושב עכשיו','יושבת עכשיו']},
+      {en:'swimming', he:'שוחה',      alts:['שוחה עכשיו']},
     ],
     rule: {
       title: 'הווה מתמשך — Present Continuous',
@@ -1595,9 +1596,13 @@ function buildVocabPage(s) {
         '</div>';
     }).join('');
 
+    var headerHtml = s.vocabHeader
+        ? '<div class="vocab-section-header">' + s.vocabHeader + '</div>'
+        : '';
     document.getElementById('lessonPageVocab').innerHTML =
         '<div class="lesson-section-title">מילים חדשות</div>' +
         '<p style="font-size:0.82rem;color:var(--gray-txt);margin-bottom:1rem">לחץ על מילה לשמוע את ההגייה</p>' +
+        headerHtml +
         '<div class="vocab-grid">' + cards + '</div>' +
         '<div class="lesson-nav" style="margin-top:1.5rem">' +
             '<button class="btn-secondary" onclick="lessonPrev()">← הקודם</button>' +

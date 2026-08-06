@@ -1115,6 +1115,16 @@ body {
 .w-listen { display: none; }
 
 /* ── Vocabulary page ─────────────────────────────── */
+.vocab-section-header {
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #3b6fd4;
+    background: #eff6ff;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+}
 .vocab-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
