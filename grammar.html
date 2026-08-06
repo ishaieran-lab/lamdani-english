@@ -1268,7 +1268,16 @@ function showView(id) {
     VIEWS.forEach(function(v){ document.getElementById(v).style.display='none'; });
     document.getElementById(id).style.display = 'block';
     window.scrollTo({top:0, behavior:'smooth'});
+    history.pushState({grammarView: id}, '');
 }
+
+history.replaceState({grammarView: 'viewSelect'}, '');
+window.addEventListener('popstate', function(e) {
+    var view = (e.state && e.state.grammarView) ? e.state.grammarView : 'viewSelect';
+    VIEWS.forEach(function(v){ document.getElementById(v).style.display='none'; });
+    document.getElementById(view).style.display = 'block';
+    window.scrollTo({top:0, behavior:'smooth'});
+});
 
 function backToLevels()  { showView('viewSelect'); }
 function backToSelect()  { initStageCards(); showView('viewStages'); }
