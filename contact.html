@@ -119,7 +119,7 @@
                 document.getElementById('contactForm').reset();
             } else {
                 msg.className = 'form-msg error';
-                msg.innerHTML = 'שגיאה בשליחה — נסה שוב או כתוב ישירות ל: <a href="mailto:ishaieran@gmail.com" style="color:#ef4444;text-decoration:underline">ishaieran@gmail.com</a>';
+                msg.textContent = 'שגיאה בשליחה — נסה שוב מאוחר יותר.';
             }
         })
         .catch(function() {
