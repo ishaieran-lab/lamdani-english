@@ -518,8 +518,10 @@ var GRAMMAR = [
     vocab: [
       {en:'who',       he:'מי'},          {en:'what',     he:'מה'},
       {en:'where',     he:'איפה'},        {en:'when',     he:'מתי'},
-      {en:'why',       he:'למה'},         {en:'how',      he:'איך'},
-      {en:'how many',  he:'כמה (כמות)'},  {en:'how much', he:'כמה (מחיר)'},
+      {en:'why',       he:'למה',           alts:['מדוע']},
+      {en:'how',       he:'איך',           alts:['כיצד']},
+      {en:'how many',  he:'כמה (כמות)',    alts:['כמה','כמה כמות','כמה-כמות']},
+      {en:'how much',  he:'כמה (מחיר)',    alts:['כמה','כמה מחיר','כמה-מחיר']},
       {en:'which',     he:'איזה'},        {en:'whose',    he:'של מי'},
     ],
     rule: {
