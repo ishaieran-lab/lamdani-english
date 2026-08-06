@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>דף לא נמצא — למדני אנגלית</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .notfound-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70vh;
+            text-align: center;
+            padding: 2rem 1.5rem;
+        }
+        .notfound-code {
+            font-size: clamp(5rem, 20vw, 10rem);
+            font-weight: 900;
+            color: #2563eb;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        .notfound-title {
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            font-weight: 700;
+            color: #0d2347;
+            margin-bottom: 0.75rem;
+        }
+        .notfound-sub {
+            font-size: 1rem;
+            color: #637080;
+            margin-bottom: 2rem;
+        }
+        .notfound-btn {
+            display: inline-block;
+            background: #2563eb;
+            color: #fff;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding: 0.75rem 2.5rem;
+            border-radius: 2rem;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .notfound-btn:hover { background: #1d4ed8; }
+    </style>
+</head>
+<body>
+
+<nav class="toolbar">
+    <a href="index.html" class="toolbar-brand"><span class="accent">Lamdani</span> English</a>
+    <div class="toolbar-nav">
+        <a href="app.html" class="nav-icon-btn">
+            <img src="images/ui/home.png" class="nav-icon-img" alt="בית">
+        </a>
+    </div>
+</nav>
+
+<div class="notfound-wrap">
+    <div class="notfound-code">404</div>
+    <div class="notfound-title">הדף שחיפשת לא נמצא</div>
+    <p class="notfound-sub">ייתכן שהכתובת שגויה או שהדף הוסר.</p>
+    <a href="index.html" class="notfound-btn">חזרה לדף הראשי</a>
+</div>
+
+</body>
+</html>
