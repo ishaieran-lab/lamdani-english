@@ -1853,6 +1853,19 @@ body {
     .match-item { font-size: 0.84rem; }
 }
 
+/* ═══ Vocab Quiz — compact mobile ══════════════════════════ */
+@media (max-width: 600px) {
+    #viewVocabQuiz.reading-wrap { padding-top: 0.6rem; padding-bottom: 1rem; }
+    #viewVocabQuiz .stage-label { font-size: 0.75rem; margin-bottom: 0.3rem; }
+    #viewVocabQuiz .progress-row { margin-bottom: 0.4rem; }
+    #viewVocabQuiz .quiz-card { padding: 0.6rem 0.5rem; }
+    #viewVocabQuiz .quiz-prompt { font-size: 0.95rem; margin-bottom: 0.5rem; }
+    #viewVocabQuiz .quiz-en { margin-bottom: 0.4rem; }
+    #viewVocabQuiz .btn-listen-quiz { margin-bottom: 0.75rem; }
+    #viewVocabQuiz .quiz-input-wrap { margin-bottom: 0.5rem; }
+    #viewVocabQuiz .quiz-feedback { min-height: 1.4rem; margin-bottom: 0.5rem; font-size: 1rem; }
+}
+
 /* ═══ Phrase Quiz ════════════════════════════════════════════ */
 .pq-row { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.9rem; direction:ltr; }
 .pq-en  { flex:0 0 auto; min-width:9rem; font-weight:700; font-size:0.95rem; color:#1e3a5f; direction:ltr; }
