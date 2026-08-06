@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -413,9 +413,9 @@
 <!-- ══ מודל כניסה / הרשמה ══════════════════════════════════════════ -->
 <div id="fbLoginOv" onclick="if(event.target===this)closeLoginModal()"
      style="position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:9999;direction:rtl;">
-  <div onclick="event.stopPropagation()"
+  <div role="dialog" aria-modal="true" aria-labelledby="fbModalTitle" onclick="event.stopPropagation()"
        style="background:#fff;border-radius:1.2rem;padding:2rem 2rem 1.5rem;width:min(92vw,380px);position:relative;text-align:center;font-family:inherit;max-height:92vh;overflow-y:auto;">
-    <button onclick="closeLoginModal()"
+    <button onclick="closeLoginModal()" aria-label="סגור"
             style="position:absolute;top:0.7rem;left:0.8rem;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#94a3b8;">✕</button>
     <input type="hidden" id="fbModeVal" value="register">
     <div id="fbModalTitle" style="font-size:1.35rem;font-weight:800;color:#1e293b;margin-bottom:1.4rem;">הרשמה</div>
@@ -488,7 +488,7 @@
     <div id="fbConsentRow" style="margin-bottom:0.6rem;text-align:right;display:none;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:0.6rem;padding:0.6rem 0.75rem;">
         <label style="display:flex;align-items:flex-start;gap:0.5rem;cursor:pointer;font-size:0.8rem;color:#374151;line-height:1.5;">
             <input type="checkbox" id="fbTermsCheck" style="margin-top:0.2rem;flex-shrink:0;width:16px;height:16px;" onchange="document.getElementById('fbConsentRow').style.borderColor=this.checked?'#86efac':'#e2e8f0';document.getElementById('fbErr').textContent='';">
-            <span>אני הורה/אפוטרופוס ומאשר/ת ל<a href="תנאי שימוש.html" target="_blank" style="color:#2563eb;text-decoration:underline;">תנאי השימוש</a> ו<a href="מדיניות פרטיות.html" target="_blank" style="color:#2563eb;text-decoration:underline;">מדיניות הפרטיות</a></span>
+            <span>אני הורה/אפוטרופוס ומאשר/ת ל<a href="terms.html" target="_blank" style="color:#2563eb;text-decoration:underline;">תנאי השימוש</a> ו<a href="privacy.html" target="_blank" style="color:#2563eb;text-decoration:underline;">מדיניות הפרטיות</a></span>
         </label>
     </div>
 
@@ -511,7 +511,10 @@
   </div>
 </div>
 <script>
+var _fbLastFocus = null;
+function _fbEscHandler(e) { if (e.key === 'Escape') closeLoginModal(); }
 function openLoginModal(mode) {
+    _fbLastFocus = document.activeElement;
     document.getElementById('fbLoginOv').style.display = 'flex';
     document.getElementById('fbVerifyView').style.display  = 'none';
     document.getElementById('fbFormContent').style.display = 'block';
@@ -525,8 +528,14 @@ function openLoginModal(mode) {
     document.getElementById('fbToggleBtn').textContent  = isReg ? 'כבר יש לך חשבון? כנס' : 'אין לך חשבון? הירשם';
     document.getElementById('fbErr').textContent = '';
     document.getElementById('fbErr').style.color = '#ef4444';
+    document.addEventListener('keydown', _fbEscHandler);
+    setTimeout(function(){ var inp = document.getElementById('fbEmail'); if (inp) inp.focus(); }, 50);
 }
-function closeLoginModal() { document.getElementById('fbLoginOv').style.display = 'none'; }
+function closeLoginModal() {
+    document.getElementById('fbLoginOv').style.display = 'none';
+    document.removeEventListener('keydown', _fbEscHandler);
+    if (_fbLastFocus) { _fbLastFocus.focus(); _fbLastFocus = null; }
+}
 function fbToggleMode() {
     var cur = document.getElementById('fbModeVal').value;
     openLoginModal(cur === 'register' ? 'login' : 'register');
@@ -735,7 +744,7 @@ function fbSubmitEmail() {
             </div>
         </div>
         <p style="text-align:center;margin-top:1.5rem;font-size:0.85rem;color:var(--muted)">
-            ביטול בכל עת · <a href="תנאי שימוש.html" style="color:var(--blue)">תנאי שימוש</a> · <a href="מדיניות פרטיות.html" style="color:var(--blue)">מדיניות פרטיות</a>
+            ביטול בכל עת · <a href="terms.html" style="color:var(--blue)">תנאי שימוש</a> · <a href="privacy.html" style="color:var(--blue)">מדיניות פרטיות</a>
         </p>
         <div class="faq-section">
             <h3>שאלות נפוצות</h3>
@@ -811,10 +820,10 @@ function fbSubmitEmail() {
         </div>
         <div class="footer-col">
             <h4>משפטי</h4>
-            <a href="תנאי שימוש.html">תנאי שימוש</a>
-            <a href="מדיניות פרטיות.html">מדיניות פרטיות</a>
-            <a href="מדיניות ביטולים.html">מדיניות ביטולים</a>
-            <a href="הצהרת נגישות.html">הצהרת נגישות</a>
+            <a href="terms.html">תנאי שימוש</a>
+            <a href="privacy.html">מדיניות פרטיות</a>
+            <a href="cancellation.html">מדיניות ביטולים</a>
+            <a href="accessibility.html">הצהרת נגישות</a>
         </div>
     </div>
     <div class="footer-bottom">
@@ -851,6 +860,19 @@ document.getElementById('contactForm').addEventListener('submit', async function
 </script>
 <script>
 window.onUserLogin = function() { window.location.href = "app.html"; };
+</script>
+<script>
+document.querySelectorAll('.faq-q').forEach(function(el) {
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-expanded', 'false');
+    el.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+    });
+    el.addEventListener('click', function() {
+        this.setAttribute('aria-expanded', String(this.parentElement.classList.contains('open')));
+    });
+});
 </script>
 </body>
 </html>

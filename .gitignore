@@ -2,3 +2,4 @@
 test-voices.html
 *.DS_Store
 Thumbs.db
+.firebase/

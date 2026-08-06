@@ -63,8 +63,8 @@
             </button>
             <div class="nav-menu-panel" id="navMenuPanel">
                 <a href="app.html" class="nav-menu-item">דף הבית</a>
-                <a href="אודות.html" class="nav-menu-item">אודות</a>
-                <a href="צור קשר.html" class="nav-menu-item">צור קשר</a>
+                <a href="about.html" class="nav-menu-item">אודות</a>
+                <a href="contact.html" class="nav-menu-item">צור קשר</a>
             </div>
         </div>
         <a href="app.html" class="nav-icon-btn">
@@ -119,7 +119,7 @@
                 document.getElementById('contactForm').reset();
             } else {
                 msg.className = 'form-msg error';
-                msg.textContent = 'שגיאה בשליחה — נסה שוב או פנה ישירות למייל.';
+                msg.innerHTML = 'שגיאה בשליחה — נסה שוב או כתוב ישירות ל: <a href="mailto:ishaieran@gmail.com" style="color:#ef4444;text-decoration:underline">ishaieran@gmail.com</a>';
             }
         })
         .catch(function() {
@@ -140,11 +140,11 @@
 <footer class="site-footer">
     <div class="site-footer-inner">
         <div class="site-footer-links">
-            <a href="תנאי שימוש.html">תנאי שימוש</a>
-            <a href="מדיניות פרטיות.html">מדיניות פרטיות</a>
-            <a href="מדיניות ביטולים.html">מדיניות ביטולים</a>
-            <a href="הצהרת נגישות.html">הצהרת נגישות</a>
-            <a href="צור קשר.html">צור קשר</a>
+            <a href="terms.html">תנאי שימוש</a>
+            <a href="privacy.html">מדיניות פרטיות</a>
+            <a href="cancellation.html">מדיניות ביטולים</a>
+            <a href="accessibility.html">הצהרת נגישות</a>
+            <a href="contact.html">צור קשר</a>
         </div>
         <div class="site-footer-copy">© 2026 למדני אנגלית · כל הזכויות שמורות</div>
     </div>
