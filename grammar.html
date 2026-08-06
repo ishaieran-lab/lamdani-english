@@ -218,6 +218,18 @@
     <div id="dmResult"></div>
 </div>
 
+<!-- ═══ 6c. בוחן משפטים ══════════════════════════════════════ -->
+<div id="viewPhraseQuiz" class="reading-wrap" style="display:none">
+    <button class="back-link" onclick="backToLesson()">→ חזור לשיעור</button>
+    <div class="stage-label" id="pqTitle" style="text-align:center;margin-bottom:0.5rem"></div>
+    <p style="text-align:center;font-size:0.85rem;color:#6b7280;margin-bottom:1.4rem">תרגם את המשפטים לעברית</p>
+    <div id="pqRows"></div>
+    <div style="text-align:center;margin-top:1.2rem">
+        <button class="btn-primary" onclick="pqCheckAll()" style="padding:0.5rem 2.5rem">בדוק</button>
+    </div>
+    <div id="pqResult" style="text-align:center;margin-top:1rem;font-size:1.1rem;font-weight:700"></div>
+</div>
+
 <!-- ═══ 7. תרגול ════════════════════════════════════════════════ -->
 <div id="viewPractice" class="reading-wrap" style="display:none">
     <button class="back-link" onclick="backToSelect()">→ חזור לשלבים</button>
@@ -597,7 +609,7 @@ var GRAMMAR = [
       {en:'definitely',    he:'בהחלט'},     {en:'promise',      he:'להבטיח'},
       {en:'hope',          he:'לקוות'},     {en:'plan',         he:'לתכנן'},
     ],
-    vocabPhrases: [
+    phraseQuiz: [
       {en:'I will go',       he:'אני אלך'},
       {en:'she will go',     he:'היא תלך'},
       {en:'they will go',    he:'הם ילכו'},
@@ -1232,7 +1244,7 @@ function speak(text) {
 // ════════════════════════════════════════════════════════════════
 // ניווט
 // ════════════════════════════════════════════════════════════════
-var VIEWS = ['viewSelect','viewStages','viewLesson','viewExercise','viewScore','viewVocabQuiz','viewVocabScore','viewMatchEx','viewDragMatch','viewPractice','viewReading'];
+var VIEWS = ['viewSelect','viewStages','viewLesson','viewExercise','viewScore','viewVocabQuiz','viewVocabScore','viewMatchEx','viewDragMatch','viewPhraseQuiz','viewPractice','viewReading'];
 
 function showView(id) {
     VIEWS.forEach(function(v){ document.getElementById(v).style.display='none'; });
@@ -1836,9 +1848,54 @@ function showVocabScore() {
         startDragMatch();
         return;
     }
+    if (stage.phraseQuiz && stage.phraseQuiz.length) {
+        startPhraseQuiz();
+        return;
+    }
     renderScore('vsMedal','vsTitle','vsFraction','vsMsg','vsMistakes',
         vqScore, total, pct, vqMistakes, 'vq');
     showView('viewVocabScore');
+}
+
+var pqPhrases = [];
+function startPhraseQuiz() {
+    var stage = GRAMMAR[curStage];
+    pqPhrases = stage.phraseQuiz;
+    document.getElementById('pqTitle').textContent = stage.title;
+    document.getElementById('pqResult').textContent = '';
+    showView('viewPhraseQuiz');
+    var html = '';
+    pqPhrases.forEach(function(p, i) {
+        html += '<div class="pq-row">' +
+            '<div class="pq-en">' + p.en + '</div>' +
+            '<div class="pq-input-wrap">' +
+                '<input class="pq-input" type="text" id="pq-input-' + i + '" placeholder="כתוב בעברית..." dir="rtl">' +
+                '<span class="pq-icon" id="pq-icon-' + i + '"></span>' +
+            '</div>' +
+        '</div>';
+    });
+    document.getElementById('pqRows').innerHTML = html;
+}
+function pqCheckAll() {
+    var score = 0;
+    pqPhrases.forEach(function(p, i) {
+        var input = document.getElementById('pq-input-' + i);
+        var icon  = document.getElementById('pq-icon-' + i);
+        var val   = norm(input.value);
+        var alts  = (p.alts || []).map(norm);
+        var ok    = val === norm(p.he) || alts.indexOf(val) !== -1;
+        if (ok) {
+            score++;
+            icon.textContent = '✓'; icon.className = 'pq-icon ok';
+            input.classList.add('pq-correct'); input.classList.remove('pq-wrong');
+        } else {
+            icon.textContent = '✗'; icon.className = 'pq-icon err';
+            input.classList.add('pq-wrong'); input.classList.remove('pq-correct');
+        }
+    });
+    var res = document.getElementById('pqResult');
+    res.textContent = score + ' / ' + pqPhrases.length;
+    res.style.color = score === pqPhrases.length ? '#16a34a' : '#dc2626';
 }
 
 function retryVocabQuiz() {
