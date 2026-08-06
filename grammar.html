@@ -1585,8 +1585,8 @@ function buildVocabPage(s) {
     var cards = s.vocab.map(function(w) {
         var safe = w.en.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
         return '<div class="vocab-card" onclick="speak(\'' + safe + '\')">' +
-            '<div class="vocab-en" dir="ltr">' + w.en.replace(/ → /g,'<br>') + '</div>' +
-            '<div class="vocab-he">' + w.he.replace(/ → /g,'<br>') + '</div>' +
+            '<div class="vocab-en" dir="ltr">' + w.en.split(' → ').map(function(p){return '<span style="white-space:nowrap;display:block">'+p+'</span>';}).join('') + '</div>' +
+            '<div class="vocab-he">' + w.he.split(' → ').map(function(p){return '<span style="white-space:nowrap;display:block">'+p+'</span>';}).join('') + '</div>' +
             '<div class="play-btn"></div>' +
         '</div>';
     }).join('');
