@@ -634,9 +634,9 @@ function fbSubmitEmail() {
 <nav class="nav">
     <div class="nav-links">
         <a href="app.html" class="nav-cta" onclick="event.preventDefault();openLoginModal()">הירשם עכשיו / הכנס</a>
-        <a href="#about">אודות</a>
+        <a href="about.html">אודות</a>
         <a href="#pricing">מחירים</a>
-        <a href="#contact">צור קשר</a>
+        <a href="contact.html">צור קשר</a>
     </div>
     <a href="index.html" class="nav-brand"><em>Lamdani</em> English</a>
 </nav>
@@ -686,21 +686,6 @@ function fbSubmitEmail() {
     </div>
 </div>
 
-<!-- ABOUT US SECTION -->
-<section class="feature-section" id="about">
-    <div class="feature-wrap">
-        <div class="feature-img">
-            <img src="images/landing/אודות.png" alt="מי אנחנו — למדני אנגלית">
-        </div>
-        <div class="feature-text">
-            <div class="feature-tag">אודות</div>
-            <h2 class="feature-h">מי אנחנו?</h2>
-            <p class="feature-p">פלטפורמת Lamdani English פותחה על ידי אנשי חינוך ואנשי מקצוע פדגוגיים בעלי ניסיון עשיר בהוראה ובניהול מערכות&nbsp;חינוך.</p>
-            <p class="feature-p">מתוך היכרות עמוקה עם האתגרים של תלמידי בתי הספר היסודיים ברכישת שפה שנייה, זיקקנו את הניסיון המקצועי שלנו לכדי כלי דיגיטלי ממוקד, ברור וחווייתי.</p>
-            <p class="feature-p">מטרתנו לאפשר לכל ילד וילדה לבנות בסיס שפה חזק ויציב, להצליח בכיתה ולפתח ביטחון ואהבה לאנגלית – בקצב האישי שלהם.</p>
-        </div>
-    </div>
-</section>
 
 <!-- MINISTRY SECTION -->
 <section class="feature-section bg-soft">
@@ -797,7 +782,7 @@ function fbSubmitEmail() {
             </div>
             <div class="faq-item">
                 <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">האם יש הנחה לבתי ספר?</div>
-                <div class="faq-a">כן. לרכישה קבוצתית לכיתות ובתי ספר נציע מחיר מיוחד. <a href="#contact" style="color:var(--blue)">צרו קשר</a> לפרטים.</div>
+                <div class="faq-a">כן. לרכישה קבוצתית לכיתות ובתי ספר נציע מחיר מיוחד. <a href="contact.html" style="color:var(--blue)">צרו קשר</a> לפרטים.</div>
             </div>
             <div class="faq-item">
                 <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">האם ניתן לבטל את המנוי?</div>
@@ -828,34 +813,6 @@ function fbSubmitEmail() {
 </section>
 
 
-<!-- CONTACT -->
-<section class="contact-section" id="contact">
-    <div class="contact-inner">
-        <div class="section-hdr">
-            <h2>צור קשר</h2>
-            <p>שאלה, הצעה או משוב? נשמח לשמוע ממך</p>
-        </div>
-        <div class="contact-card">
-            <form id="contactForm" action="https://formspree.io/f/maqrbyzr" method="POST">
-                <input type="hidden" name="_subject" value="פנייה מ-למדני אנגלית">
-                <div class="contact-field">
-                    <label for="contactName">שם מלא</label>
-                    <input type="text" id="contactName" name="name" placeholder="הכנס את שמך" required>
-                </div>
-                <div class="contact-field">
-                    <label for="contactEmail">כתובת מייל</label>
-                    <input type="email" id="contactEmail" name="email" placeholder="example@email.com" dir="ltr" required>
-                </div>
-                <div class="contact-field">
-                    <label for="contactMsg">הודעה</label>
-                    <textarea id="contactMsg" name="message" placeholder="כתוב כאן את הודעתך..." required></textarea>
-                </div>
-                <button type="submit" class="contact-submit" id="submitBtn">שלח הודעה</button>
-            </form>
-            <div class="contact-success" id="contactSuccess">✅ ההודעה נשלחה! נחזור אליך בהקדם.</div>
-        </div>
-    </div>
-</section>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -873,9 +830,9 @@ function fbSubmitEmail() {
         </div>
         <div class="footer-col">
             <h4>כללי</h4>
-            <a href="#about">אודות</a>
+            <a href="about.html">אודות</a>
             <a href="#pricing">מחירים</a>
-            <a href="#contact">צור קשר</a>
+            <a href="contact.html">צור קשר</a>
         </div>
         <div class="footer-col">
             <h4>משפטי</h4>
