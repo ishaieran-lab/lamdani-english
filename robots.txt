@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /backend-3mx8.html
+Disallow: /verify.html
+
+Sitemap: https://lamdanien.co.il/sitemap.xml
