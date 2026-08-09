@@ -14,7 +14,7 @@ const CARDCOM_API_NAME = process.env.CARDCOM_API_NAME || "";
 const CARDCOM_API_PASS = process.env.CARDCOM_API_PASS || "";
 const CARDCOM_API_URL = "https://secure.cardcom.solutions/api/v11";
 const SITE_URL = "https://lamdanien.co.il";
-const FUNCTIONS_URL = "https://us-central1-lamdani-eng.cloudfunctions.net";
+const FUNCTIONS_URL = "https://cardcomcallback-2tarox7bha-uc.a.run.app";
 
 // ─── 1. Create Cardcom payment session ────────────────────────────────────────
 // Called from the client (authenticated user) to get a payment URL
@@ -49,7 +49,7 @@ exports.createPaymentSession = onRequest(
       ProductName: "מנוי חודשי למדני אנגלית",
       SuccessRedirectUrl: `${SITE_URL}/payment-success.html`,
       FailedRedirectUrl: `${SITE_URL}/payment-failed.html`,
-      WebHookUrl: `${FUNCTIONS_URL}/cardcomCallback`,
+      WebHookUrl: FUNCTIONS_URL,
       CreateInvoice: true,
       Document: {
         To: displayName,

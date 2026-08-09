@@ -158,7 +158,7 @@ function subscribeToPremium() {
     btn.disabled = true;
 
     _fbUser.getIdToken().then(function(token) {
-        return fetch('https://us-central1-lamdani-eng.cloudfunctions.net/createPaymentSession', {
+        return fetch('https://createpaymentsession-2tarox7bha-uc.a.run.app', {
             method: 'POST',
             headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
             body: JSON.stringify({})
