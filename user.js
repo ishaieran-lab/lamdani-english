@@ -776,7 +776,10 @@ function _deleteKid(id) {
                     return { id: k.id, name: k.name, gender: k.gender || 'male', age: k.age || '', photo: k.photo || '' };
                 });
                 db.collection('users').doc(parent.uid).update({ kids: kidsData })
-                    .catch(function(e) { console.warn('[fsync] delete kid error:', e.message); });
+                    .catch(function(e) {
+                        console.warn('[fsync] delete kid error:', e.message);
+                        alert('הפרופיל נמחק במכשיר זה, אך שמירה בענן נכשלה.\nאם תיכנס ממכשיר אחר הפרופיל עלול להופיע שוב.\nנסה שוב מאוחר יותר.');
+                    });
             }
             _kidEditId = '';
             _showKidList();
