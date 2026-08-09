@@ -27,8 +27,11 @@ function fsyncUserLogin(fbUser) {
 
         // Merge local kids + Firestore kids (by id, no duplicates)
         var fsKids = (doc.exists && data.kids) ? data.kids : [];
+        var deletedKids = [];
+        try { deletedKids = JSON.parse(localStorage.getItem('lmd_deleted_kids') || '[]'); } catch(e) {}
         var merged = localKids.slice();
         fsKids.forEach(function(fk) {
+            if (deletedKids.indexOf(fk.id) !== -1) return; // locally deleted — don't restore
             var localIdx = -1;
             for (var i = 0; i < merged.length; i++) { if (merged[i].id === fk.id) { localIdx = i; break; } }
             if (localIdx === -1) {

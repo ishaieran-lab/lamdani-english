@@ -762,6 +762,12 @@ function _deleteKid(id) {
             localStorage.removeItem('engProgress_' + id);
             var active = getActiveKid();
             if (active && active.id === id) clearActiveKid();
+            // Remember this deletion so Firestore sync doesn't restore it
+            try {
+                var deleted = JSON.parse(localStorage.getItem('lmd_deleted_kids') || '[]');
+                if (deleted.indexOf(id) === -1) deleted.push(id);
+                localStorage.setItem('lmd_deleted_kids', JSON.stringify(deleted));
+            } catch(e) {}
             // Sync deletion to Firestore
             var db = typeof _fsDb === 'function' ? _fsDb() : null;
             var parent = typeof getParent === 'function' ? getParent() : null;
