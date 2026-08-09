@@ -1,5 +1,6 @@
 const { onRequest } = require("firebase-functions/v2/https");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { setGlobalOptions } = require("firebase-functions/v2");
 const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
@@ -340,5 +341,22 @@ exports.deleteAccount = onRequest(
       `משתמש מחק את חשבונו.\nאימייל: ${email}\nUID: ${uid}\nתאריך: ${new Date().toISOString()}`
     );
     res.json({ ok: true });
+  }
+);
+
+// ─── 7. הרשמת משתמש חדש ───────────────────────────────────────────────────────
+// מופעלת אוטומטית כשנוצר מסמך חדש ב-users (כלומר, משתמש נרשם לראשונה)
+exports.onNewUser = onDocumentCreated(
+  { document: "users/{uid}", region: "us-central1" },
+  async (event) => {
+    const data = event.data ? event.data.data() : null;
+    if (!data) return;
+    const email = data.email || "לא ידוע";
+    const name  = data.name  || "לא ידוע";
+    const uid   = event.params.uid;
+    await sendAdminEmail(
+      `משתמש חדש נרשם — ${email}`,
+      `שם: ${name}\nאימייל: ${email}\nUID: ${uid}\nתאריך: ${new Date().toISOString()}`
+    );
   }
 );
