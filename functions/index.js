@@ -2,6 +2,7 @@ const { onRequest } = require("firebase-functions/v2/https");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { setGlobalOptions } = require("firebase-functions/v2");
 const admin = require("firebase-admin");
+const nodemailer = require("nodemailer");
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -15,6 +16,25 @@ const CARDCOM_API_PASS = process.env.CARDCOM_API_PASS || "";
 const CARDCOM_API_URL = "https://secure.cardcom.solutions/api/v11";
 const SITE_URL = "https://lamdanien.co.il";
 const FUNCTIONS_URL = "https://cardcomcallback-2tarox7bha-uc.a.run.app";
+
+// Gmail credentials — loaded from functions/.env
+const GMAIL_USER = process.env.GMAIL_USER || "";
+const GMAIL_APP_PASS = process.env.GMAIL_APP_PASS || "";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || GMAIL_USER;
+
+async function sendAdminEmail(subject, text) {
+  if (!GMAIL_USER || !GMAIL_APP_PASS) return;
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: { user: GMAIL_USER, pass: GMAIL_APP_PASS },
+    });
+    await transporter.sendMail({ from: GMAIL_USER, to: ADMIN_EMAIL, subject, text });
+    console.log("Admin email sent:", subject);
+  } catch (err) {
+    console.warn("Email send failed:", err.message);
+  }
+}
 
 // ─── 1. Create Cardcom payment session ────────────────────────────────────────
 // Called from the client (authenticated user) to get a payment URL
@@ -118,6 +138,15 @@ exports.cardcomCallback = onRequest(async (req, res) => {
   );
 
   console.log(`User ${uid} activated premium until ${expiry.toISOString()}`);
+
+  // Send admin notification
+  const userRecord = await admin.auth().getUser(uid).catch(() => null);
+  const userEmail = userRecord ? userRecord.email : uid;
+  await sendAdminEmail(
+    `מנוי חדש — ${userEmail}`,
+    `משתמש חדש רכש מנוי חודשי.\n\nאימייל: ${userEmail}\nUID: ${uid}\nתאריך: ${now.toISOString()}`
+  );
+
   res.status(200).send("OK");
 });
 
@@ -200,6 +229,14 @@ exports.cancelSubscription = onRequest(
       cancelAtPeriodEnd: true,
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
+
+    // Send admin notification
+    const userRecord = await admin.auth().getUser(uid).catch(() => null);
+    const userEmail = userRecord ? userRecord.email : uid;
+    await sendAdminEmail(
+      `ביטול מנוי — ${userEmail}`,
+      `משתמש ביטל את המנוי שלו.\n\nאימייל: ${userEmail}\nUID: ${uid}\nתאריך: ${new Date().toISOString()}`
+    );
 
     res.json({ success: true });
   }
