@@ -14,7 +14,7 @@ service cloud.firestore {
                     && !request.resource.data.keys().hasAny([
                          'premium', 'premiumExpiry', 'premiumSince',
                          'cardcomToken', 'last4', 'cancelAtPeriodEnd',
-                         '_deleted', '_deletedAt'
+                         'chargeFailedAt', '_deleted', '_deletedAt'
                        ]);
 
       // Users can update their own document — cannot change premium/admin fields
@@ -24,7 +24,7 @@ service cloud.firestore {
                        .hasNone([
                          'premium', 'premiumExpiry', 'premiumSince',
                          'cardcomToken', 'last4', 'cancelAtPeriodEnd',
-                         '_deleted', '_deletedAt'
+                         'chargeFailedAt', '_deleted', '_deletedAt'
                        ]);
     }
   }

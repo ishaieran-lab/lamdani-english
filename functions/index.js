@@ -136,6 +136,7 @@ exports.cardcomCallback = onRequest(async (req, res) => {
       premiumExpiry: admin.firestore.Timestamp.fromDate(expiry),
       cardcomToken: cardToken,
       last4: last4,
+      chargeFailedAt: admin.firestore.FieldValue.delete(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     },
     { merge: true }
@@ -211,6 +212,7 @@ exports.chargeMonthly = onSchedule("0 8 1 * *", async () => {
         // Charge failed — disable premium
         await doc.ref.update({
           premium: false,
+          chargeFailedAt: admin.firestore.FieldValue.serverTimestamp(),
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
         const failedRecord = await admin.auth().getUser(doc.id).catch(() => null);
@@ -266,5 +268,49 @@ exports.cancelSubscription = onRequest(
     );
 
     res.json({ success: true });
+  }
+);
+
+// ─── 5. Contact form ──────────────────────────────────────────────────────────
+exports.contactForm = onRequest(
+  { cors: [SITE_URL] },
+  async (req, res) => {
+    if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
+    const { name, email, message } = req.body || {};
+    if (!name || !email || !message) return res.status(400).json({ error: "Missing fields" });
+    await sendAdminEmail(
+      `פנייה מהאתר — ${name}`,
+      `שם: ${name}\nאימייל: ${email}\n\nהודעה:\n${message}`
+    );
+    res.json({ ok: true });
+  }
+);
+
+// ─── 6. Delete account ────────────────────────────────────────────────────────
+exports.deleteAccount = onRequest(
+  { cors: [SITE_URL] },
+  async (req, res) => {
+    if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
+    const authHeader = req.headers.authorization || "";
+    const idToken = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+    if (!idToken) return res.status(401).json({ error: "Unauthorized" });
+    let uid, email;
+    try {
+      const decoded = await admin.auth().verifyIdToken(idToken);
+      uid = decoded.uid;
+      email = decoded.email || uid;
+    } catch {
+      return res.status(401).json({ error: "Invalid token" });
+    }
+    await db.collection("users").doc(uid).update({
+      _deleted: true,
+      _deletedAt: admin.firestore.FieldValue.serverTimestamp(),
+    }).catch(() => {});
+    await admin.auth().deleteUser(uid);
+    await sendAdminEmail(
+      `חשבון נמחק — ${email}`,
+      `משתמש מחק את חשבונו.\nאימייל: ${email}\nUID: ${uid}\nתאריך: ${new Date().toISOString()}`
+    );
+    res.json({ ok: true });
   }
 );
