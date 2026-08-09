@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>התשלום נכשל — למדני אנגלית</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SM6JG73T8P"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-SM6JG73T8P');</script>
+    <style>
+        .result-wrap {
+            max-width: 500px;
+            margin: 6rem auto;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            background: var(--card-bg, #fff);
+            border-radius: 20px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+        .result-icon { font-size: 4rem; margin-bottom: 1rem; }
+        .result-wrap h1 { font-size: 1.7rem; font-weight: 800; color: #dc2626; margin-bottom: 0.6rem; }
+        .result-wrap p { color: #374151; font-size: 1rem; line-height: 1.7; margin-bottom: 1.5rem; }
+        .btn-retry { display: inline-block; background: var(--blue); color: #fff; padding: 0.75rem 2rem; border-radius: 50px; font-size: 1rem; font-weight: 700; text-decoration: none; margin-left: 0.5rem; }
+        .btn-retry:hover { opacity: 0.9; }
+        .btn-contact { display: inline-block; border: 2px solid var(--blue); color: var(--blue); padding: 0.7rem 1.5rem; border-radius: 50px; font-size: 1rem; font-weight: 700; text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav class="toolbar">
+    <a href="index.html" class="toolbar-brand"><span class="accent">Lamdani</span> English</a>
+</nav>
+
+<div class="result-wrap">
+    <div class="result-icon">😔</div>
+    <h1>התשלום לא הושלם</h1>
+    <p>
+        משהו השתבש בתהליך התשלום.<br>
+        ניתן לנסות שוב או לפנות אלינו לעזרה.
+    </p>
+    <a href="app.html" class="btn-retry">נסה שוב</a>
+    <a href="contact.html" class="btn-contact">צור קשר</a>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="firebase-auth.js"></script>
+</body>
+</html>
