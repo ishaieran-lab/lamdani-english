@@ -3,16 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>קריאה — לימוד אנגלית</title>
+    <title>צעדים ראשונים — קריאה | למדני אנגלית</title>
+    <meta name="description" content="לימוד קריאה באנגלית לילדים — אלפבית, צלילי אותיות, תנועות, צירוף אותיות וקריאת מילים.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SM6JG73T8P"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-SM6JG73T8P');</script>
+    <script src="premium-guard.js"></script>
 </head>
 <body>
 
 <nav class="toolbar">
-    <a href="app.html" class="toolbar-brand"><span class="accent">Learn</span>English</a>
+    <a href="app.html" class="toolbar-brand"><span class="accent">Lamdani</span> English</a>
     <div class="toolbar-nav">
         <div class="nav-menu-wrap">
             <button class="nav-icon-btn" id="navMenuBtn" onclick="toggleNavMenu()">
@@ -483,7 +488,9 @@ showView('viewSelect');
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-auth.js"></script>
+<script src="firestore-sync.js"></script>
 <script src="user.js"></script>
 </body>
 </html>

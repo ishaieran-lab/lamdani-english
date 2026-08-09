@@ -2,5 +2,8 @@ User-agent: *
 Allow: /
 Disallow: /backend-3mx8.html
 Disallow: /verify.html
+Disallow: /account.html
+Disallow: /payment-success.html
+Disallow: /payment-failed.html
 
 Sitemap: https://lamdanien.co.il/sitemap.xml

@@ -167,6 +167,17 @@ exports.chargeMonthly = onSchedule("0 8 1 * *", async () => {
     // Skip if subscription is still active
     if (data.premiumExpiry && data.premiumExpiry.toDate() > now) continue;
 
+    // Subscription period ended — if cancelled, disable premium instead of charging
+    if (data.cancelAtPeriodEnd) {
+      await doc.ref.update({
+        premium: false,
+        cancelAtPeriodEnd: false,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      console.log(`Subscription ended (cancelled) for user ${doc.id}`);
+      continue;
+    }
+
     try {
       const response = await fetch(`${CARDCOM_API_URL}/Tokens/Charge`, {
         method: "POST",

@@ -2,8 +2,30 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // Admin has full access
       allow read, write: if request.auth != null && request.auth.token.email == 'ishaieran@gmail.com';
+
+      // Users can read their own document
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      // Users can create their own document (first login) — no premium/admin fields allowed
+      allow create: if request.auth != null
+                    && request.auth.uid == userId
+                    && !request.resource.data.keys().hasAny([
+                         'premium', 'premiumExpiry', 'premiumSince',
+                         'cardcomToken', 'last4', 'cancelAtPeriodEnd',
+                         '_deleted', '_deletedAt'
+                       ]);
+
+      // Users can update their own document — cannot change premium/admin fields
+      allow update: if request.auth != null
+                    && request.auth.uid == userId
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                       .hasNone([
+                         'premium', 'premiumExpiry', 'premiumSince',
+                         'cardcomToken', 'last4', 'cancelAtPeriodEnd',
+                         '_deleted', '_deletedAt'
+                       ]);
     }
   }
 }
