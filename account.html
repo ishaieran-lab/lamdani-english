@@ -32,6 +32,13 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         .info-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 0.9rem 1.1rem; font-size: 0.9rem; color: #166534; margin-top: 0.75rem; }
         .warn-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 0.9rem 1.1rem; font-size: 0.9rem; color: #92400e; margin-top: 0.75rem; }
+        .btn-settings { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0.7rem 0.9rem; background: #f8fafc; color: #334155; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.92rem; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 1rem; transition: background 0.15s; }
+        .btn-settings:hover { background: #f1f5f9; }
+        .btn-settings .settings-chevron { display: inline-block; transition: transform 0.25s; font-style: normal; }
+        .btn-settings.open .settings-chevron { transform: rotate(180deg); }
+        .sub-settings-panel { overflow: hidden; max-height: 0; transition: max-height 0.35s ease; }
+        .sub-settings-panel.open { max-height: 600px; }
+        .sub-settings-inner { padding-top: 0.75rem; border-top: 1px solid #f1f5f9; margin-top: 0.75rem; }
     </style>
 </head>
 <body>
@@ -132,6 +139,7 @@ function renderSubscription(data, fbUser) {
     var el = document.getElementById('accSubContent');
     var isPremium = !!data.premium;
     var isCancelled = !!data.cancelAtPeriodEnd;
+    var since = data.premiumSince ? fmtDate(data.premiumSince) : null;
     var expiry = data.premiumExpiry ? fmtDate(data.premiumExpiry) : null;
     var last4 = data.last4 || null;
 
@@ -143,32 +151,50 @@ function renderSubscription(data, fbUser) {
         return;
     }
 
-    var rows =
+    // Status row only — always visible
+    var html =
         '<div class="acc-row"><span class="acc-lbl">סטטוס</span>' +
         (isCancelled
             ? '<span class="badge-cancelled">מבוטל — פעיל עד סיום התקופה</span>'
             : '<span class="badge-premium">⭐ פעיל</span>') +
         '</div>';
 
-    if (expiry) {
-        rows += '<div class="acc-row"><span class="acc-lbl">' +
-            (isCancelled ? 'פעיל עד' : 'חידוש הבא') + '</span>' +
-            '<span class="acc-val">' + expiry + '</span></div>';
-    }
-    if (last4) {
-        rows += '<div class="acc-row"><span class="acc-lbl">כרטיס</span>' +
-            '<span class="acc-val" style="direction:ltr">•••• ' + last4 + '</span></div>';
-    }
-
-    el.innerHTML = rows;
-
     if (isCancelled) {
-        el.innerHTML += '<div class="warn-box">המנוי בוטל ויסתיים בתאריך ' + (expiry || '—') + '. עד אז תוכל להמשיך להשתמש בכל התכנים.</div>';
-    } else {
-        el.innerHTML +=
+        html += '<div class="warn-box">המנוי בוטל ויסתיים בתאריך ' + (expiry || '—') + '. עד אז תוכל להמשיך להשתמש בכל התכנים.</div>';
+    }
+
+    // Settings accordion button
+    html += '<button class="btn-settings" id="subSettingsBtn" onclick="toggleSubSettings()">' +
+        '<span>אפשרויות והגדרות מנוי</span>' +
+        '<span class="settings-chevron">▾</span>' +
+        '</button>';
+
+    // Collapsible panel
+    var details = '';
+    if (since) details += '<div class="acc-row"><span class="acc-lbl">תחילת מנוי</span><span class="acc-val">' + since + '</span></div>';
+    if (expiry) details += '<div class="acc-row"><span class="acc-lbl">' + (isCancelled ? 'פעיל עד' : 'חידוש הבא') + '</span><span class="acc-val">' + expiry + '</span></div>';
+    details += '<div class="acc-row"><span class="acc-lbl">עלות חודשית</span><span class="acc-val">35 ₪</span></div>';
+    if (last4) details += '<div class="acc-row"><span class="acc-lbl">כרטיס</span><span class="acc-val" style="direction:ltr">•••• ' + last4 + '</span></div>';
+
+    if (!isCancelled) {
+        details +=
             '<button class="btn-cancel" onclick="doCancelSubscription()">בטל מנוי</button>' +
             '<p class="cancel-note">הביטול ייכנס לתוקף בסוף תקופת החיוב הנוכחית.<br>לא יחויב כרטיסך מחדש.</p>';
     }
+
+    html += '<div class="sub-settings-panel" id="subSettingsPanel">' +
+        '<div class="sub-settings-inner">' + details + '</div>' +
+        '</div>';
+
+    el.innerHTML = html;
+}
+
+function toggleSubSettings() {
+    var btn = document.getElementById('subSettingsBtn');
+    var panel = document.getElementById('subSettingsPanel');
+    if (!btn || !panel) return;
+    btn.classList.toggle('open');
+    panel.classList.toggle('open');
 }
 
 function loadAccount(fbUser) {
