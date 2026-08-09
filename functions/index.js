@@ -50,18 +50,6 @@ exports.createPaymentSession = onRequest(
       SuccessRedirectUrl: `${SITE_URL}/payment-success.html`,
       FailedRedirectUrl: `${SITE_URL}/payment-failed.html`,
       WebHookUrl: FUNCTIONS_URL,
-      CreateInvoice: true,
-      Document: {
-        To: displayName,
-        Email: email,
-        Type: 305,
-      },
-      Charge: {
-        Total: 35,
-        Products: [
-          { Description: "מנוי חודשי למדני אנגלית", UnitCost: 35, Quantity: 1 },
-        ],
-      },
     };
 
     try {
@@ -151,8 +139,6 @@ exports.chargeMonthly = onSchedule("0 8 1 * *", async () => {
           Amount: 35,
           CoinID: 1,
           ProductName: "מנוי חודשי למדני אנגלית",
-          CreateInvoice: true,
-          Document: { Type: 305 },
         }),
       });
 
