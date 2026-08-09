@@ -118,7 +118,7 @@
         var name = document.getElementById('cf-name').value.trim();
         var email = document.getElementById('cf-email').value.trim();
         var message = document.getElementById('cf-msg').value.trim();
-        fetch('https://contactform-2tarox7bha-uc.a.run.app', {
+        fetch('https://us-central1-lamdani-eng.cloudfunctions.net/contactForm', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: name, email: email, message: message })
