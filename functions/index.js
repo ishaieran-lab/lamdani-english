@@ -59,13 +59,24 @@ exports.createPaymentSession = onRequest(
         body: JSON.stringify(payload),
       });
       const data = await response.json();
+      console.log("Cardcom response:", JSON.stringify(data));
 
       if (data.ResponseCode !== 0) {
         console.error("Cardcom error:", data);
         return res.status(500).json({ error: data.Description || "שגיאה בשירות התשלום" });
       }
 
-      const paymentUrl = `https://secure.cardcom.solutions/Purchase?lowprofilecode=${data.LowProfileCode}`;
+      // Use Url field if returned, otherwise build from LowProfileCode
+      const paymentUrl = data.Url ||
+        (data.LowProfileCode
+          ? `https://secure.cardcom.solutions/Interface/Lowprofile.aspx?LowProfileCode=${data.LowProfileCode}`
+          : null);
+
+      if (!paymentUrl) {
+        console.error("No payment URL in response:", data);
+        return res.status(500).json({ error: "לא התקבל קישור תשלום מקארדקום" });
+      }
+
       res.json({ url: paymentUrl });
     } catch (err) {
       console.error("createPaymentSession error:", err);
