@@ -301,7 +301,7 @@ function loadUsers() {
     db.collection('users').orderBy('lastLogin', 'desc').get()
         .then(function(snap) {
             _allUsers = [];
-            snap.forEach(function(doc) { var d = doc.data(); d._uid = doc.id; _allUsers.push(d); });
+            snap.forEach(function(doc) { var d = doc.data(); if (d._deleted) return; d._uid = doc.id; _allUsers.push(d); });
             renderStats(_allUsers);
             renderTable(_allUsers);
         })
@@ -532,10 +532,10 @@ function savePremiumExpiry(uid) {
 
 // ── Delete user ──────────────────────────────────────────
 function deleteUser(uid, name) {
-    if (!confirm('למחוק את המשתמש "' + name + '"?\n\nהפעולה תמחק את הנתונים מהמערכת (לא תסגור את חשבון Firebase).')) return;
+    if (!confirm('למחוק את המשתמש "' + name + '"?\n\nהמשתמש לא יוכל להתחבר מחדש ולשחזר את הנתונים.')) return;
     var db = window._firebaseDb;
     if (!db) return;
-    db.collection('users').doc(uid).delete()
+    db.collection('users').doc(uid).set({ _deleted: true, _deletedAt: new Date().toISOString() }, { merge: true })
         .then(function() { loadUsers(); })
         .catch(function(e) { alert('שגיאה: ' + e.message); });
 }

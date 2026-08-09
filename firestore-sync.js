@@ -13,6 +13,14 @@ function fsyncUserLogin(fbUser) {
 
     return userRef.get({ source: 'server' }).then(function(doc) {
         var data = doc.exists ? doc.data() : {};
+
+        // If admin marked this account as deleted — clear local data and stop
+        if (data._deleted) {
+            if (typeof saveChildren === 'function') saveChildren([]);
+            if (typeof clearActiveKid === 'function') clearActiveKid();
+            return;
+        }
+
         if (data.premium) window._fsUserPremium = true;
 
         // Merge local kids + Firestore kids (by id, no duplicates)
