@@ -25,21 +25,24 @@ function fsyncUserLogin(fbUser) {
 
         if (data.premium) window._fsUserPremium = true;
 
-        // Merge local kids + Firestore kids (by id, no duplicates)
+        // Firestore is source of truth — build list from server, filtered by local deletions
         var fsKids = (doc.exists && data.kids) ? data.kids : [];
         var deletedKids = [];
         try { deletedKids = JSON.parse(localStorage.getItem('lmd_deleted_kids') || '[]'); } catch(e) {}
-        var merged = localKids.slice();
+
+        // Start from Firestore kids, skip any that were locally deleted
+        var merged = [];
         fsKids.forEach(function(fk) {
-            if (deletedKids.indexOf(fk.id) !== -1) return; // locally deleted — don't restore
-            var localIdx = -1;
-            for (var i = 0; i < merged.length; i++) { if (merged[i].id === fk.id) { localIdx = i; break; } }
-            if (localIdx === -1) {
-                merged.push(fk);
-            } else {
-                if (!merged[localIdx].photo && fk.photo) merged[localIdx].photo = fk.photo;
-                if (!merged[localIdx].age && fk.age) merged[localIdx].age = fk.age;
-            }
+            if (deletedKids.indexOf(fk.id) !== -1) return;
+            merged.push(fk);
+        });
+
+        // Add local kids not yet in Firestore (created offline / Firestore write failed)
+        localKids.forEach(function(lk) {
+            if (deletedKids.indexOf(lk.id) !== -1) return;
+            var exists = false;
+            for (var i = 0; i < merged.length; i++) { if (merged[i].id === lk.id) { exists = true; break; } }
+            if (!exists) merged.push(lk);
         });
 
         // Merge progress: local wins, Firestore fills the rest
