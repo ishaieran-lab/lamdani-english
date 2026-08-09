@@ -14,10 +14,12 @@ function fsyncUserLogin(fbUser) {
     return userRef.get({ source: 'server' }).then(function(doc) {
         var data = doc.exists ? doc.data() : {};
 
-        // If admin marked this account as deleted — clear local data and stop
+        // If admin marked this account as deleted — sign out immediately
         if (data._deleted) {
             if (typeof saveChildren === 'function') saveChildren([]);
             if (typeof clearActiveKid === 'function') clearActiveKid();
+            var authObj = window._firebaseAuth || (window.firebase && firebase.auth ? firebase.auth() : null);
+            if (authObj && authObj.signOut) authObj.signOut();
             return;
         }
 

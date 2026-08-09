@@ -532,12 +532,21 @@ function savePremiumExpiry(uid) {
 
 // ── Delete user ──────────────────────────────────────────
 function deleteUser(uid, name) {
-    if (!confirm('למחוק את המשתמש "' + name + '"?\n\nהמשתמש לא יוכל להתחבר מחדש ולשחזר את הנתונים.')) return;
-    var db = window._firebaseDb;
-    if (!db) return;
-    db.collection('users').doc(uid).set({ _deleted: true, _deletedAt: new Date().toISOString() }, { merge: true })
-        .then(function() { loadUsers(); })
-        .catch(function(e) { alert('שגיאה: ' + e.message); });
+    if (!confirm('למחוק את המשתמש "' + name + '"?\n\nהמשתמש יימחק לצמיתות מ-Firebase Auth ולא יוכל להתחבר מחדש.')) return;
+    var auth = window._firebaseAuth;
+    if (!auth || !auth.currentUser) { alert('שגיאה: לא מחובר'); return; }
+    auth.currentUser.getIdToken().then(function(token) {
+        return fetch('https://us-central1-lamdani-eng.cloudfunctions.net/adminDeleteUser', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ uid: uid })
+        });
+    }).then(function(res) {
+        return res.json();
+    }).then(function(data) {
+        if (data.ok) { loadUsers(); }
+        else { alert('שגיאה: ' + (data.error || 'לא ידוע')); }
+    }).catch(function(e) { alert('שגיאה: ' + e.message); });
 }
 
 // ── Helpers ──────────────────────────────────────────────

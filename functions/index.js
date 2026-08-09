@@ -271,7 +271,35 @@ exports.cancelSubscription = onRequest(
   }
 );
 
-// ─── 5. Contact form ──────────────────────────────────────────────────────────
+// ─── 5. Admin delete user ─────────────────────────────────────────────────────
+// Deletes a user from both Firebase Auth and Firestore (admin only)
+exports.adminDeleteUser = onRequest(
+  { cors: [SITE_URL] },
+  async (req, res) => {
+    if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
+    const authHeader = req.headers.authorization || "";
+    const idToken = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+    if (!idToken) return res.status(401).json({ error: "Unauthorized" });
+    let callerEmail;
+    try {
+      const decoded = await admin.auth().verifyIdToken(idToken);
+      callerEmail = decoded.email;
+    } catch {
+      return res.status(401).json({ error: "Invalid token" });
+    }
+    if (callerEmail !== ADMIN_EMAIL) return res.status(403).json({ error: "Forbidden" });
+    const { uid } = req.body || {};
+    if (!uid) return res.status(400).json({ error: "Missing uid" });
+    await db.collection("users").doc(uid).set(
+      { _deleted: true, _deletedAt: admin.firestore.FieldValue.serverTimestamp() },
+      { merge: true }
+    ).catch(() => {});
+    await admin.auth().deleteUser(uid).catch(() => {});
+    res.json({ ok: true });
+  }
+);
+
+// ─── 6. Contact form ──────────────────────────────────────────────────────────
 exports.contactForm = onRequest(
   { cors: [SITE_URL] },
   async (req, res) => {
