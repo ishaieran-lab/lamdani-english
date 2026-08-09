@@ -391,7 +391,7 @@ function renderUserNav() {
                         '<div class="u-menu-sub">' + (parent.email || '') + '</div>' +
                     '</div>' +
                 '</div>' +
-                '<a class="u-menu-item" href="account.html">💳 החשבון שלי</a>' +
+                '<button class="u-menu-item" onclick="window.location.href=\'account.html\'">💳 החשבון שלי</button>' +
                 '<button class="u-menu-item" onclick="_openEditCurrentKid()">✏️ עריכת פרופיל</button>' +
                 '<button class="u-menu-item" onclick="openChildPicker()">👥 החלף משתמש</button>' +
                 '<button class="u-menu-item u-menu-logout" onclick="uLogout()"><img src="images/ui/log-out.png" style="width:1.1rem;height:1.1rem;object-fit:contain;vertical-align:middle;"> התנתק</button>' +
