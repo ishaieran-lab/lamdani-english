@@ -3,6 +3,7 @@
     "rules": "firestore.rules"
   },
   "hosting": {
+    "404": "/404.html",
     "public": ".",
     "releaseLimit": 5,
     "ignore": [
@@ -10,7 +11,6 @@
       "**/.git/**",
       "**/node_modules/**"
     ],
-    "404": "/404.html",
     "headers": [
       {
         "source": "**/*.@(html|js|css)",
@@ -31,5 +31,19 @@
         ]
       }
     ]
-  }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ]
 }

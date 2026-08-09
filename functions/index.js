@@ -8,10 +8,10 @@ const db = admin.firestore();
 
 setGlobalOptions({ maxInstances: 10, region: "us-central1" });
 
-// Cardcom test credentials — replace with production credentials before going live
-const CARDCOM_TERMINAL = 1000;
-const CARDCOM_API_NAME = "kzFKfohEvL6AOF8aMEJz";
-const CARDCOM_API_PASS = "FIDHIh4pAadw3Slbdsjg";
+// Cardcom credentials — loaded from functions/.env (not committed to git)
+const CARDCOM_TERMINAL = parseInt(process.env.CARDCOM_TERMINAL) || 1000;
+const CARDCOM_API_NAME = process.env.CARDCOM_API_NAME || "";
+const CARDCOM_API_PASS = process.env.CARDCOM_API_PASS || "";
 const CARDCOM_API_URL = "https://secure.cardcom.solutions/api/v11";
 const SITE_URL = "https://lamdanien.co.il";
 const FUNCTIONS_URL = "https://us-central1-lamdani-eng.cloudfunctions.net";
