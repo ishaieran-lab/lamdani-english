@@ -55,36 +55,6 @@
     </div>
 </nav>
 
-<!-- ═══ 0. בחירת רמה ════════════════════════════════════════════ -->
-<div id="viewSelect" class="reading-wrap" style="display:none">
-    <div class="breadcrumb">
-        <a href="app.html">בית</a>
-        <span class="bc-sep">‹</span>
-        <span>דקדוק</span>
-    </div>
-    <h1 class="section-title">דקדוק</h1>
-    <p class="section-subtitle">בחר שלב</p>
-    <div class="vocab-levels-row">
-        <div class="vocab-level-slot">
-            <div class="vocab-level-btn vocab-level-card" onclick="openGrammarLevel(1)">
-                <div class="vocab-level-card-title">שלב 1</div>
-                <img src="images/grammar/דקדוק שלב 1.jpg" class="vocab-level-card-img" alt="שלב 1">
-                <div class="vocab-level-card-bottom">13 נושאים לבי"ס יסודי</div>
-            </div>
-        </div>
-        <div class="vocab-level-slot">
-            <div class="vocab-level-btn vocab-level-empty">
-                <div class="vocab-level-title">שלב 2</div>
-            </div>
-        </div>
-        <div class="vocab-level-slot">
-            <div class="vocab-level-btn vocab-level-empty">
-                <div class="vocab-level-title">שלב 3</div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- ═══ 0b. שלבי דקדוק ══════════════════════════════════════════ -->
 <div id="viewStages" class="reading-wrap" style="display:none">
     <div id="grammarNav"></div>
@@ -1270,7 +1240,7 @@ function speak(text) {
 // ════════════════════════════════════════════════════════════════
 // ניווט
 // ════════════════════════════════════════════════════════════════
-var VIEWS = ['viewSelect','viewStages','viewLesson','viewExercise','viewScore','viewVocabQuiz','viewVocabScore','viewMatchEx','viewDragMatch','viewPhraseQuiz','viewPractice','viewReading'];
+var VIEWS = ['viewStages','viewLesson','viewExercise','viewScore','viewVocabQuiz','viewVocabScore','viewMatchEx','viewDragMatch','viewPhraseQuiz','viewPractice','viewReading'];
 
 function showView(id) {
     VIEWS.forEach(function(v){ document.getElementById(v).style.display='none'; });
@@ -1279,20 +1249,20 @@ function showView(id) {
     history.pushState({grammarView: id}, '');
 }
 
-history.replaceState({grammarView: 'viewSelect'}, '');
+history.replaceState({grammarView: 'viewStages'}, '');
 window.addEventListener('popstate', function(e) {
-    var view = (e.state && e.state.grammarView) ? e.state.grammarView : 'viewSelect';
+    var view = (e.state && e.state.grammarView) ? e.state.grammarView : 'viewStages';
+    if (view === 'viewStages') { window.location.href = 'app.html'; return; }
     VIEWS.forEach(function(v){ document.getElementById(v).style.display='none'; });
     document.getElementById(view).style.display = 'block';
     window.scrollTo({top:0, behavior:'smooth'});
 });
 
-function backToLevels()  { showView('viewSelect'); }
+function backToLevels()  { window.location.href = 'app.html'; }
 function backToSelect()  { initStageCards(); showView('viewStages'); }
 function backToLesson()  { showView('viewLesson'); }
 function openGrammarLevel(n) {
     initStageCards();
-    document.getElementById('grammarLevelTitle').textContent = 'שלב ' + n;
     showView('viewStages');
 }
 
@@ -2526,11 +2496,7 @@ function closePaywall() { var el=document.getElementById('paywallOverlay'); if(e
 
 // ════════════════════════════════════════════════════════════════
 initStageCards();
-if (location.search.indexOf('direct=1') !== -1) {
-    openGrammarLevel(1);
-} else {
-    showView('viewSelect');
-}
+showView('viewStages');
 
 window.onBackspace = function() {
     var cur = VIEWS.find(function(v) {
@@ -2539,8 +2505,7 @@ window.onBackspace = function() {
     });
     if (!cur) return;
     if (cur === 'viewStages') {
-        if (location.search.indexOf('direct=1') !== -1) window.location.href = 'app.html?level=elementary';
-        else backToLevels();
+        window.location.href = 'app.html';
     } else if (cur === 'viewLesson' || cur === 'viewVocabQuiz' || cur === 'viewMatchEx' || cur === 'viewPractice' || cur === 'viewReading') {
         backToSelect();
     } else if (cur === 'viewExercise') {
