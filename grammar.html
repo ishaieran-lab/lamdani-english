@@ -1358,15 +1358,36 @@ function initStageCards() {
     ];
 
     var R = 126;
+    var grammarProgress = (loggedIn && typeof getProgress === 'function') ? (getProgress().grammar || {}) : {};
     var svgBtns = STAGES.map(function(s, idx) {
         var stageNum = idx + 1;
         var r = s.r || R;
         var locked = FREE_GRAMMAR_INDICES.indexOf(s.gi) === -1 && !isPremium();
         var click  = locked ? 'showPaywall()' : 'openLesson(' + s.gi + ')';
         var cls    = 'ms-btn' + (locked ? ' ms-locked' : '');
+
+        var sd = grammarProgress[s.gi] || {};
+        var started = !!(sd.ruleViewed || sd.vocabViewed || sd.examplesViewed);
+        var score   = sd.grammarBest !== undefined ? sd.grammarBest : (sd.vocabBest !== undefined ? sd.vocabBest : null);
+        var done    = score !== null;
+
+        var circleFill = done    ? 'rgba(34,197,94,0.92)'
+                       : started ? 'rgba(251,191,36,0.92)'
+                       : 'rgba(255,255,255,0.82)';
+        var textFill   = (done || started) ? '#ffffff' : '#1e3a5f';
+
+        var textHtml;
+        if (done) {
+            textHtml =
+                '<text x="' + s.cx + '" y="' + (s.cy - 38) + '" text-anchor="middle" dominant-baseline="middle" font-size="96" font-weight="900" fill="' + textFill + '" font-family="inherit">' + stageNum + '</text>' +
+                '<text x="' + s.cx + '" y="' + (s.cy + 56) + '" text-anchor="middle" dominant-baseline="middle" font-size="68" font-weight="700" fill="' + textFill + '" font-family="inherit">' + score + '%</text>';
+        } else {
+            textHtml = '<text x="' + s.cx + '" y="' + s.cy + '" text-anchor="middle" dominant-baseline="middle" font-size="120" font-weight="900" fill="' + textFill + '" font-family="inherit">' + stageNum + '</text>';
+        }
+
         return '<g class="' + cls + '" onclick="' + click + '">' +
-            '<circle cx="' + s.cx + '" cy="' + s.cy + '" r="' + r + '" fill="rgba(255,255,255,0.82)"/>' +
-            '<text x="' + s.cx + '" y="' + s.cy + '" text-anchor="middle" dominant-baseline="middle" font-size="120" font-weight="900" fill="#1e3a5f" font-family="inherit">' + stageNum + '</text>' +
+            '<circle cx="' + s.cx + '" cy="' + s.cy + '" r="' + r + '" fill="' + circleFill + '"/>' +
+            textHtml +
         '</g>';
     }).join('');
 
