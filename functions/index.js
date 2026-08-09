@@ -22,18 +22,22 @@ const GMAIL_USER = process.env.GMAIL_USER || "";
 const GMAIL_APP_PASS = process.env.GMAIL_APP_PASS || "";
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || GMAIL_USER;
 
-async function sendAdminEmail(subject, text) {
+async function sendMail(to, subject, text) {
   if (!GMAIL_USER || !GMAIL_APP_PASS) return;
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: { user: GMAIL_USER, pass: GMAIL_APP_PASS },
     });
-    await transporter.sendMail({ from: GMAIL_USER, to: ADMIN_EMAIL, subject, text });
-    console.log("Admin email sent:", subject);
+    await transporter.sendMail({ from: `למדני אנגלית <${GMAIL_USER}>`, to, subject, text });
+    console.log("Email sent to", to, ":", subject);
   } catch (err) {
     console.warn("Email send failed:", err.message);
   }
+}
+
+async function sendAdminEmail(subject, text) {
+  return sendMail(ADMIN_EMAIL, subject, text);
 }
 
 // ─── 1. Create Cardcom payment session ────────────────────────────────────────
@@ -209,6 +213,18 @@ exports.chargeMonthly = onSchedule("0 8 1 * *", async () => {
           premium: false,
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
+        const failedRecord = await admin.auth().getUser(doc.id).catch(() => null);
+        const failedEmail = failedRecord ? failedRecord.email : null;
+        if (failedEmail) {
+          await sendMail(failedEmail,
+            "בעיה בחיוב המנוי שלך — למדני אנגלית",
+            `שלום,\n\nלא הצלחנו לחייב את הכרטיס שלך עבור מנוי למדני אנגלית.\nהגישה לתכנים הושעתה.\n\nלחידוש המנוי, כנס לאפליקציה:\nhttps://lamdanien.co.il/account.html\n\nלעזרה, צור קשר:\nhttps://lamdanien.co.il/contact.html\n\nתודה,\nצוות למדני אנגלית`
+          );
+        }
+        await sendAdminEmail(
+          `כישלון חיוב — ${failedEmail || doc.id}`,
+          `חיוב חודשי נכשל.\n\nאימייל: ${failedEmail || "לא ידוע"}\nUID: ${doc.id}\nשגיאה: ${result.Description || ""}\n\nהמנוי בוטל אוטומטית.`
+        );
         console.warn(`Charge failed for user ${doc.id}:`, result.Description);
       }
     } catch (err) {

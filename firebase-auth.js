@@ -53,7 +53,7 @@
     // ── Email/Password ───────────────────────────────────────────────
     var _pendingEmail = '';
     var _pendingPass  = '';
-    var VERIFY_URL = 'https://ishaieran-lab.github.io/lamdani-english/verify.html';
+    var VERIFY_URL = 'https://lamdanien.co.il/verify.html';
 
     function getActionSettings() { return { url: VERIFY_URL }; }
 
@@ -112,6 +112,13 @@
             btn.disabled = false;
             btn.textContent = mode === 'register' ? 'הרשמה ←' : 'כנס ←';
         });
+    };
+
+    window._fbDoForgot = function(email) {
+        if (!email) return;
+        return auth.sendPasswordResetEmail(email)
+            .then(function() { return true; })
+            .catch(function(e) { throw e; });
     };
 
     window._fbDoResend = function() {

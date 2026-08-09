@@ -453,6 +453,21 @@
     <input type="hidden" id="fbModeVal" value="register">
     <div id="fbModalTitle" style="font-size:1.35rem;font-weight:800;color:#1e293b;margin-bottom:1.4rem;">הרשמה</div>
 
+    <!-- ── מסך שכחתי סיסמה ── -->
+    <div id="fbForgotView" style="display:none;text-align:center;padding:0.3rem 0;">
+      <button onclick="openLoginModal('login')" style="background:none;border:none;color:#2563eb;font-size:0.85rem;cursor:pointer;text-decoration:underline;display:block;margin-bottom:1.2rem;font-family:inherit;">→ חזור לכניסה</button>
+      <div style="font-size:1.1rem;font-weight:800;color:#0f172a;margin-bottom:0.5rem;">איפוס סיסמה</div>
+      <div style="font-size:0.85rem;color:#475569;margin-bottom:1rem;text-align:right;line-height:1.5;">הכנס את האימייל שלך ונשלח קישור לאיפוס הסיסמה.</div>
+      <input id="fbForgotEmail" type="email" placeholder="your@email.com" dir="ltr"
+             style="width:100%;padding:0.6rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:0.5rem;font-size:0.95rem;box-sizing:border-box;margin-bottom:0.75rem;"
+             onkeydown="if(event.key==='Enter')fbDoForgot()">
+      <button onclick="fbDoForgot()" id="fbForgotBtn"
+              style="width:100%;padding:0.75rem;background:#2563eb;color:#fff;border:none;border-radius:0.6rem;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:0.5rem;font-family:inherit;">
+        שלח קישור לאיפוס ←
+      </button>
+      <div id="fbForgotMsg" style="font-size:0.83rem;min-height:1.1em;margin-top:0.3rem;"></div>
+    </div>
+
     <!-- ── מסך המתנה לאימות אימייל ── -->
     <div id="fbVerifyView" style="display:none;text-align:center;padding:0.3rem 0;">
       <div style="font-size:3rem;margin-bottom:0.6rem;">📧</div>
@@ -516,7 +531,10 @@
              onkeydown="if(event.key==='Enter')fbSubmitEmail()">
     </div>
 
-    <div id="fbErr" style="color:#ef4444;font-size:0.82rem;margin-bottom:0.45rem;min-height:1.1em;text-align:right;"></div>
+    <div id="fbErr" style="color:#ef4444;font-size:0.82rem;margin-bottom:0.25rem;min-height:1.1em;text-align:right;"></div>
+    <div id="fbForgotLink" style="text-align:left;margin-bottom:0.4rem;display:none;">
+      <button onclick="fbShowForgotView()" style="background:none;border:none;color:#64748b;font-size:0.8rem;cursor:pointer;text-decoration:underline;font-family:inherit;">שכחתי סיסמה</button>
+    </div>
 
     <div id="fbConsentRow" style="margin-bottom:0.6rem;text-align:right;display:none;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:0.6rem;padding:0.6rem 0.75rem;">
         <label style="display:flex;align-items:flex-start;gap:0.5rem;cursor:pointer;font-size:0.8rem;color:#374151;line-height:1.5;">
@@ -561,6 +579,8 @@ function openLoginModal(mode) {
     document.getElementById('fbToggleBtn').textContent  = isReg ? 'כבר יש לך חשבון? כנס' : 'אין לך חשבון? הירשם';
     document.getElementById('fbErr').textContent = '';
     document.getElementById('fbErr').style.color = '#ef4444';
+    document.getElementById('fbForgotView').style.display = 'none';
+    document.getElementById('fbForgotLink').style.display = isReg ? 'none' : 'block';
     document.addEventListener('keydown', _fbEscHandler);
     setTimeout(function(){ var inp = document.getElementById('fbEmail'); if (inp) inp.focus(); }, 50);
 }
@@ -599,6 +619,34 @@ function fbChangeVerifyEmail()   {
     document.getElementById('fbErr').textContent = '';
 }
 function fbGoToLogin() { openLoginModal('login'); }
+function fbShowForgotView() {
+    document.getElementById('fbFormContent').style.display = 'none';
+    document.getElementById('fbForgotView').style.display  = 'block';
+    document.getElementById('fbModalTitle').textContent = 'שכחתי סיסמה';
+    document.getElementById('fbForgotMsg').textContent  = '';
+    setTimeout(function(){ var i = document.getElementById('fbForgotEmail'); if(i) i.focus(); }, 50);
+}
+function fbDoForgot() {
+    var email = (document.getElementById('fbForgotEmail').value || '').trim();
+    var msg   = document.getElementById('fbForgotMsg');
+    var btn   = document.getElementById('fbForgotBtn');
+    if (!email) { msg.style.color = '#ef4444'; msg.textContent = 'נא להכניס כתובת אימייל'; return; }
+    btn.disabled = true; btn.textContent = 'שולח...';
+    msg.textContent = '';
+    if (!window._fbDoForgot) { msg.style.color = '#ef4444'; msg.textContent = 'שגיאה — Firebase לא נטען'; btn.disabled = false; btn.textContent = 'שלח קישור לאיפוס ←'; return; }
+    window._fbDoForgot(email)
+        .then(function() {
+            msg.style.color   = '#16a34a';
+            msg.textContent   = '✅ קישור לאיפוס נשלח! בדוק את תיבת הדואר (וגם ספאם).';
+            btn.disabled = false; btn.textContent = 'שלח שוב';
+        })
+        .catch(function(e) {
+            var errs = { 'auth/user-not-found': 'האימייל לא נמצא במערכת', 'auth/invalid-email': 'כתובת אימייל לא תקינה' };
+            msg.style.color = '#ef4444';
+            msg.textContent = errs[e.code] || ('שגיאה: ' + e.code);
+            btn.disabled = false; btn.textContent = 'שלח קישור לאיפוס ←';
+        });
+}
 function fbSignInGoogle() { document.getElementById('fbErr').textContent = 'טוען...'; if(window._fbDoGoogle) window._fbDoGoogle(); }
 function fbSubmitEmail() {
     var mode = document.getElementById('fbModeVal').value;
@@ -890,5 +938,5 @@ document.querySelectorAll('.faq-q').forEach(function(el) {
     });
 });
 </script>
-</body>
+<script src="cookie-consent.js"></script></body>
 </html>
