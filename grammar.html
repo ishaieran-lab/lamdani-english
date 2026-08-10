@@ -1337,9 +1337,14 @@ function initStageCards() {
         var cls    = 'ms-btn' + (locked ? ' ms-locked' : '');
 
         var sd = grammarProgress[s.gi] || {};
-        var started = !!(sd.ruleViewed || sd.vocabViewed || sd.examplesViewed);
-        var score   = sd.grammarBest !== undefined ? sd.grammarBest : (sd.vocabBest !== undefined ? sd.vocabBest : null);
-        var done    = score !== null;
+        var started    = !!(sd.ruleViewed || sd.vocabViewed || sd.examplesViewed);
+        var hasGrammar = sd.grammarBest !== undefined;
+        var hasVocab   = sd.vocabBest   !== undefined;
+        var score      = hasGrammar ? sd.grammarBest : (hasVocab ? sd.vocabBest : null);
+        var done       = score !== null;
+        var missingHint = done && !(hasGrammar && hasVocab)
+            ? (hasGrammar ? '⚠ חסר בוחן מילים' : '⚠ חסר תרגול')
+            : null;
 
         var circleFill = done    ? 'rgba(34,197,94,0.92)'
                        : started ? 'rgba(251,191,36,0.92)'
@@ -1348,9 +1353,16 @@ function initStageCards() {
 
         var textHtml;
         if (done) {
-            textHtml =
-                '<text x="' + s.cx + '" y="' + (s.cy - 38) + '" text-anchor="middle" dominant-baseline="middle" font-size="96" font-weight="900" fill="' + textFill + '" font-family="inherit">' + stageNum + '</text>' +
-                '<text x="' + s.cx + '" y="' + (s.cy + 56) + '" text-anchor="middle" dominant-baseline="middle" font-size="68" font-weight="700" fill="' + textFill + '" font-family="inherit">' + score + '%</text>';
+            if (missingHint) {
+                textHtml =
+                    '<text x="' + s.cx + '" y="' + (s.cy - 50) + '" text-anchor="middle" dominant-baseline="middle" font-size="96" font-weight="900" fill="' + textFill + '" font-family="inherit">' + stageNum + '</text>' +
+                    '<text x="' + s.cx + '" y="' + (s.cy + 15) + '" text-anchor="middle" dominant-baseline="middle" font-size="68" font-weight="700" fill="' + textFill + '" font-family="inherit">' + score + '%</text>' +
+                    '<text x="' + s.cx + '" y="' + (s.cy + 80) + '" text-anchor="middle" dominant-baseline="middle" font-size="38" font-weight="500" fill="rgba(255,255,180,0.95)" font-family="inherit">' + missingHint + '</text>';
+            } else {
+                textHtml =
+                    '<text x="' + s.cx + '" y="' + (s.cy - 38) + '" text-anchor="middle" dominant-baseline="middle" font-size="96" font-weight="900" fill="' + textFill + '" font-family="inherit">' + stageNum + '</text>' +
+                    '<text x="' + s.cx + '" y="' + (s.cy + 56) + '" text-anchor="middle" dominant-baseline="middle" font-size="68" font-weight="700" fill="' + textFill + '" font-family="inherit">' + score + '%</text>';
+            }
         } else {
             textHtml = '<text x="' + s.cx + '" y="' + s.cy + '" text-anchor="middle" dominant-baseline="middle" font-size="120" font-weight="900" fill="' + textFill + '" font-family="inherit">' + stageNum + '</text>';
         }
