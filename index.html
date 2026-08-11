@@ -176,18 +176,18 @@
         }
         .modules-header p { color: var(--muted); font-size: 0.95rem; }
         .modules-grid {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            gap: clamp(0.75rem, 2.5vw, 2.5rem);
-            flex-wrap: nowrap;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: clamp(0.5rem, 2vw, 1.5rem);
+            justify-items: center;
+            align-items: start;
         }
         .module-card {
             background: none;
             border: none;
-            padding: 0.75rem;
+            padding: 0.5rem;
             text-align: center;
-            flex: 0 0 auto;
+            width: 100%;
         }
         .module-icon { font-size: clamp(2rem, 3vw, 3.6rem); margin-bottom: 0.75rem; }
         .module-name { font-size: clamp(1rem, 2vw, 1.94rem); font-weight: 700; color: var(--navy); margin-bottom: 0.4rem; }
@@ -397,8 +397,8 @@
         }
         @media (max-width: 480px) {
             .nav-brand { font-size: 18px; }
-            .modules-grid { gap: 0.5rem; flex-wrap: wrap; }
-            .module-card { max-width: 110px; padding: 0.5rem; }
+            .modules-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+            .module-card { max-width: none; padding: 0.5rem; }
             .hero-badge { font-size: 1.1rem; }
             .hero-sub { font-size: 1rem; }
             .cta-h { font-size: 1.3rem; }
@@ -724,7 +724,7 @@ function fbSubmitEmail() {
                 <div class="module-desc">10 רמות קריאה עם שאלות הבנה</div>
             </div>
             <div class="module-card">
-                <div class="module-icon"><img src="images/landing/tirgul-mish.png" alt="תרגול משפטים" style="width:17.58rem;height:17.58rem;object-fit:contain;display:block;margin:0 auto;"></div>
+                <div class="module-icon"><img src="images/landing/tirgul-mish.png" alt="תרגול משפטים" style="width:8.79rem;height:8.79rem;object-fit:contain;display:block;margin:0 auto;"></div>
                 <div class="module-name">תרגול משפטים</div>
                 <div class="module-desc">בניית משפטים נכונים לפי רמות</div>
             </div>
