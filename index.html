@@ -163,11 +163,11 @@
             background: var(--bg-soft);
             border-top: 1px solid var(--border);
             border-bottom: 1px solid var(--border);
-            padding: 3.5rem 2rem;
+            padding: 1.75rem 2rem;
             margin-top: 1rem;
         }
-        .modules-inner { max-width: 900px; margin: 0 auto; }
-        .modules-header { text-align: center; margin-bottom: 2rem; }
+        .modules-inner { max-width: 960px; margin: 0 auto; }
+        .modules-header { text-align: center; margin-bottom: 0.75rem; }
         .modules-header h2 {
             font-size: 1.45rem;
             font-weight: 800;
@@ -178,16 +178,16 @@
         .modules-grid {
             display: flex;
             justify-content: center;
-            gap: clamp(1rem, 3vw, 3rem);
-            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: clamp(0.75rem, 2.5vw, 2.5rem);
+            flex-wrap: nowrap;
         }
         .module-card {
             background: none;
             border: none;
-            padding: 1rem;
+            padding: 0.75rem;
             text-align: center;
             flex: 0 0 auto;
-            max-width: 200px;
         }
         .module-icon { font-size: clamp(2rem, 3vw, 3.6rem); margin-bottom: 0.75rem; }
         .module-name { font-size: clamp(1rem, 2vw, 1.94rem); font-weight: 700; color: var(--navy); margin-bottom: 0.4rem; }
@@ -397,7 +397,7 @@
         }
         @media (max-width: 480px) {
             .nav-brand { font-size: 18px; }
-            .modules-grid { gap: 0.5rem; }
+            .modules-grid { gap: 0.5rem; flex-wrap: wrap; }
             .module-card { max-width: 110px; padding: 0.5rem; }
             .hero-badge { font-size: 1.1rem; }
             .hero-sub { font-size: 1rem; }
@@ -724,12 +724,11 @@ function fbSubmitEmail() {
                 <div class="module-desc">10 רמות קריאה עם שאלות הבנה</div>
             </div>
             <div class="module-card">
-                <div class="module-icon"><img src="images/landing/tirgul-mish.png" alt="תרגול משפטים" style="width:8.79rem;height:8.79rem;object-fit:contain;display:block;margin:0 auto;"></div>
+                <div class="module-icon"><img src="images/landing/tirgul-mish.png" alt="תרגול משפטים" style="width:17.58rem;height:17.58rem;object-fit:contain;display:block;margin:0 auto;"></div>
                 <div class="module-name">תרגול משפטים</div>
                 <div class="module-desc">בניית משפטים נכונים לפי רמות</div>
             </div>
         </div>
-        <p style="text-align:center;margin-top:1.2rem;font-size:0.9rem;color:#94a3b8;">בקרוב: <strong>צעדים ראשונים — קריאה</strong> 🔜</p>
     </div>
 </div>
 
