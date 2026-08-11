@@ -15,13 +15,11 @@ var PREMIUM_EMAILS = [
 ];
 
 function isPremium() {
-    // getParent() = ההורה הרשום — יש לו email מ-Firebase
+    // כל משתמש מחובר מקבל גישה מלאה
     if (typeof getParent === 'function') {
         var p = getParent();
-        if (p && PREMIUM_EMAILS.indexOf(p.email) !== -1) return true;
+        if (p && (p.uid || p.email)) return true;
     }
-    // Firestore-based premium (set by admin dashboard or fsyncUserLogin)
-    if (window._fsUserPremium === true) return true;
     return false;
 }
 

@@ -2502,7 +2502,7 @@ window.onUserLogin       = function() { renderStageCards(); };
 
 // ─ ברירות מחדל לאתחול סינכרוני (premium.js נטען אחר כך ומחליף) ─
 var FREE_GRAMMAR_INDICES = [12];
-function isPremium()    { return false; }
+function isPremium()    { var p = typeof getParent==='function'?getParent():null; return !!(p&&(p.uid||p.email)); }
 function showPaywall()  { var el=document.getElementById('paywallOverlay'); if(el) el.style.display='flex'; }
 function closePaywall() { var el=document.getElementById('paywallOverlay'); if(el) el.style.display='none'; }
 
