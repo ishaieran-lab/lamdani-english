@@ -92,14 +92,16 @@ function fsyncKids() {
     var uid = _fsUid();
     if (!db || !uid) return;
     var kids = typeof getChildren === 'function' ? getChildren() : [];
+    if (!kids.length) return;
     var kidsData = kids.map(function(k) {
         return { id: k.id, name: k.name, gender: k.gender || 'male', age: k.age || '', photo: k.photo || '' };
     });
-    db.collection('users').doc(uid).update({ kids: kidsData })
-        .catch(function(e) { console.warn('[fsync] kids sync error:', e.message); });
+    // Use set+merge so it works even if the document doesn't exist yet
+    db.collection('users').doc(uid).set({ kids: kidsData }, { merge: true })
+        .catch(function(e) { console.warn('[fsync] kids sync error:', e.code, e.message); });
 }
 
-// Called after every saveProgress() — writes only the active kid's progress
+// Called after every saveProgress() — writes only the active kid's progress, and ensures kids are synced
 function fsyncProgress() {
     var db  = _fsDb();
     var uid = _fsUid();
@@ -112,9 +114,16 @@ function fsyncProgress() {
     var progress;
     try { progress = raw ? JSON.parse(raw) : {}; } catch(e) { progress = {}; }
 
+    // Build update: always include full kids list + this kid's progress
+    var kids = typeof getChildren === 'function' ? getChildren() : [];
+    var kidsData = kids.map(function(k) {
+        return { id: k.id, name: k.name, gender: k.gender || 'male', age: k.age || '', photo: k.photo || '' };
+    });
+
     var update = {};
     update['progress.' + kid.id] = progress;
+    if (kidsData.length) update.kids = kidsData;
 
-    db.collection('users').doc(uid).update(update)
-        .catch(function(e) { console.warn('[fsync] progress sync error:', e.message); });
+    db.collection('users').doc(uid).set(update, { merge: true })
+        .catch(function(e) { console.warn('[fsync] progress sync error:', e.code, e.message); });
 }
