@@ -115,6 +115,7 @@ function fsyncProgress() {
     try { progress = raw ? JSON.parse(raw) : {}; } catch(e) { progress = {}; }
 
     // Build update: always include full kids list + this kid's progress
+    // IMPORTANT: use update() not set() — update() supports dot-notation paths for nested fields
     var kids = typeof getChildren === 'function' ? getChildren() : [];
     var kidsData = kids.map(function(k) {
         return { id: k.id, name: k.name, gender: k.gender || 'male', age: k.age || '', photo: k.photo || '' };
@@ -124,6 +125,6 @@ function fsyncProgress() {
     update['progress.' + kid.id] = progress;
     if (kidsData.length) update.kids = kidsData;
 
-    db.collection('users').doc(uid).set(update, { merge: true })
+    db.collection('users').doc(uid).update(update)
         .catch(function(e) { console.warn('[fsync] progress sync error:', e.code, e.message); });
 }
