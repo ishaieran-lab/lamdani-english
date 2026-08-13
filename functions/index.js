@@ -344,7 +344,45 @@ exports.deleteAccount = onRequest(
   }
 );
 
-// ─── 7. הרשמת משתמש חדש ───────────────────────────────────────────────────────
+// ─── 7. Bulk email ────────────────────────────────────────────────────────────
+// Admin sends email to a list of addresses
+exports.sendBulkEmail = onRequest(
+  { cors: [SITE_URL] },
+  async (req, res) => {
+    if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
+    const authHeader = req.headers.authorization || "";
+    const idToken = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+    if (!idToken) return res.status(401).json({ error: "Unauthorized" });
+    let callerEmail;
+    try {
+      const decoded = await admin.auth().verifyIdToken(idToken);
+      callerEmail = decoded.email;
+    } catch {
+      return res.status(401).json({ error: "Invalid token" });
+    }
+    if (callerEmail !== ADMIN_EMAIL) return res.status(403).json({ error: "Forbidden" });
+    const { emails, subject, message } = req.body || {};
+    if (!Array.isArray(emails) || !emails.length || !subject || !message) {
+      return res.status(400).json({ error: "Missing fields" });
+    }
+    let sent = 0, failed = 0;
+    const errors = [];
+    for (const email of emails) {
+      try {
+        await sendMail(email, subject, message);
+        sent++;
+      } catch (err) {
+        failed++;
+        errors.push({ email, error: err.message });
+        console.warn("Bulk email failed for", email, err.message);
+      }
+    }
+    console.log(`Bulk email: ${sent} sent, ${failed} failed. Subject: "${subject}"`);
+    res.json({ sent, failed, errors });
+  }
+);
+
+// ─── 8. הרשמת משתמש חדש ───────────────────────────────────────────────────────
 // מופעלת אוטומטית כשנוצר מסמך חדש ב-users (כלומר, משתמש נרשם לראשונה)
 exports.onNewUser = onDocumentCreated(
   { document: "users/{uid}", region: "us-central1" },

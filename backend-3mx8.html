@@ -95,6 +95,17 @@ td{padding:0.8rem 1rem;border-top:1px solid #f1f5f9;vertical-align:middle}
 .mgmt-feedback{font-size:0.75rem;color:#16a34a;font-weight:700;min-width:18px}
 .mgmt-footer{display:flex;justify-content:flex-end;padding-top:0.5rem}
 
+/* ── email compose ───────────────────────────────────── */
+.email-section{background:#fff;border-radius:1rem;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04);padding:1.25rem 1.4rem;margin-top:1.25rem}
+.email-toolbar{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.75rem;flex-wrap:wrap}
+.email-label{font-size:0.72rem;font-weight:700;color:#475569;margin-bottom:0.3rem;display:block}
+.email-input{width:100%;background:#fff;border:1px solid #e2e8f0;border-radius:0.45rem;padding:0.45rem 0.7rem;color:#0f172a;font-size:0.88rem;font-family:inherit;box-sizing:border-box}
+.email-input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 2px rgba(37,99,235,0.1)}
+textarea.email-input{min-height:120px;resize:vertical}
+.email-field{margin-bottom:0.85rem}
+.recipient-badge{display:inline-flex;align-items:center;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:0.45rem;padding:0.22rem 0.65rem;font-size:0.82rem;font-weight:700}
+input[type="checkbox"].row-cb{width:15px;height:15px;cursor:pointer;accent-color:#2563eb;vertical-align:middle}
+
 /* ── empty / loading ─────────────────────────────────── */
 .empty-row td{text-align:center;color:#94a3b8;padding:2.5rem;font-size:0.9rem;background:#fff !important}
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle}
@@ -239,10 +250,32 @@ td{padding:0.8rem 1rem;border-top:1px solid #f1f5f9;vertical-align:middle}
       <button class="btn-sm btn-ghost" onclick="loadUsers()">↻ רענן</button>
     </div>
 
+    <div id="emailSection" class="email-section">
+      <div class="email-toolbar">
+        <div class="section-title" style="margin-bottom:0;flex:1">שליחת אימייל</div>
+        <span class="recipient-badge" id="recipientBadge">0 נמענים</span>
+        <button class="btn-sm btn-ghost" onclick="selectAll()">בחר הכל</button>
+        <button class="btn-sm btn-ghost" onclick="clearAll()">נקה</button>
+      </div>
+      <div class="email-field">
+        <label class="email-label">נושא</label>
+        <input class="email-input" id="emailSubject" type="text" placeholder="נושא ההודעה...">
+      </div>
+      <div class="email-field">
+        <label class="email-label">תוכן ההודעה</label>
+        <textarea class="email-input" id="emailBody" placeholder="כתוב את ההודעה כאן..."></textarea>
+      </div>
+      <div style="display:flex;justify-content:flex-end;align-items:center;gap:1rem">
+        <span id="emailStatus" style="font-size:0.85rem;font-weight:700"></span>
+        <button class="btn-primary" onclick="doSendBulkEmail()">שלח ←</button>
+      </div>
+    </div>
+
     <div class="table-card">
       <table>
         <thead>
           <tr>
+            <th style="width:36px;text-align:center"><input type="checkbox" class="row-cb" id="cbSelectAll" onclick="if(this.checked)selectAll();else clearAll()" title="בחר הכל"></th>
             <th>שם</th>
             <th>הצטרף</th>
             <th>כניסה אחרונה</th>
@@ -254,7 +287,7 @@ td{padding:0.8rem 1rem;border-top:1px solid #f1f5f9;vertical-align:middle}
           </tr>
         </thead>
         <tbody id="usersBody">
-          <tr class="empty-row"><td colspan="8"><span class="spinner"></span> טוען משתמשים...</td></tr>
+          <tr class="empty-row"><td colspan="9"><span class="spinner"></span> טוען משתמשים...</td></tr>
         </tbody>
       </table>
     </div>
@@ -364,7 +397,7 @@ function countDone(progress) {
 function renderTable(users) {
     var tbody = document.getElementById('usersBody');
     if (!users.length) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="8">לא נמצאו משתמשים</td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="9">לא נמצאו משתמשים</td></tr>';
         return;
     }
     var html = '';
@@ -376,8 +409,13 @@ function renderTable(users) {
         var expiry  = u.premiumUntil ? fmtDate(u.premiumUntil) : '';
         var note    = u.note ? esc(u.note).substring(0,24) + (u.note.length > 24 ? '…' : '') : '';
 
+        var isChecked = !!_selectedEmails[uid];
         html +=
         '<tr class="data-row" onclick="toggleExpand(\'' + uid + '\')">' +
+          '<td style="text-align:center" onclick="event.stopPropagation()">' +
+            '<input type="checkbox" class="row-cb" id="cb-' + uid + '" ' + (isChecked ? 'checked' : '') + ' ' +
+            'onchange="toggleUserSelect(\'' + uid + '\',\'' + esc(u.email||'') + '\',this.checked)">' +
+          '</td>' +
           '<td><div class="user-name">' + esc(u.name||'—') + '</div>' +
                '<div class="user-email">' + esc(u.email||'—') + '</div></td>' +
           '<td class="date-cell">' + fmtDate(u.registeredAt) + '</td>' +
@@ -396,7 +434,7 @@ function renderTable(users) {
           '</td>' +
         '</tr>' +
         '<tr class="detail-row" id="detail-' + uid + '" style="display:none">' +
-          '<td colspan="8"><div class="detail-inner">' + renderDetail(u) + '</div></td>' +
+          '<td colspan="9"><div class="detail-inner">' + renderDetail(u) + '</div></td>' +
         '</tr>';
     });
     tbody.innerHTML = html;
@@ -576,6 +614,76 @@ function reloadUser(uid) {
 
 function esc(s) {
     return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Bulk email ───────────────────────────────────────────
+var _selectedEmails = {};
+
+function toggleUserSelect(uid, email, checked) {
+    if (checked && email) _selectedEmails[uid] = email;
+    else delete _selectedEmails[uid];
+    updateRecipientBadge();
+}
+
+function selectAll() {
+    _allUsers.forEach(function(u) {
+        if (u.email) _selectedEmails[u._uid] = u.email;
+    });
+    document.querySelectorAll('.row-cb').forEach(function(cb) {
+        if (cb.id !== 'cbSelectAll') cb.checked = true;
+    });
+    var hdr = document.getElementById('cbSelectAll');
+    if (hdr) hdr.checked = true;
+    updateRecipientBadge();
+}
+
+function clearAll() {
+    _selectedEmails = {};
+    document.querySelectorAll('.row-cb').forEach(function(cb) { cb.checked = false; });
+    updateRecipientBadge();
+}
+
+function updateRecipientBadge() {
+    var count = Object.keys(_selectedEmails).length;
+    var el = document.getElementById('recipientBadge');
+    if (el) el.textContent = count + ' נמענים';
+}
+
+function doSendBulkEmail() {
+    var emails = Object.values(_selectedEmails).filter(Boolean);
+    if (!emails.length) { alert('יש לבחור לפחות נמען אחד'); return; }
+    var subject = (document.getElementById('emailSubject').value || '').trim();
+    var message = (document.getElementById('emailBody').value || '').trim();
+    if (!subject) { alert('יש להזין נושא'); return; }
+    if (!message) { alert('יש להזין תוכן הודעה'); return; }
+    if (!confirm('לשלוח אימייל ל-' + emails.length + ' נמענים?')) return;
+
+    var statusEl = document.getElementById('emailStatus');
+    statusEl.textContent = 'שולח...';
+    statusEl.style.color = '#64748b';
+
+    var auth = window._firebaseAuth;
+    if (!auth || !auth.currentUser) { alert('שגיאה: לא מחובר'); return; }
+
+    auth.currentUser.getIdToken().then(function(token) {
+        return fetch('https://us-central1-lamdani-eng.cloudfunctions.net/sendBulkEmail', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ emails: emails, subject: subject, message: message })
+        });
+    }).then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.sent !== undefined) {
+            statusEl.textContent = '✓ נשלח ל-' + data.sent + ' נמענים' + (data.failed ? ' (' + data.failed + ' נכשלו)' : '');
+            statusEl.style.color = data.failed ? '#ca8a04' : '#16a34a';
+        } else {
+            statusEl.textContent = '✗ ' + (data.error || 'שגיאה');
+            statusEl.style.color = '#dc2626';
+        }
+    }).catch(function(e) {
+        statusEl.textContent = '✗ ' + e.message;
+        statusEl.style.color = '#dc2626';
+    });
 }
 
 // ── Login helpers ────────────────────────────────────────
