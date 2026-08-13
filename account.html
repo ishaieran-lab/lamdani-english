@@ -161,24 +161,7 @@ function fmtDate(ts) {
 
 function renderSubscription(data, fbUser) {
     var el = document.getElementById('accSubContent');
-    var isPremium = !!data.premium;
-    var isCancelled = !!data.cancelAtPeriodEnd;
-    var since = data.premiumSince ? fmtDate(data.premiumSince) : null;
-    var expiry = data.premiumExpiry ? fmtDate(data.premiumExpiry) : null;
-    var last4 = data.last4 || null;
-
-    if (!isPremium) {
-        var noSubHtml = '<div class="acc-row"><span class="acc-lbl">סטטוס</span>';
-        if (data.chargeFailedAt) {
-            noSubHtml += '<span class="badge-cancelled">חיוב נכשל</span></div>' +
-                '<div class="err-box">החיוב החודשי לא הצליח וגישתך לתכנים הושעתה. ניתן לחדש את המנוי.</div>';
-        } else {
-            noSubHtml += '<span class="badge-free">ללא מנוי</span></div>';
-        }
-        noSubHtml += '<button class="btn-subscribe" onclick="goSubscribe()">רכוש מנוי — 35 ₪ לחודש ←</button>';
-        el.innerHTML = noSubHtml;
-        return;
-    }
+    if (!el) return; // card replaced with static badge
 
     // Status row only — always visible
     var html =

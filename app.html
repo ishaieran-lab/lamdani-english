@@ -47,13 +47,6 @@
     <div style="width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
 </div>
 <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
-<!-- Premium Banner — shown only to non-premium users -->
-<div id="premiumBanner" style="display:none;background:linear-gradient(135deg,#1e40af,#2563eb);color:#fff;padding:1rem 1.5rem;text-align:center;">
-    <div style="max-width:700px;margin:0 auto;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0.75rem;">
-        <span style="font-size:1rem;font-weight:600;">גישה מלאה לכל התכנים — <strong>35 ₪ לחודש</strong> בלבד</span>
-        <button onclick="subscribeToPremium()" id="subscribeBtn" style="background:#fff;color:#1e40af;border:none;padding:0.5rem 1.4rem;border-radius:50px;font-size:0.95rem;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">רכוש מנוי ←</button>
-    </div>
-</div>
 
 <main class="home" id="appMain" style="display:none">
     <div class="home-hero">
@@ -132,7 +125,6 @@ window.onFirebaseAuth = function(fbUser) {
     document.getElementById('appMain').style.display = '';
     document.getElementById('authLoader').style.display = 'none';
     if (typeof _origAuth === 'function') _origAuth(fbUser);
-    checkPremiumStatus(fbUser.uid);
 };
 window.onFirebaseLogout = function() {
     window.location.href = 'index.html';
@@ -142,42 +134,6 @@ setTimeout(function() {
         window.location.href = 'index.html';
 }, 4000);
 
-function checkPremiumStatus(uid) {
-    if (!window.firebase || !window.firebase.firestore) return;
-    firebase.firestore().collection('users').doc(uid).get().then(function(doc) {
-        var isPremium = doc.exists && doc.data().premium === true;
-        document.getElementById('premiumBanner').style.display = isPremium ? 'none' : 'block';
-    }).catch(function() {
-        document.getElementById('premiumBanner').style.display = 'block';
-    });
-}
-
-function subscribeToPremium() {
-    if (!_fbUser) return;
-    var btn = document.getElementById('subscribeBtn');
-    btn.textContent = 'טוען...';
-    btn.disabled = true;
-
-    _fbUser.getIdToken().then(function(token) {
-        return fetch('https://createpaymentsession-2tarox7bha-uc.a.run.app', {
-            method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-            body: JSON.stringify({})
-        });
-    }).then(function(res) { return res.json(); }).then(function(data) {
-        if (data.url) {
-            window.location.href = data.url;
-        } else {
-            alert('שגיאה: ' + (data.error || 'לא ניתן לפתוח עמוד תשלום'));
-            btn.textContent = 'רכוש מנוי ←';
-            btn.disabled = false;
-        }
-    }).catch(function() {
-        alert('שגיאת תקשורת — נסה שוב');
-        btn.textContent = 'רכוש מנוי ←';
-        btn.disabled = false;
-    });
-}
 </script>
 <script>
 var MODULES = [

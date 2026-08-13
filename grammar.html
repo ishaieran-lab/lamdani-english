@@ -2529,11 +2529,11 @@ window.onBackspace = function() {
 </script>
 <div id="paywallOverlay" onclick="closePaywall()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.72);align-items:center;justify-content:center">
     <div onclick="event.stopPropagation()" style="background:#fff;border-radius:1.4rem;padding:2.2rem 2rem;text-align:center;max-width:340px;width:88%;box-shadow:0 8px 40px rgba(0,0,0,0.22);font-family:inherit">
-        <div style="font-size:3rem;margin-bottom:0.5rem">🔒</div>
-        <h3 style="color:#0f172a;margin:0 0 0.5rem;font-size:1.25rem;font-weight:800">פתוח למנויים בלבד</h3>
-        <p style="color:#64748b;font-size:0.95rem;line-height:1.6;margin:0 0 1.5rem">לגישה לתכנים יש לרכוש מנוי.</p>
-        <a href="index.html#pricing" style="display:inline-block;background:#2563eb;color:#fff;font-weight:700;font-size:1rem;padding:0.75rem 1.8rem;border-radius:0.65rem;text-decoration:none;margin-bottom:0.9rem">לרכישת מנוי ←</a><br>
-        <a href="app.html" style="display:inline-block;color:#94a3b8;font-size:0.85rem;margin-top:0.5rem;text-decoration:none">חזור לדף הבית</a>
+        <div style="font-size:3rem;margin-bottom:0.5rem">🔐</div>
+        <h3 style="color:#0f172a;margin:0 0 0.5rem;font-size:1.25rem;font-weight:800">נדרשת התחברות</h3>
+        <p style="color:#64748b;font-size:0.95rem;line-height:1.6;margin:0 0 1.5rem">התוכן זמין לכל מי שנרשם. ההרשמה חינמית לחלוטין!</p>
+        <a href="index.html" style="display:inline-block;background:#2563eb;color:#fff;font-weight:700;font-size:1rem;padding:0.75rem 1.8rem;border-radius:0.65rem;text-decoration:none;margin-bottom:0.9rem">הירשם / התחבר ←</a><br>
+        <button onclick="closePaywall()" style="background:none;border:none;color:#94a3b8;font-size:0.85rem;margin-top:0.5rem;cursor:pointer;font-family:inherit">סגור</button>
     </div>
 </div>
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
