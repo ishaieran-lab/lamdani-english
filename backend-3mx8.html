@@ -331,10 +331,15 @@ function loadUsers() {
     var tbody = document.getElementById('usersBody');
     tbody.innerHTML = '<tr class="empty-row"><td colspan="8"><span class="spinner"></span> טוען...</td></tr>';
     _expandedUid = null;
-    db.collection('users').orderBy('lastLogin', 'desc').get()
+    db.collection('users').get()
         .then(function(snap) {
             _allUsers = [];
             snap.forEach(function(doc) { var d = doc.data(); if (d._deleted) return; d._uid = doc.id; _allUsers.push(d); });
+            _allUsers.sort(function(a,b) {
+                var ta = (a.lastLogin && a.lastLogin.toMillis) ? a.lastLogin.toMillis() : (a.registeredAt && a.registeredAt.toMillis ? a.registeredAt.toMillis() : 0);
+                var tb = (b.lastLogin && b.lastLogin.toMillis) ? b.lastLogin.toMillis() : (b.registeredAt && b.registeredAt.toMillis ? b.registeredAt.toMillis() : 0);
+                return tb - ta;
+            });
             renderStats(_allUsers);
             renderTable(_allUsers);
         })
