@@ -279,6 +279,7 @@ input[type="checkbox"].row-cb{width:15px;height:15px;cursor:pointer;accent-color
             <th>שם</th>
             <th>הצטרף</th>
             <th>כניסה אחרונה</th>
+            <th>סנכרון</th>
             <th>ילדים</th>
             <th>שלבים</th>
             <th>הערה</th>
@@ -287,7 +288,7 @@ input[type="checkbox"].row-cb{width:15px;height:15px;cursor:pointer;accent-color
           </tr>
         </thead>
         <tbody id="usersBody">
-          <tr class="empty-row"><td colspan="9"><span class="spinner"></span> טוען משתמשים...</td></tr>
+          <tr class="empty-row"><td colspan="10"><span class="spinner"></span> טוען משתמשים...</td></tr>
         </tbody>
       </table>
     </div>
@@ -329,7 +330,7 @@ function loadUsers() {
     var db = window._firebaseDb;
     if (!db) { setTimeout(loadUsers, 500); return; }
     var tbody = document.getElementById('usersBody');
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="8"><span class="spinner"></span> טוען...</td></tr>';
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="10"><span class="spinner"></span> טוען...</td></tr>';
     _expandedUid = null;
     db.collection('users').get()
         .then(function(snap) {
@@ -344,7 +345,7 @@ function loadUsers() {
             renderTable(_allUsers);
         })
         .catch(function(e) {
-            tbody.innerHTML = '<tr class="empty-row"><td colspan="8">שגיאה: ' + e.message + '</td></tr>';
+            tbody.innerHTML = '<tr class="empty-row"><td colspan="10">שגיאה: ' + e.message + '</td></tr>';
         });
 }
 
@@ -376,6 +377,14 @@ function fmtDate(ts) {
     return d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear();
 }
 
+function fmtSyncDate(s) {
+    if (!s) return '<span style="color:#cbd5e1">—</span>';
+    try {
+        var d = new Date(s);
+        return d.getDate() + '/' + (d.getMonth()+1) + ' ' + ('0'+d.getHours()).slice(-2) + ':' + ('0'+d.getMinutes()).slice(-2);
+    } catch(e) { return '?'; }
+}
+
 function fmtDateInput(ts) {
     if (!ts || !ts.toDate) return '';
     var d = ts.toDate();
@@ -402,7 +411,7 @@ function countDone(progress) {
 function renderTable(users) {
     var tbody = document.getElementById('usersBody');
     if (!users.length) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="9">לא נמצאו משתמשים</td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="10">לא נמצאו משתמשים</td></tr>';
         return;
     }
     var html = '';
@@ -425,6 +434,7 @@ function renderTable(users) {
                '<div class="user-email">' + esc(u.email||'—') + '</div></td>' +
           '<td class="date-cell">' + fmtDate(u.registeredAt) + '</td>' +
           '<td class="date-cell">' + fmtDate(u.lastLogin) + '</td>' +
+          '<td class="date-cell" style="font-size:0.7rem">' + fmtSyncDate(u.lastSyncAt) + '</td>' +
           '<td style="font-weight:600">' + kids.length + '</td>' +
           '<td style="font-weight:600">' + done + '</td>' +
           '<td class="note-preview">' + (note || '<span style="color:#cbd5e1">—</span>') + '</td>' +
@@ -439,7 +449,7 @@ function renderTable(users) {
           '</td>' +
         '</tr>' +
         '<tr class="detail-row" id="detail-' + uid + '" style="display:none">' +
-          '<td colspan="9"><div class="detail-inner">' + renderDetail(u) + '</div></td>' +
+          '<td colspan="10"><div class="detail-inner">' + renderDetail(u) + '</div></td>' +
         '</tr>';
     });
     tbody.innerHTML = html;

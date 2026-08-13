@@ -124,7 +124,20 @@ function fsyncProgress() {
     var update = {};
     update['progress.' + kid.id] = progress;
     if (kidsData.length) update.kids = kidsData;
+    update.lastSyncAt = new Date().toISOString();
 
     db.collection('users').doc(uid).update(update)
-        .catch(function(e) { console.warn('[fsync] progress sync error:', e.code, e.message); });
+        .then(function() { console.log('[fsync] progress synced ok, kids:', kidsData.length); })
+        .catch(function(e) {
+            console.error('[fsync] progress sync FAILED:', e.code, e.message);
+            // Fallback: try set with merge if document missing
+            if (e.code === 'not-found') {
+                var fallback = { kids: kidsData, lastSyncAt: new Date().toISOString() };
+                fallback['progress'] = {};
+                fallback['progress'][kid.id] = progress;
+                db.collection('users').doc(uid).set(fallback, { merge: true })
+                    .then(function() { console.log('[fsync] fallback set ok'); })
+                    .catch(function(e2) { console.error('[fsync] fallback FAILED:', e2.code, e2.message); });
+            }
+        });
 }
