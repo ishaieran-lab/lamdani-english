@@ -8,24 +8,9 @@ service cloud.firestore {
       // Users can read their own document
       allow read: if request.auth != null && request.auth.uid == userId;
 
-      // Users can create their own document (first login) — no premium/admin fields allowed
-      allow create: if request.auth != null
-                    && request.auth.uid == userId
-                    && !request.resource.data.keys().hasAny([
-                         'premium', 'premiumExpiry', 'premiumSince',
-                         'cardcomToken', 'last4', 'cancelAtPeriodEnd',
-                         'chargeFailedAt', '_deleted', '_deletedAt'
-                       ]);
-
-      // Users can update their own document — cannot change premium/admin fields
-      allow update: if request.auth != null
-                    && request.auth.uid == userId
-                    && request.resource.data.diff(resource.data).affectedKeys()
-                       .hasNone([
-                         'premium', 'premiumExpiry', 'premiumSince',
-                         'cardcomToken', 'last4', 'cancelAtPeriodEnd',
-                         'chargeFailedAt', '_deleted', '_deletedAt'
-                       ]);
+      // Users can create or update their own document
+      // (site is free — no premium field restrictions needed)
+      allow create, update: if request.auth != null && request.auth.uid == userId;
     }
   }
 }
