@@ -584,6 +584,7 @@ function _saveNewKid() {
     var kids = getChildren();
     kids.push(kid);
     saveChildren(kids);
+    if (typeof fsyncKids === 'function') fsyncKids();
     _selectKid(kid.id);
 }
 
@@ -741,6 +742,7 @@ function _saveEditKid() {
     kids[idx].gender = _kidGender;
     if (_kidPhoto) kids[idx].photo = _kidPhoto;
     saveChildren(kids);
+    if (typeof fsyncKids === 'function') fsyncKids();
     var active = getActiveKid();
     if (active && active.id === _kidEditId) setActiveKid(kids[idx]);
     _showKidList();

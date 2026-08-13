@@ -86,6 +86,19 @@ function fsyncUserLogin(fbUser) {
     });
 }
 
+// Called after adding or editing a kid — pushes the updated kids list to Firestore
+function fsyncKids() {
+    var db  = _fsDb();
+    var uid = _fsUid();
+    if (!db || !uid) return;
+    var kids = typeof getChildren === 'function' ? getChildren() : [];
+    var kidsData = kids.map(function(k) {
+        return { id: k.id, name: k.name, gender: k.gender || 'male', age: k.age || '', photo: k.photo || '' };
+    });
+    db.collection('users').doc(uid).update({ kids: kidsData })
+        .catch(function(e) { console.warn('[fsync] kids sync error:', e.message); });
+}
+
 // Called after every saveProgress() — writes only the active kid's progress
 function fsyncProgress() {
     var db  = _fsDb();
