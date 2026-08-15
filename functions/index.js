@@ -382,7 +382,80 @@ exports.sendBulkEmail = onRequest(
   }
 );
 
-// ─── 8. הרשמת משתמש חדש ───────────────────────────────────────────────────────
+// ─── 8. Admin list users ──────────────────────────────────────────────────────
+// Firebase Auth is the source of truth for who exists, when they registered and
+// when they last signed in. Firestore only fills in the app data (kids, progress).
+exports.adminListUsers = onRequest(
+  { cors: [SITE_URL] },
+  async (req, res) => {
+    const authHeader = req.headers.authorization || "";
+    const idToken = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+    if (!idToken) return res.status(401).json({ error: "Unauthorized" });
+    let callerEmail;
+    try {
+      const decoded = await admin.auth().verifyIdToken(idToken);
+      callerEmail = decoded.email;
+    } catch {
+      return res.status(401).json({ error: "Invalid token" });
+    }
+    if (callerEmail !== ADMIN_EMAIL) return res.status(403).json({ error: "Forbidden" });
+
+    try {
+      // Every account that actually exists in Firebase Auth
+      const authUsers = [];
+      let pageToken;
+      do {
+        const page = await admin.auth().listUsers(1000, pageToken);
+        page.users.forEach((u) => authUsers.push(u));
+        pageToken = page.pageToken;
+      } while (pageToken);
+
+      // App data from Firestore, keyed by uid
+      const fsDocs = {};
+      const snap = await db.collection("users").get();
+      snap.forEach((doc) => { fsDocs[doc.id] = doc.data(); });
+
+      const toIso = (v) => {
+        if (!v) return null;
+        if (typeof v === "string") return v;
+        if (v.toDate) return v.toDate().toISOString();
+        return null;
+      };
+
+      const users = authUsers
+        .filter((au) => !(fsDocs[au.uid] && fsDocs[au.uid]._deleted))
+        .map((au) => {
+          const d = fsDocs[au.uid] || {};
+          return {
+            uid: au.uid,
+            email: au.email || d.email || "",
+            name: d.name || au.displayName || (au.email ? au.email.split("@")[0] : ""),
+            createdAt: au.metadata.creationTime ? new Date(au.metadata.creationTime).toISOString() : null,
+            lastSignIn: au.metadata.lastSignInTime ? new Date(au.metadata.lastSignInTime).toISOString() : null,
+            emailVerified: au.emailVerified,
+            hasData: !!fsDocs[au.uid],
+            // photos are data-URIs — strip them, the panel only needs name/gender
+            kids: (Array.isArray(d.kids) ? d.kids : []).map((k) => ({
+              id: k.id, name: k.name, gender: k.gender || "male", age: k.age || "",
+            })),
+            progress: d.progress || {},
+            note: d.note || "",
+            price: d.price || "",
+            premium: !!d.premium,
+            premiumUntil: toIso(d.premiumUntil),
+            lastSyncAt: toIso(d.lastSyncAt),
+          };
+        });
+
+      res.json({ users });
+    } catch (err) {
+      console.error("adminListUsers error:", err);
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
+
+// ─── 9. הרשמת משתמש חדש ───────────────────────────────────────────────────────
 // מופעלת אוטומטית כשנוצר מסמך חדש ב-users (כלומר, משתמש נרשם לראשונה)
 exports.onNewUser = onDocumentCreated(
   { document: "users/{uid}", region: "us-central1" },

@@ -69,6 +69,7 @@ td{padding:0.8rem 1rem;border-top:1px solid #f1f5f9;vertical-align:middle}
 .badge-free{background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0}
 .badge-expiry{font-size:0.65rem;font-weight:400;color:#a16207;margin-top:0.1rem}
 .date-cell{font-size:0.78rem;color:#64748b;white-space:nowrap}
+.never-used{font-size:0.68rem;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:0.3rem;padding:0.05rem 0.35rem;display:inline-block;margin-top:0.2rem}
 .note-preview{font-size:0.78rem;color:#64748b;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* ── toolbar ─────────────────────────────────────────── */
@@ -326,27 +327,35 @@ window.onFirebaseLogout = function() { showState('stateLogin'); };
 function doLogout() { if (window._firebaseAuth) window._firebaseAuth.signOut(); }
 
 // ── Load ────────────────────────────────────────────────
-function loadUsers() {
-    var db = window._firebaseDb;
-    if (!db) { setTimeout(loadUsers, 500); return; }
+// Reads from adminListUsers — Auth decides who exists, Firestore fills in the data
+function loadUsers(keepUid) {
+    var auth = window._firebaseAuth;
     var tbody = document.getElementById('usersBody');
     tbody.innerHTML = '<tr class="empty-row"><td colspan="10"><span class="spinner"></span> טוען...</td></tr>';
     _expandedUid = null;
-    db.collection('users').get()
-        .then(function(snap) {
-            _allUsers = [];
-            snap.forEach(function(doc) { var d = doc.data(); if (d._deleted) return; d._uid = doc.id; _allUsers.push(d); });
-            _allUsers.sort(function(a,b) {
-                var ta = (a.lastLogin && a.lastLogin.toMillis) ? a.lastLogin.toMillis() : (a.registeredAt && a.registeredAt.toMillis ? a.registeredAt.toMillis() : 0);
-                var tb = (b.lastLogin && b.lastLogin.toMillis) ? b.lastLogin.toMillis() : (b.registeredAt && b.registeredAt.toMillis ? b.registeredAt.toMillis() : 0);
-                return tb - ta;
-            });
-            renderStats(_allUsers);
-            renderTable(_allUsers);
-        })
-        .catch(function(e) {
-            tbody.innerHTML = '<tr class="empty-row"><td colspan="10">שגיאה: ' + e.message + '</td></tr>';
+    if (!auth || !auth.currentUser) { setTimeout(function() { loadUsers(keepUid); }, 500); return; }
+    auth.currentUser.getIdToken().then(function(token) {
+        return fetch('https://us-central1-lamdani-eng.cloudfunctions.net/adminListUsers', {
+            headers: { 'Authorization': 'Bearer ' + token }
         });
+    }).then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (!data.users) throw new Error(data.error || 'תגובה לא תקינה');
+        _allUsers = data.users;
+        _allUsers.forEach(function(u) { u._uid = u.uid; });
+        _allUsers.sort(function(a, b) {
+            return (b.lastSignIn ? Date.parse(b.lastSignIn) : 0) - (a.lastSignIn ? Date.parse(a.lastSignIn) : 0);
+        });
+        renderStats(_allUsers);
+        renderTable(_allUsers);
+        if (keepUid) {
+            var row = document.getElementById('detail-' + keepUid);
+            if (row) { row.style.display = 'table-row'; _expandedUid = keepUid; }
+        }
+    })
+    .catch(function(e) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="10">שגיאה: ' + e.message + '</td></tr>';
+    });
 }
 
 // ── Stats ────────────────────────────────────────────────
@@ -354,7 +363,7 @@ function renderStats(users) {
     var now = Date.now(), week = 7*24*60*60*1000, premium=0, active=0, kids=0;
     users.forEach(function(u) {
         if (u.premium) premium++;
-        if (u.lastLogin && u.lastLogin.toMillis && now - u.lastLogin.toMillis() < week) active++;
+        if (u.lastSignIn && now - Date.parse(u.lastSignIn) < week) active++;
         if (Array.isArray(u.kids)) kids += u.kids.length;
     });
     document.getElementById('statTotal').textContent   = users.length;
@@ -371,23 +380,25 @@ function filterUsers() {
     }));
 }
 
-function fmtDate(ts) {
-    if (!ts || !ts.toDate) return '—';
-    var d = ts.toDate();
+// All dates arrive from the server as ISO strings
+function fmtDate(s) {
+    if (!s) return '—';
+    var d = new Date(s);
+    if (isNaN(d.getTime())) return '—';
     return d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear();
 }
 
 function fmtSyncDate(s) {
     if (!s) return '<span style="color:#cbd5e1">—</span>';
-    try {
-        var d = new Date(s);
-        return d.getDate() + '/' + (d.getMonth()+1) + ' ' + ('0'+d.getHours()).slice(-2) + ':' + ('0'+d.getMinutes()).slice(-2);
-    } catch(e) { return '?'; }
+    var d = new Date(s);
+    if (isNaN(d.getTime())) return '<span style="color:#cbd5e1">—</span>';
+    return d.getDate() + '/' + (d.getMonth()+1) + ' ' + ('0'+d.getHours()).slice(-2) + ':' + ('0'+d.getMinutes()).slice(-2);
 }
 
-function fmtDateInput(ts) {
-    if (!ts || !ts.toDate) return '';
-    var d = ts.toDate();
+function fmtDateInput(s) {
+    if (!s) return '';
+    var d = new Date(s);
+    if (isNaN(d.getTime())) return '';
     var mm = ('0'+(d.getMonth()+1)).slice(-2);
     var dd = ('0'+d.getDate()).slice(-2);
     return d.getFullYear() + '-' + mm + '-' + dd;
@@ -431,9 +442,10 @@ function renderTable(users) {
             'onchange="toggleUserSelect(\'' + uid + '\',\'' + esc(u.email||'') + '\',this.checked)">' +
           '</td>' +
           '<td><div class="user-name">' + esc(u.name||'—') + '</div>' +
-               '<div class="user-email">' + esc(u.email||'—') + '</div></td>' +
-          '<td class="date-cell">' + fmtDate(u.registeredAt) + '</td>' +
-          '<td class="date-cell">' + fmtDate(u.lastLogin) + '</td>' +
+               '<div class="user-email">' + esc(u.email||'—') + '</div>' +
+               (u.hasData ? '' : '<div class="never-used">טרם השתמש באתר</div>') + '</td>' +
+          '<td class="date-cell">' + fmtDate(u.createdAt) + '</td>' +
+          '<td class="date-cell">' + fmtDate(u.lastSignIn) + '</td>' +
           '<td class="date-cell" style="font-size:0.7rem">' + fmtSyncDate(u.lastSyncAt) + '</td>' +
           '<td style="font-weight:600">' + kids.length + '</td>' +
           '<td style="font-weight:600">' + done + '</td>' +
@@ -543,7 +555,7 @@ function toggleExpand(uid) {
 function togglePremium(uid, current) {
     var db = window._firebaseDb;
     if (!db) return;
-    db.collection('users').doc(uid).update({ premium: !current })
+    db.collection('users').doc(uid).set({ premium: !current }, { merge: true })
         .then(function() { loadUsers(); })
         .catch(function(e) {
             if (e.code === 'permission-denied') alert('⚠️ עדכן הרשאות Firestore — המנהל צריך הרשאת כתיבה.');
@@ -557,7 +569,7 @@ function saveField(uid, field, inputId, fbId) {
     if (!db) return;
     var val = document.getElementById(inputId).value;
     var update = {}; update[field] = val;
-    db.collection('users').doc(uid).update(update)
+    db.collection('users').doc(uid).set(update, { merge: true })
         .then(function() { showFb(fbId); reloadUser(uid); })
         .catch(function(e) { alert('שגיאה: ' + e.message); });
 }
@@ -567,7 +579,7 @@ function saveFieldNum(uid, field, inputId, fbId) {
     if (!db) return;
     var val = parseFloat(document.getElementById(inputId).value) || 0;
     var update = {}; update[field] = val;
-    db.collection('users').doc(uid).update(update)
+    db.collection('users').doc(uid).set(update, { merge: true })
         .then(function() { showFb(fbId); reloadUser(uid); })
         .catch(function(e) { alert('שגיאה: ' + e.message); });
 }
@@ -578,7 +590,7 @@ function savePremiumExpiry(uid) {
     var dateVal = document.getElementById('exp-' + uid).value;
     if (!dateVal) return;
     var ts = firebase.firestore.Timestamp.fromDate(new Date(dateVal));
-    db.collection('users').doc(uid).update({ premium: true, premiumUntil: ts })
+    db.collection('users').doc(uid).set({ premium: true, premiumUntil: ts }, { merge: true })
         .then(function() { showFb('fb-exp-' + uid); reloadUser(uid); })
         .catch(function(e) { alert('שגיאה: ' + e.message); });
 }
@@ -610,22 +622,8 @@ function showFb(id) {
     setTimeout(function() { el.textContent = ''; }, 2000);
 }
 
-function reloadUser(uid) {
-    var db = window._firebaseDb;
-    if (!db) return;
-    db.collection('users').doc(uid).get().then(function(doc) {
-        if (!doc.exists) return;
-        var d = doc.data(); d._uid = uid;
-        for (var i = 0; i < _allUsers.length; i++) {
-            if (_allUsers[i]._uid === uid) { _allUsers[i] = d; break; }
-        }
-        renderStats(_allUsers);
-        renderTable(_allUsers);
-        // Re-open the expanded row
-        var row = document.getElementById('detail-' + uid);
-        if (row) { row.style.display = 'table-row'; _expandedUid = uid; }
-    });
-}
+// Re-fetch the merged list and re-open the row that was being edited
+function reloadUser(uid) { loadUsers(uid); }
 
 function esc(s) {
     return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
