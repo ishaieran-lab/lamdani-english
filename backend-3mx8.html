@@ -273,15 +273,14 @@ input[type="checkbox"].row-cb{width:15px;height:15px;cursor:pointer;accent-color
             <th style="width:36px;text-align:center"><input type="checkbox" class="row-cb" id="cbSelectAll" onclick="if(this.checked)selectAll();else clearAll()" title="בחר הכל"></th>
             <th>שם</th>
             <th>הצטרף</th>
-            <th>כניסה אחרונה</th>
-            <th>סנכרון</th>
+            <th>סנכרון/פעילות אחרונה</th>
             <th>ילדים</th>
             <th>שלבים</th>
             <th>הערה</th>
           </tr>
         </thead>
         <tbody id="usersBody">
-          <tr class="empty-row"><td colspan="8"><span class="spinner"></span> טוען משתמשים...</td></tr>
+          <tr class="empty-row"><td colspan="7"><span class="spinner"></span> טוען משתמשים...</td></tr>
         </tbody>
       </table>
     </div>
@@ -323,7 +322,7 @@ function doLogout() { if (window._firebaseAuth) window._firebaseAuth.signOut(); 
 function loadUsers(keepUid) {
     var auth = window._firebaseAuth;
     var tbody = document.getElementById('usersBody');
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="8"><span class="spinner"></span> טוען...</td></tr>';
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="7"><span class="spinner"></span> טוען...</td></tr>';
     _expandedUid = null;
     if (!auth || !auth.currentUser) { setTimeout(function() { loadUsers(keepUid); }, 500); return; }
     auth.currentUser.getIdToken().then(function(token) {
@@ -336,7 +335,8 @@ function loadUsers(keepUid) {
         _allUsers = data.users;
         _allUsers.forEach(function(u) { u._uid = u.uid; });
         _allUsers.sort(function(a, b) {
-            return (b.lastSignIn ? Date.parse(b.lastSignIn) : 0) - (a.lastSignIn ? Date.parse(a.lastSignIn) : 0);
+            var t = function(u) { return u.lastSyncAt ? Date.parse(u.lastSyncAt) : (u.createdAt ? Date.parse(u.createdAt) : 0); };
+            return t(b) - t(a);
         });
         renderStats(_allUsers);
         renderTable(_allUsers);
@@ -346,7 +346,7 @@ function loadUsers(keepUid) {
         }
     })
     .catch(function(e) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="8">שגיאה: ' + e.message + '</td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="7">שגיאה: ' + e.message + '</td></tr>';
     });
 }
 
@@ -355,8 +355,9 @@ function renderStats(users) {
     var now = Date.now(), day = 24*60*60*1000;
     var month=0, active=0, kids=0;
     users.forEach(function(u) {
-        if (u.lastSignIn) {
-            var since = now - Date.parse(u.lastSignIn);
+        // Counted from real activity (finishing an exercise), not from signing in
+        if (u.lastSyncAt) {
+            var since = now - Date.parse(u.lastSyncAt);
             if (since < 7*day)  active++;
             if (since < 30*day) month++;
         }
@@ -409,7 +410,7 @@ function countDone(progress) {
 function renderTable(users) {
     var tbody = document.getElementById('usersBody');
     if (!users.length) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="8">לא נמצאו משתמשים</td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="7">לא נמצאו משתמשים</td></tr>';
         return;
     }
     var html = '';
@@ -430,14 +431,13 @@ function renderTable(users) {
                '<div class="user-email">' + esc(u.email||'—') + '</div>' +
                (u.hasData ? '' : '<div class="never-used">טרם השתמש באתר</div>') + '</td>' +
           '<td class="date-cell">' + fmtDate(u.createdAt) + '</td>' +
-          '<td class="date-cell">' + fmtDate(u.lastSignIn) + '</td>' +
-          '<td class="date-cell" style="font-size:0.7rem">' + fmtSyncDate(u.lastSyncAt) + '</td>' +
+          '<td class="date-cell">' + fmtSyncDate(u.lastSyncAt) + '</td>' +
           '<td style="font-weight:600">' + kids.length + '</td>' +
           '<td style="font-weight:600">' + done + '</td>' +
           '<td class="note-preview">' + (note || '<span style="color:#cbd5e1">—</span>') + '</td>' +
         '</tr>' +
         '<tr class="detail-row" id="detail-' + uid + '" style="display:none">' +
-          '<td colspan="8"><div class="detail-inner">' + renderDetail(u) + '</div></td>' +
+          '<td colspan="7"><div class="detail-inner">' + renderDetail(u) + '</div></td>' +
         '</tr>';
     });
     tbody.innerHTML = html;
