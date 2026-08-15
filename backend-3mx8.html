@@ -64,10 +64,6 @@ td{padding:0.8rem 1rem;border-top:1px solid #f1f5f9;vertical-align:middle}
 .data-row:hover td{background:#fafbfc;cursor:pointer}
 .user-name{font-weight:700;color:#0f172a;font-size:0.92rem}
 .user-email{font-size:0.76rem;color:#94a3b8;direction:ltr;text-align:right;margin-top:0.1rem}
-.badge{display:inline-flex;flex-direction:column;padding:0.2rem 0.6rem;border-radius:0.4rem;font-size:0.73rem;font-weight:700;line-height:1.3}
-.badge-premium{background:#fefce8;color:#a16207;border:1px solid #fde68a}
-.badge-free{background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0}
-.badge-expiry{font-size:0.65rem;font-weight:400;color:#a16207;margin-top:0.1rem}
 .date-cell{font-size:0.78rem;color:#64748b;white-space:nowrap}
 .never-used{font-size:0.68rem;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:0.3rem;padding:0.05rem 0.35rem;display:inline-block;margin-top:0.2rem}
 .note-preview{font-size:0.78rem;color:#64748b;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -88,7 +84,7 @@ td{padding:0.8rem 1rem;border-top:1px solid #f1f5f9;vertical-align:middle}
 .kid-chip{background:#fff;border:1px solid #e2e8f0;border-radius:0.5rem;padding:0.3rem 0.7rem;font-size:0.8rem;color:#334155;display:flex;align-items:center;gap:0.4rem;box-shadow:0 1px 2px rgba(0,0,0,0.04)}
 .kid-stages{font-size:0.7rem;color:#16a34a;font-weight:700}
 .mgmt-divider{border:none;border-top:1px solid #e2e8f0;margin:0.75rem 0}
-.mgmt-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:0.85rem}
+.mgmt-grid{display:grid;grid-template-columns:1fr;gap:1rem;margin-bottom:0.85rem}
 .mgmt-lbl{font-size:0.72rem;font-weight:700;color:#475569;margin-bottom:0.3rem}
 .mgmt-row{display:flex;gap:0.5rem;align-items:center}
 .mgmt-input{flex:1;background:#fff;border:1px solid #e2e8f0;border-radius:0.45rem;padding:0.38rem 0.65rem;color:#0f172a;font-size:0.83rem;font-family:inherit}
@@ -132,7 +128,6 @@ input[type="checkbox"].row-cb{width:15px;height:15px;cursor:pointer;accent-color
 
 @media(max-width:700px){
   .stats-grid{grid-template-columns:repeat(2,1fr)}
-  .mgmt-grid{grid-template-columns:1fr 1fr}
   table{font-size:0.8rem}
   th,td{padding:0.6rem 0.5rem}
   .search-input{width:160px}
@@ -140,7 +135,6 @@ input[type="checkbox"].row-cb{width:15px;height:15px;cursor:pointer;accent-color
 @media(max-width:480px){
   .stats-grid{grid-template-columns:1fr 1fr}
   .topbar-user{display:none}
-  .mgmt-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -225,9 +219,9 @@ input[type="checkbox"].row-cb{width:15px;height:15px;cursor:pointer;accent-color
         <div class="stat-lbl">משתמשים רשומים</div>
       </div>
       <div class="stat-card green">
-        <div class="stat-icon">⭐</div>
-        <div class="stat-val" id="statPremium">—</div>
-        <div class="stat-lbl">מנויי פרמיום</div>
+        <div class="stat-icon">📅</div>
+        <div class="stat-val" id="statMonth">—</div>
+        <div class="stat-lbl">פעילים החודש</div>
       </div>
       <div class="stat-card yellow">
         <div class="stat-icon">🔥</div>
@@ -284,12 +278,10 @@ input[type="checkbox"].row-cb{width:15px;height:15px;cursor:pointer;accent-color
             <th>ילדים</th>
             <th>שלבים</th>
             <th>הערה</th>
-            <th>סטטוס</th>
-            <th></th>
           </tr>
         </thead>
         <tbody id="usersBody">
-          <tr class="empty-row"><td colspan="10"><span class="spinner"></span> טוען משתמשים...</td></tr>
+          <tr class="empty-row"><td colspan="8"><span class="spinner"></span> טוען משתמשים...</td></tr>
         </tbody>
       </table>
     </div>
@@ -331,7 +323,7 @@ function doLogout() { if (window._firebaseAuth) window._firebaseAuth.signOut(); 
 function loadUsers(keepUid) {
     var auth = window._firebaseAuth;
     var tbody = document.getElementById('usersBody');
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="10"><span class="spinner"></span> טוען...</td></tr>';
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="8"><span class="spinner"></span> טוען...</td></tr>';
     _expandedUid = null;
     if (!auth || !auth.currentUser) { setTimeout(function() { loadUsers(keepUid); }, 500); return; }
     auth.currentUser.getIdToken().then(function(token) {
@@ -354,22 +346,26 @@ function loadUsers(keepUid) {
         }
     })
     .catch(function(e) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="10">שגיאה: ' + e.message + '</td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="8">שגיאה: ' + e.message + '</td></tr>';
     });
 }
 
 // ── Stats ────────────────────────────────────────────────
 function renderStats(users) {
-    var now = Date.now(), week = 7*24*60*60*1000, premium=0, active=0, kids=0;
+    var now = Date.now(), day = 24*60*60*1000;
+    var month=0, active=0, kids=0;
     users.forEach(function(u) {
-        if (u.premium) premium++;
-        if (u.lastSignIn && now - Date.parse(u.lastSignIn) < week) active++;
+        if (u.lastSignIn) {
+            var since = now - Date.parse(u.lastSignIn);
+            if (since < 7*day)  active++;
+            if (since < 30*day) month++;
+        }
         if (Array.isArray(u.kids)) kids += u.kids.length;
     });
-    document.getElementById('statTotal').textContent   = users.length;
-    document.getElementById('statPremium').textContent = premium;
-    document.getElementById('statActive').textContent  = active;
-    document.getElementById('statKids').textContent    = kids;
+    document.getElementById('statTotal').textContent  = users.length;
+    document.getElementById('statMonth').textContent  = month;
+    document.getElementById('statActive').textContent = active;
+    document.getElementById('statKids').textContent   = kids;
 }
 
 // ── Table ────────────────────────────────────────────────
@@ -395,15 +391,6 @@ function fmtSyncDate(s) {
     return d.getDate() + '/' + (d.getMonth()+1) + ' ' + ('0'+d.getHours()).slice(-2) + ':' + ('0'+d.getMinutes()).slice(-2);
 }
 
-function fmtDateInput(s) {
-    if (!s) return '';
-    var d = new Date(s);
-    if (isNaN(d.getTime())) return '';
-    var mm = ('0'+(d.getMonth()+1)).slice(-2);
-    var dd = ('0'+d.getDate()).slice(-2);
-    return d.getFullYear() + '-' + mm + '-' + dd;
-}
-
 function countDone(progress) {
     if (!progress || typeof progress !== 'object') return 0;
     var total = 0;
@@ -422,17 +409,15 @@ function countDone(progress) {
 function renderTable(users) {
     var tbody = document.getElementById('usersBody');
     if (!users.length) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="10">לא נמצאו משתמשים</td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="8">לא נמצאו משתמשים</td></tr>';
         return;
     }
     var html = '';
     users.forEach(function(u) {
-        var uid     = u._uid;
-        var premium = !!u.premium;
-        var kids    = Array.isArray(u.kids) ? u.kids : [];
-        var done    = countDone(u.progress);
-        var expiry  = u.premiumUntil ? fmtDate(u.premiumUntil) : '';
-        var note    = u.note ? esc(u.note).substring(0,24) + (u.note.length > 24 ? '…' : '') : '';
+        var uid  = u._uid;
+        var kids = Array.isArray(u.kids) ? u.kids : [];
+        var done = countDone(u.progress);
+        var note = u.note ? esc(u.note).substring(0,24) + (u.note.length > 24 ? '…' : '') : '';
 
         var isChecked = !!_selectedEmails[uid];
         html +=
@@ -450,18 +435,9 @@ function renderTable(users) {
           '<td style="font-weight:600">' + kids.length + '</td>' +
           '<td style="font-weight:600">' + done + '</td>' +
           '<td class="note-preview">' + (note || '<span style="color:#cbd5e1">—</span>') + '</td>' +
-          '<td><span class="badge ' + (premium ? 'badge-premium' : 'badge-free') + '">' +
-               (premium ? '⭐ פרמיום' : 'חינמי') +
-               (expiry ? '<span class="badge-expiry">עד ' + expiry + '</span>' : '') +
-          '</span></td>' +
-          '<td onclick="event.stopPropagation()">' +
-            '<button class="btn-sm ' + (premium ? 'btn-danger' : 'btn-success') + '" ' +
-                    'onclick="togglePremium(\'' + uid + '\',' + premium + ')">' +
-                    (premium ? 'בטל פרמיום' : 'הפוך פרמיום') + '</button>' +
-          '</td>' +
         '</tr>' +
         '<tr class="detail-row" id="detail-' + uid + '" style="display:none">' +
-          '<td colspan="10"><div class="detail-inner">' + renderDetail(u) + '</div></td>' +
+          '<td colspan="8"><div class="detail-inner">' + renderDetail(u) + '</div></td>' +
         '</tr>';
     });
     tbody.innerHTML = html;
@@ -471,9 +447,7 @@ function renderTable(users) {
 function renderDetail(u) {
     var uid     = u._uid;
     var kids    = Array.isArray(u.kids) ? u.kids : [];
-    var expVal  = fmtDateInput(u.premiumUntil);
     var noteVal = esc(u.note || '');
-    var priceVal= esc(String(u.price || ''));
 
     // Kids
     var kidsHtml = '<div class="detail-section-lbl">ילדים</div>';
@@ -512,24 +486,6 @@ function renderDetail(u) {
         '</div>' +
       '</div>' +
 
-      '<div>' +
-        '<div class="mgmt-lbl">מחיר ששולם (₪)</div>' +
-        '<div class="mgmt-row">' +
-          '<input class="mgmt-input" id="price-' + uid + '" type="number" min="0" value="' + priceVal + '" placeholder="0" style="max-width:100px">' +
-          '<button class="btn-save" onclick="saveFieldNum(\'' + uid + '\',\'price\',\'price-' + uid + '\',\'fb-price-' + uid + '\')">שמור</button>' +
-          '<span class="mgmt-feedback" id="fb-price-' + uid + '"></span>' +
-        '</div>' +
-      '</div>' +
-
-      '<div>' +
-        '<div class="mgmt-lbl">פרמיום עד תאריך</div>' +
-        '<div class="mgmt-row">' +
-          '<input class="mgmt-input" id="exp-' + uid + '" type="date" value="' + expVal + '">' +
-          '<button class="btn-save" onclick="savePremiumExpiry(\'' + uid + '\')">קבע</button>' +
-          '<span class="mgmt-feedback" id="fb-exp-' + uid + '"></span>' +
-        '</div>' +
-      '</div>' +
-
     '</div>' +
     '<div class="mgmt-footer">' +
       '<button class="btn-delete" onclick="deleteUser(\'' + uid + '\',\'' + esc(u.name||u.email||'?') + '\')">🗑 מחק משתמש</button>' +
@@ -551,18 +507,6 @@ function toggleExpand(uid) {
     _expandedUid = open ? null : uid;
 }
 
-// ── Premium toggle ───────────────────────────────────────
-function togglePremium(uid, current) {
-    var db = window._firebaseDb;
-    if (!db) return;
-    db.collection('users').doc(uid).set({ premium: !current }, { merge: true })
-        .then(function() { loadUsers(); })
-        .catch(function(e) {
-            if (e.code === 'permission-denied') alert('⚠️ עדכן הרשאות Firestore — המנהל צריך הרשאת כתיבה.');
-            else alert('שגיאה: ' + e.message);
-        });
-}
-
 // ── Save field ───────────────────────────────────────────
 function saveField(uid, field, inputId, fbId) {
     var db = window._firebaseDb;
@@ -571,27 +515,6 @@ function saveField(uid, field, inputId, fbId) {
     var update = {}; update[field] = val;
     db.collection('users').doc(uid).set(update, { merge: true })
         .then(function() { showFb(fbId); reloadUser(uid); })
-        .catch(function(e) { alert('שגיאה: ' + e.message); });
-}
-
-function saveFieldNum(uid, field, inputId, fbId) {
-    var db = window._firebaseDb;
-    if (!db) return;
-    var val = parseFloat(document.getElementById(inputId).value) || 0;
-    var update = {}; update[field] = val;
-    db.collection('users').doc(uid).set(update, { merge: true })
-        .then(function() { showFb(fbId); reloadUser(uid); })
-        .catch(function(e) { alert('שגיאה: ' + e.message); });
-}
-
-function savePremiumExpiry(uid) {
-    var db = window._firebaseDb;
-    if (!db) return;
-    var dateVal = document.getElementById('exp-' + uid).value;
-    if (!dateVal) return;
-    var ts = firebase.firestore.Timestamp.fromDate(new Date(dateVal));
-    db.collection('users').doc(uid).set({ premium: true, premiumUntil: ts }, { merge: true })
-        .then(function() { showFb('fb-exp-' + uid); reloadUser(uid); })
         .catch(function(e) { alert('שגיאה: ' + e.message); });
 }
 

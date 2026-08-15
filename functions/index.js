@@ -1,5 +1,4 @@
 const { onRequest } = require("firebase-functions/v2/https");
-const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { setGlobalOptions } = require("firebase-functions/v2");
 const admin = require("firebase-admin");
@@ -156,85 +155,9 @@ exports.cardcomCallback = onRequest(async (req, res) => {
   res.status(200).send("OK");
 });
 
-// ─── 3. Monthly recurring charge ──────────────────────────────────────────────
-// Runs on the 1st of every month at 08:00 UTC
-exports.chargeMonthly = onSchedule("0 8 1 * *", async () => {
-  const now = new Date();
-
-  const snapshot = await db
-    .collection("users")
-    .where("premium", "==", true)
-    .get();
-
-  for (const doc of snapshot.docs) {
-    const data = doc.data();
-    if (!data.cardcomToken) continue;
-
-    // Skip if subscription is still active
-    if (data.premiumExpiry && data.premiumExpiry.toDate() > now) continue;
-
-    // Subscription period ended — if cancelled, disable premium instead of charging
-    if (data.cancelAtPeriodEnd) {
-      await doc.ref.update({
-        premium: false,
-        cancelAtPeriodEnd: false,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-      console.log(`Subscription ended (cancelled) for user ${doc.id}`);
-      continue;
-    }
-
-    try {
-      const response = await fetch(`${CARDCOM_API_URL}/Tokens/Charge`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          TerminalNumber: CARDCOM_TERMINAL,
-          ApiName: CARDCOM_API_NAME,
-          ApiPass: CARDCOM_API_PASS,
-          Token: data.cardcomToken,
-          Amount: 35,
-          CoinID: 1,
-          ProductName: "מנוי חודשי למדני אנגלית",
-        }),
-      });
-
-      const result = await response.json();
-
-      if (result.ResponseCode === 0) {
-        const expiry = new Date();
-        expiry.setMonth(expiry.getMonth() + 1);
-        await doc.ref.update({
-          premiumExpiry: admin.firestore.Timestamp.fromDate(expiry),
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
-        console.log(`Renewed premium for user ${doc.id}`);
-      } else {
-        // Charge failed — disable premium
-        await doc.ref.update({
-          premium: false,
-          chargeFailedAt: admin.firestore.FieldValue.serverTimestamp(),
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
-        const failedRecord = await admin.auth().getUser(doc.id).catch(() => null);
-        const failedEmail = failedRecord ? failedRecord.email : null;
-        if (failedEmail) {
-          await sendMail(failedEmail,
-            "בעיה בחיוב המנוי שלך — למדני אנגלית",
-            `שלום,\n\nלא הצלחנו לחייב את הכרטיס שלך עבור מנוי למדני אנגלית.\nהגישה לתכנים הושעתה.\n\nלחידוש המנוי, כנס לאפליקציה:\nhttps://lamdanien.co.il/account.html\n\nלעזרה, צור קשר:\nhttps://lamdanien.co.il/contact.html\n\nתודה,\nצוות למדני אנגלית`
-          );
-        }
-        await sendAdminEmail(
-          `כישלון חיוב — ${failedEmail || doc.id}`,
-          `חיוב חודשי נכשל.\n\nאימייל: ${failedEmail || "לא ידוע"}\nUID: ${doc.id}\nשגיאה: ${result.Description || ""}\n\nהמנוי בוטל אוטומטית.`
-        );
-        console.warn(`Charge failed for user ${doc.id}:`, result.Description);
-      }
-    } catch (err) {
-      console.error(`Error charging user ${doc.id}:`, err);
-    }
-  }
-});
+// ─── 3. (removed) Monthly recurring charge ────────────────────────────────────
+// The site is free. The scheduled charge job was deleted so no card can ever be
+// charged, even if a premium flag is set by mistake. See git history to restore.
 
 // ─── 4. Cancel subscription ───────────────────────────────────────────────────
 // Called from client to cancel at end of current period

@@ -20,30 +20,12 @@
         .acc-row:last-child { border-bottom: none; }
         .acc-lbl { font-size: 0.9rem; color: #64748b; }
         .acc-val { font-size: 0.95rem; font-weight: 700; color: #0f172a; }
-        .badge-premium { background: #fefce8; color: #a16207; border: 1px solid #fde68a; padding: 0.2rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; }
-        .badge-free { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; padding: 0.2rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; }
-        .badge-cancelled { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 0.2rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; }
-        .btn-subscribe { display: block; width: 100%; padding: 0.85rem; background: #2563eb; color: #fff; border: none; border-radius: 50px; font-size: 1rem; font-weight: 800; cursor: pointer; font-family: inherit; margin-top: 1rem; }
-        .btn-subscribe:hover { opacity: 0.9; }
         .btn-cancel { display: block; width: 100%; padding: 0.75rem; background: none; color: #dc2626; border: 1.5px solid #fca5a5; border-radius: 50px; font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 0.75rem; }
         .btn-cancel:hover { background: #fef2f2; }
-        .cancel-note { font-size: 0.82rem; color: #94a3b8; text-align: center; margin-top: 0.5rem; line-height: 1.5; }
         .acc-loader { text-align: center; padding: 3rem; color: #94a3b8; }
         .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .info-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 0.9rem 1.1rem; font-size: 0.9rem; color: #166534; margin-top: 0.75rem; }
-        .warn-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 0.9rem 1.1rem; font-size: 0.9rem; color: #92400e; margin-top: 0.75rem; }
-        .btn-settings { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0.7rem 0.9rem; background: #f8fafc; color: #334155; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.92rem; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 1rem; transition: background 0.15s; }
-        .btn-settings:hover { background: #f1f5f9; }
-        .sub-modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.45); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; }
-        .sub-modal-backdrop.open { display: flex; }
-        .sub-modal { background: #fff; border-radius: 18px; width: 100%; max-width: 420px; box-shadow: 0 8px 40px rgba(0,0,0,0.18); animation: modalIn 0.22s ease; overflow: hidden; }
-        @keyframes modalIn { from { opacity: 0; transform: translateY(18px) scale(0.97); } to { opacity: 1; transform: none; } }
-        .sub-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 1.5rem 1rem; border-bottom: 1px solid #f1f5f9; }
-        .sub-modal-title { font-size: 1.05rem; font-weight: 800; color: #0f172a; }
-        .sub-modal-close { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #94a3b8; line-height: 1; padding: 0 0.25rem; }
-        .sub-modal-close:hover { color: #334155; }
-        .sub-modal-body { padding: 1rem 1.5rem 1.5rem; }
         .err-box { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 0.9rem 1.1rem; font-size: 0.9rem; color: #dc2626; margin-top: 0.75rem; }
         .btn-link { background: none; border: none; color: #2563eb; font-size: 0.88rem; font-weight: 600; cursor: pointer; font-family: inherit; padding: 0.4rem 0; text-decoration: underline; display: block; width: 100%; text-align: right; margin-top: 0.5rem; }
         .btn-link:hover { color: #1d4ed8; }
@@ -148,132 +130,15 @@
 <script src="user.js"></script>
 
 <script>
-var CANCEL_FN = 'https://cancelsubscription-2tarox7bha-uc.a.run.app';
-var PAYMENT_FN = 'https://createpaymentsession-2tarox7bha-uc.a.run.app';
 var DELETE_FN  = 'https://us-central1-lamdani-eng.cloudfunctions.net/deleteAccount';
 var _fbUser = null;
-
-function fmtDate(ts) {
-    if (!ts || !ts.toDate) return '—';
-    var d = ts.toDate();
-    return d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
-}
-
-function renderSubscription(data, fbUser) {
-    var el = document.getElementById('accSubContent');
-    if (!el) return; // card replaced with static badge
-
-    // Status row only — always visible
-    var html =
-        '<div class="acc-row"><span class="acc-lbl">סטטוס</span>' +
-        (isCancelled
-            ? '<span class="badge-cancelled">מבוטל — פעיל עד סיום התקופה</span>'
-            : '<span class="badge-premium">⭐ פעיל</span>') +
-        '</div>';
-
-    if (isCancelled) {
-        html += '<div class="warn-box">המנוי בוטל ויסתיים בתאריך ' + (expiry || '—') + '. עד אז תוכל להמשיך להשתמש בכל התכנים.</div>';
-    }
-
-    // Settings modal button
-    html += '<button class="btn-settings" onclick="openSubModal()">' +
-        '<span>אפשרויות והגדרות מנוי</span>' +
-        '<span>←</span>' +
-        '</button>';
-
-    // Build modal content
-    var details = '';
-    if (since) details += '<div class="acc-row"><span class="acc-lbl">תחילת מנוי</span><span class="acc-val">' + since + '</span></div>';
-    if (expiry) details += '<div class="acc-row"><span class="acc-lbl">' + (isCancelled ? 'פעיל עד' : 'חידוש הבא') + '</span><span class="acc-val">' + expiry + '</span></div>';
-    details += '<div class="acc-row"><span class="acc-lbl">עלות חודשית</span><span class="acc-val">35 ₪</span></div>';
-    if (last4) details += '<div class="acc-row"><span class="acc-lbl">כרטיס</span><span class="acc-val" style="direction:ltr">•••• ' + last4 + '</span></div>';
-
-    if (!isCancelled) {
-        details +=
-            '<button class="btn-cancel" onclick="doCancelSubscription()">בטל מנוי</button>' +
-            '<p class="cancel-note">הביטול ייכנס לתוקף בסוף תקופת החיוב הנוכחית.<br>לא יחויב כרטיסך מחדש.</p>';
-    }
-
-    el.innerHTML = html;
-
-    // Inject modal into body (once)
-    if (!document.getElementById('subModal')) {
-        var backdrop = document.createElement('div');
-        backdrop.className = 'sub-modal-backdrop';
-        backdrop.id = 'subModalBackdrop';
-        backdrop.innerHTML =
-            '<div class="sub-modal" id="subModal">' +
-                '<div class="sub-modal-header">' +
-                    '<span class="sub-modal-title">הגדרות מנוי</span>' +
-                    '<button class="sub-modal-close" onclick="closeSubModal()">✕</button>' +
-                '</div>' +
-                '<div class="sub-modal-body">' + details + '</div>' +
-            '</div>';
-        backdrop.addEventListener('click', function(e) { if (e.target === backdrop) closeSubModal(); });
-        document.body.appendChild(backdrop);
-    }
-}
-
-function openSubModal() {
-    var b = document.getElementById('subModalBackdrop');
-    if (b) b.classList.add('open');
-}
-
-function closeSubModal() {
-    var b = document.getElementById('subModalBackdrop');
-    if (b) b.classList.remove('open');
-}
 
 function loadAccount(fbUser) {
     _fbUser = fbUser;
     document.getElementById('accName').textContent = fbUser.displayName || fbUser.email.split('@')[0];
     document.getElementById('accEmail').textContent = fbUser.email || '—';
-
-    firebase.firestore().collection('users').doc(fbUser.uid).get().then(function(doc) {
-        document.getElementById('accLoader').style.display = 'none';
-        document.getElementById('accContent').style.display = 'block';
-        renderSubscription(doc.exists ? doc.data() : {}, fbUser);
-    }).catch(function() {
-        document.getElementById('accLoader').innerHTML = '<p style="color:#ef4444">שגיאה בטעינת נתוני חשבון</p>';
-    });
-}
-
-function goSubscribe() {
-    if (!_fbUser) return;
-    var btn = document.querySelector('.btn-subscribe');
-    btn.textContent = 'טוען...'; btn.disabled = true;
-    _fbUser.getIdToken().then(function(token) {
-        return fetch(PAYMENT_FN, {
-            method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-            body: JSON.stringify({})
-        });
-    }).then(function(r) { return r.json(); }).then(function(data) {
-        if (data.url) window.location.href = data.url;
-        else { alert('שגיאה: ' + (data.error || 'לא ניתן לפתוח עמוד תשלום')); btn.textContent = 'רכוש מנוי — 35 ₪ לחודש ←'; btn.disabled = false; }
-    }).catch(function() { alert('שגיאת תקשורת'); btn.textContent = 'רכוש מנוי — 35 ₪ לחודש ←'; btn.disabled = false; });
-}
-
-function doCancelSubscription() {
-    if (!_fbUser) return;
-    if (!confirm('לבטל את המנוי?\n\nתוכל להמשיך להשתמש בתכנים עד סוף תקופת החיוב הנוכחית.')) return;
-    var btn = document.querySelector('.btn-cancel');
-    btn.textContent = 'מבטל...'; btn.disabled = true;
-    _fbUser.getIdToken().then(function(token) {
-        return fetch(CANCEL_FN, {
-            method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-            body: JSON.stringify({})
-        });
-    }).then(function(r) { return r.json(); }).then(function(data) {
-        if (data.success) {
-            firebase.firestore().collection('users').doc(_fbUser.uid).update({ cancelAtPeriodEnd: true })
-                .then(function() { loadAccount(_fbUser); });
-        } else {
-            alert('שגיאה בביטול — פנה לצור קשר');
-            btn.textContent = 'בטל מנוי'; btn.disabled = false;
-        }
-    }).catch(function() { alert('שגיאת תקשורת'); btn.textContent = 'בטל מנוי'; btn.disabled = false; });
+    document.getElementById('accLoader').style.display = 'none';
+    document.getElementById('accContent').style.display = 'block';
 }
 
 function doChangePassword() {
