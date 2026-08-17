@@ -67,6 +67,10 @@ td{padding:0.8rem 1rem;border-top:1px solid #f1f5f9;vertical-align:middle}
 .date-cell{font-size:0.78rem;color:#64748b;white-space:nowrap}
 .never-used{font-size:0.68rem;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:0.3rem;padding:0.05rem 0.35rem;display:inline-block;margin-top:0.2rem}
 .note-preview{font-size:0.78rem;color:#64748b;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{color:#475569;background:#f1f5f9}
+th.sortable.active{color:#2563eb}
+.sort-arrow{display:inline-block;margin-right:0.3rem;font-size:0.65rem;color:#2563eb}
 
 /* ── toolbar ─────────────────────────────────────────── */
 .toolbar{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap}
@@ -271,11 +275,11 @@ input[type="checkbox"].row-cb{width:15px;height:15px;cursor:pointer;accent-color
         <thead>
           <tr>
             <th style="width:36px;text-align:center"><input type="checkbox" class="row-cb" id="cbSelectAll" onclick="if(this.checked)selectAll();else clearAll()" title="בחר הכל"></th>
-            <th>שם</th>
-            <th>הצטרף</th>
-            <th>סנכרון/פעילות אחרונה</th>
-            <th>ילדים</th>
-            <th>שלבים</th>
+            <th class="sortable" onclick="sortBy('name')">שם<span class="sort-arrow" id="sa-name"></span></th>
+            <th class="sortable" onclick="sortBy('joined')">הצטרף<span class="sort-arrow" id="sa-joined"></span></th>
+            <th class="sortable" onclick="sortBy('activity')">סנכרון/פעילות אחרונה<span class="sort-arrow" id="sa-activity"></span></th>
+            <th class="sortable" onclick="sortBy('kids')">ילדים<span class="sort-arrow" id="sa-kids"></span></th>
+            <th class="sortable" onclick="sortBy('stages')">שלבים<span class="sort-arrow" id="sa-stages"></span></th>
             <th>הערה</th>
           </tr>
         </thead>
@@ -292,6 +296,8 @@ input[type="checkbox"].row-cb{width:15px;height:15px;cursor:pointer;accent-color
 var ADMIN_EMAIL  = 'ishaieran@gmail.com';
 var _allUsers    = [];
 var _expandedUid = null;
+var _sortKey     = 'activity';   // default: most recently active first
+var _sortDir     = -1;           // 1 = ascending, -1 = descending
 
 // Fallback: if auth hasn't resolved in 7s, show login
 setTimeout(function() {
@@ -334,10 +340,6 @@ function loadUsers(keepUid) {
         if (!data.users) throw new Error(data.error || 'תגובה לא תקינה');
         _allUsers = data.users;
         _allUsers.forEach(function(u) { u._uid = u.uid; });
-        _allUsers.sort(function(a, b) {
-            var t = function(u) { return u.lastSyncAt ? Date.parse(u.lastSyncAt) : (u.createdAt ? Date.parse(u.createdAt) : 0); };
-            return t(b) - t(a);
-        });
         renderStats(_allUsers);
         renderTable(_allUsers);
         if (keepUid) {
@@ -367,6 +369,57 @@ function renderStats(users) {
     document.getElementById('statMonth').textContent  = month;
     document.getElementById('statActive').textContent = active;
     document.getElementById('statKids').textContent   = kids;
+}
+
+// ── Sorting ──────────────────────────────────────────────
+// Click a header to sort by it; click again to reverse.
+// Text starts A-Z, dates and numbers start with the largest first.
+function sortBy(key) {
+    if (_sortKey === key) _sortDir = -_sortDir;
+    else { _sortKey = key; _sortDir = (key === 'name') ? 1 : -1; }
+    filterUsers();   // re-renders, keeping any active search
+}
+
+function _sortVal(u) {
+    switch (_sortKey) {
+        case 'name':     return u.name || u.email || '';
+        case 'joined':   return u.createdAt  ? Date.parse(u.createdAt)  : null;
+        case 'activity': return u.lastSyncAt ? Date.parse(u.lastSyncAt) : null;
+        case 'kids':     return Array.isArray(u.kids) ? u.kids.length : 0;
+        case 'stages':   return countDone(u.progress);
+    }
+    return null;
+}
+
+function applySort(users) {
+    var arr = users.slice();
+    arr.sort(function(a, b) {
+        var x = _sortVal(a), y = _sortVal(b);
+        // Rows with no value sink to the bottom in both directions,
+        // so reversing never fills the top with blanks
+        var xEmpty = (x === null || x === ''), yEmpty = (y === null || y === '');
+        if (xEmpty && yEmpty) return 0;
+        if (xEmpty) return 1;
+        if (yEmpty) return -1;
+        if (_sortKey === 'name') return String(x).localeCompare(String(y), 'he') * _sortDir;
+        return (x - y) * _sortDir;
+    });
+    return arr;
+}
+
+function updateSortArrows() {
+    ['name','joined','activity','kids','stages'].forEach(function(k) {
+        var el = document.getElementById('sa-' + k);
+        if (!el) return;
+        var th = el.parentElement;
+        if (_sortKey === k) {
+            el.textContent = (_sortDir === 1) ? '▲' : '▼';
+            if (th) th.classList.add('active');
+        } else {
+            el.textContent = '';
+            if (th) th.classList.remove('active');
+        }
+    });
 }
 
 // ── Table ────────────────────────────────────────────────
@@ -409,6 +462,8 @@ function countDone(progress) {
 
 function renderTable(users) {
     var tbody = document.getElementById('usersBody');
+    updateSortArrows();
+    users = applySort(users);
     if (!users.length) {
         tbody.innerHTML = '<tr class="empty-row"><td colspan="7">לא נמצאו משתמשים</td></tr>';
         return;
