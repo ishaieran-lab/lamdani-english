@@ -71,6 +71,8 @@ th.sortable{cursor:pointer;user-select:none}
 th.sortable:hover{color:#475569;background:#f1f5f9}
 th.sortable.active{color:#2563eb}
 .sort-arrow{display:inline-block;margin-right:0.3rem;font-size:0.65rem;color:#2563eb}
+.sort-arrow.idle{color:#cbd5e1}
+th.sortable:hover .sort-arrow.idle{color:#94a3b8}
 
 /* ── toolbar ─────────────────────────────────────────── */
 .toolbar{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap}
@@ -275,11 +277,11 @@ input[type="checkbox"].row-cb{width:15px;height:15px;cursor:pointer;accent-color
         <thead>
           <tr>
             <th style="width:36px;text-align:center"><input type="checkbox" class="row-cb" id="cbSelectAll" onclick="if(this.checked)selectAll();else clearAll()" title="בחר הכל"></th>
-            <th class="sortable" onclick="sortBy('name')">שם<span class="sort-arrow" id="sa-name"></span></th>
-            <th class="sortable" onclick="sortBy('joined')">הצטרף<span class="sort-arrow" id="sa-joined"></span></th>
-            <th class="sortable" onclick="sortBy('activity')">סנכרון/פעילות אחרונה<span class="sort-arrow" id="sa-activity"></span></th>
-            <th class="sortable" onclick="sortBy('kids')">ילדים<span class="sort-arrow" id="sa-kids"></span></th>
-            <th class="sortable" onclick="sortBy('stages')">שלבים<span class="sort-arrow" id="sa-stages"></span></th>
+            <th class="sortable" onclick="sortBy('name')">שם<span class="sort-arrow idle" id="sa-name">⇅</span></th>
+            <th class="sortable" onclick="sortBy('joined')">הצטרף<span class="sort-arrow idle" id="sa-joined">⇅</span></th>
+            <th class="sortable" onclick="sortBy('activity')">סנכרון/פעילות אחרונה<span class="sort-arrow idle" id="sa-activity">⇅</span></th>
+            <th class="sortable" onclick="sortBy('kids')">ילדים<span class="sort-arrow idle" id="sa-kids">⇅</span></th>
+            <th class="sortable" onclick="sortBy('stages')">שלבים<span class="sort-arrow idle" id="sa-stages">⇅</span></th>
             <th>הערה</th>
           </tr>
         </thead>
@@ -412,13 +414,11 @@ function updateSortArrows() {
         var el = document.getElementById('sa-' + k);
         if (!el) return;
         var th = el.parentElement;
-        if (_sortKey === k) {
-            el.textContent = (_sortDir === 1) ? '▲' : '▼';
-            if (th) th.classList.add('active');
-        } else {
-            el.textContent = '';
-            if (th) th.classList.remove('active');
-        }
+        var on = (_sortKey === k);
+        // Idle columns keep a faint marker so it stays obvious they sort too
+        el.textContent = on ? ((_sortDir === 1) ? '▲' : '▼') : '⇅';
+        el.className   = on ? 'sort-arrow' : 'sort-arrow idle';
+        if (th) th.classList.toggle('active', on);
     });
 }
 
