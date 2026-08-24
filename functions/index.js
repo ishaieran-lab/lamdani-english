@@ -367,6 +367,7 @@ exports.adminListUsers = onRequest(
             premium: !!d.premium,
             premiumUntil: toIso(d.premiumUntil),
             lastSyncAt: toIso(d.lastSyncAt),
+            lastVisitAt: toIso(d.lastVisitAt),
           };
         });
 

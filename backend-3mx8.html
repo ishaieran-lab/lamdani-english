@@ -279,6 +279,7 @@ input[type="checkbox"].row-cb{width:15px;height:15px;cursor:pointer;accent-color
             <th style="width:36px;text-align:center"><input type="checkbox" class="row-cb" id="cbSelectAll" onclick="if(this.checked)selectAll();else clearAll()" title="בחר הכל"></th>
             <th class="sortable" onclick="sortBy('name')">שם<span class="sort-arrow idle" id="sa-name">⇅</span></th>
             <th class="sortable" onclick="sortBy('joined')">הצטרף<span class="sort-arrow idle" id="sa-joined">⇅</span></th>
+            <th class="sortable" onclick="sortBy('visit')">ביקור אחרון<span class="sort-arrow idle" id="sa-visit">⇅</span></th>
             <th class="sortable" onclick="sortBy('activity')">סנכרון/פעילות אחרונה<span class="sort-arrow idle" id="sa-activity">⇅</span></th>
             <th class="sortable" onclick="sortBy('kids')">ילדים<span class="sort-arrow idle" id="sa-kids">⇅</span></th>
             <th class="sortable" onclick="sortBy('stages')">שלבים<span class="sort-arrow idle" id="sa-stages">⇅</span></th>
@@ -286,7 +287,7 @@ input[type="checkbox"].row-cb{width:15px;height:15px;cursor:pointer;accent-color
           </tr>
         </thead>
         <tbody id="usersBody">
-          <tr class="empty-row"><td colspan="7"><span class="spinner"></span> טוען משתמשים...</td></tr>
+          <tr class="empty-row"><td colspan="8"><span class="spinner"></span> טוען משתמשים...</td></tr>
         </tbody>
       </table>
     </div>
@@ -330,7 +331,7 @@ function doLogout() { if (window._firebaseAuth) window._firebaseAuth.signOut(); 
 function loadUsers(keepUid) {
     var auth = window._firebaseAuth;
     var tbody = document.getElementById('usersBody');
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="7"><span class="spinner"></span> טוען...</td></tr>';
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="8"><span class="spinner"></span> טוען...</td></tr>';
     _expandedUid = null;
     if (!auth || !auth.currentUser) { setTimeout(function() { loadUsers(keepUid); }, 500); return; }
     auth.currentUser.getIdToken().then(function(token) {
@@ -350,7 +351,7 @@ function loadUsers(keepUid) {
         }
     })
     .catch(function(e) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="7">שגיאה: ' + e.message + '</td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="8">שגיאה: ' + e.message + '</td></tr>';
     });
 }
 
@@ -385,8 +386,9 @@ function sortBy(key) {
 function _sortVal(u) {
     switch (_sortKey) {
         case 'name':     return u.name || u.email || '';
-        case 'joined':   return u.createdAt  ? Date.parse(u.createdAt)  : null;
-        case 'activity': return u.lastSyncAt ? Date.parse(u.lastSyncAt) : null;
+        case 'joined':   return u.createdAt   ? Date.parse(u.createdAt)   : null;
+        case 'visit':    return u.lastVisitAt ? Date.parse(u.lastVisitAt) : null;
+        case 'activity': return u.lastSyncAt  ? Date.parse(u.lastSyncAt)  : null;
         case 'kids':     return Array.isArray(u.kids) ? u.kids.length : 0;
         case 'stages':   return countDone(u.progress);
     }
@@ -410,7 +412,7 @@ function applySort(users) {
 }
 
 function updateSortArrows() {
-    ['name','joined','activity','kids','stages'].forEach(function(k) {
+    ['name','joined','visit','activity','kids','stages'].forEach(function(k) {
         var el = document.getElementById('sa-' + k);
         if (!el) return;
         var th = el.parentElement;
@@ -465,7 +467,7 @@ function renderTable(users) {
     updateSortArrows();
     users = applySort(users);
     if (!users.length) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="7">לא נמצאו משתמשים</td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="8">לא נמצאו משתמשים</td></tr>';
         return;
     }
     var html = '';
@@ -486,13 +488,14 @@ function renderTable(users) {
                '<div class="user-email">' + esc(u.email||'—') + '</div>' +
                (u.hasData ? '' : '<div class="never-used">טרם השתמש באתר</div>') + '</td>' +
           '<td class="date-cell">' + fmtDate(u.createdAt) + '</td>' +
+          '<td class="date-cell">' + fmtSyncDate(u.lastVisitAt) + '</td>' +
           '<td class="date-cell">' + fmtSyncDate(u.lastSyncAt) + '</td>' +
           '<td style="font-weight:600">' + kids.length + '</td>' +
           '<td style="font-weight:600">' + done + '</td>' +
           '<td class="note-preview">' + (note || '<span style="color:#cbd5e1">—</span>') + '</td>' +
         '</tr>' +
         '<tr class="detail-row" id="detail-' + uid + '" style="display:none">' +
-          '<td colspan="7"><div class="detail-inner">' + renderDetail(u) + '</div></td>' +
+          '<td colspan="8"><div class="detail-inner">' + renderDetail(u) + '</div></td>' +
         '</tr>';
     });
     tbody.innerHTML = html;

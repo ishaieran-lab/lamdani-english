@@ -75,6 +75,9 @@ function fsyncUserLogin(fbUser) {
             email: fbUser.email,
             name:  fbUser.displayName || fbUser.email.split('@')[0],
             lastLogin: new Date().toISOString(),
+            // Runs on every page load of a signed-in user, so this tracks visits
+            // rather than sign-ins (a restored session never counts as a sign-in)
+            lastVisitAt: new Date().toISOString(),
             kids: kidsData,
             progress: mergedProgress
         };
