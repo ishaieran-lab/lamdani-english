@@ -3,6 +3,51 @@
 function _fsDb()  { return window._firebaseDb || null; }
 function _fsUid() { var p = typeof getParent === 'function' ? getParent() : null; return p ? p.uid : null; }
 
+// ── Progress merging ────────────────────────────────────────────────────────
+// Progress is progress[kidId][module][stageIdx] = { grammarBest, vocabBest,
+// ruleViewed, lastActivity, ... }. Two devices hold two partial copies, so the
+// merge keeps the better of each field rather than letting one side win.
+
+function _mergeStage(a, b) {
+    if (!a || typeof a !== 'object') return b || {};
+    if (!b || typeof b !== 'object') return a;
+    var out = {}, keys = {};
+    Object.keys(a).forEach(function(k) { keys[k] = 1; });
+    Object.keys(b).forEach(function(k) { keys[k] = 1; });
+    Object.keys(keys).forEach(function(k) {
+        var x = a[k], y = b[k];
+        if (x === undefined) { out[k] = y; return; }
+        if (y === undefined) { out[k] = x; return; }
+        // "viewed" flags: seen on either device means seen
+        if (typeof x === 'boolean' || typeof y === 'boolean') { out[k] = !!(x || y); return; }
+        // scores and attempt counts: keep the higher. Not a sum — both copies
+        // may already share history, and summing would double-count it.
+        if (typeof x === 'number' && typeof y === 'number') { out[k] = Math.max(x, y); return; }
+        // ISO timestamps compare correctly as strings, so this keeps the later one
+        out[k] = (String(x) > String(y)) ? x : y;
+    });
+    return out;
+}
+
+function _mergeKidProgress(cloud, local) {
+    if (!cloud || typeof cloud !== 'object') return local || {};
+    if (!local || typeof local !== 'object') return cloud;
+    var out = {}, modules = {};
+    Object.keys(cloud).forEach(function(m) { modules[m] = 1; });
+    Object.keys(local).forEach(function(m) { modules[m] = 1; });
+    Object.keys(modules).forEach(function(m) {
+        var c = cloud[m], l = local[m];
+        if (!c || typeof c !== 'object') { out[m] = l; return; }
+        if (!l || typeof l !== 'object') { out[m] = c; return; }
+        var stages = {};
+        Object.keys(c).forEach(function(s) { stages[s] = 1; });
+        Object.keys(l).forEach(function(s) { stages[s] = 1; });
+        out[m] = {};
+        Object.keys(stages).forEach(function(s) { out[m][s] = _mergeStage(c[s], l[s]); });
+    });
+    return out;
+}
+
 // Called once on login — merges local kids with Firestore and writes back
 function fsyncUserLogin(fbUser) {
     var db = _fsDb();
@@ -45,7 +90,9 @@ function fsyncUserLogin(fbUser) {
             if (!exists) merged.push(lk);
         });
 
-        // Merge progress: local wins, Firestore fills the rest
+        // Merge progress stage by stage, so a device never erases work done
+        // elsewhere. Replacing the whole kid here used to make two devices
+        // overwrite each other, with the last one to sign in winning.
         var mergedProgress = {};
         if (data.progress) {
             Object.keys(data.progress).forEach(function(kid_id) {
@@ -54,9 +101,10 @@ function fsyncUserLogin(fbUser) {
         }
         merged.forEach(function(k) {
             var raw = localStorage.getItem('engProgress_' + k.id);
-            if (raw) {
-                try { mergedProgress[k.id] = JSON.parse(raw); } catch(e) {}
-            }
+            if (!raw) return;
+            var localP;
+            try { localP = JSON.parse(raw); } catch(e) { return; }
+            mergedProgress[k.id] = _mergeKidProgress(mergedProgress[k.id], localP);
         });
 
         // Save merged list to localStorage
