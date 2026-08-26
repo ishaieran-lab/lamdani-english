@@ -777,7 +777,12 @@ function _deleteKid(id) {
                 var kidsData = remaining.map(function(k) {
                     return { id: k.id, name: k.name, gender: k.gender || 'male', age: k.age || '', photo: k.photo || '' };
                 });
-                db.collection('users').doc(parent.uid).update({ kids: kidsData })
+                // Record the deletion in the cloud too. Kept only on this device,
+                // any other device that still had the kid would add it back.
+                var delUpdate = { kids: kidsData };
+                delUpdate.deletedKids = firebase.firestore.FieldValue.arrayUnion(id);
+                delUpdate['progress.' + id] = firebase.firestore.FieldValue.delete();
+                db.collection('users').doc(parent.uid).update(delUpdate)
                     .catch(function(e) {
                         console.warn('[fsync] delete kid error:', e.message);
                         alert('הפרופיל נמחק במכשיר זה, אך שמירה בענן נכשלה.\nאם תיכנס ממכשיר אחר הפרופיל עלול להופיע שוב.\nנסה שוב מאוחר יותר.');

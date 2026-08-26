@@ -29,6 +29,22 @@ function _mergeStage(a, b) {
     return out;
 }
 
+// The write below uses set+merge, which merges nested maps rather than
+// replacing them — so a kid dropped locally would survive in the cloud.
+// Deleted kids that still have progress there get an explicit delete marker.
+function _progressForCloud(mergedProgress, deletedKids, cloudProgress) {
+    var out = {};
+    Object.keys(mergedProgress).forEach(function(id) { out[id] = mergedProgress[id]; });
+    if (!cloudProgress) return out;
+    var del = (window.firebase && firebase.firestore && firebase.firestore.FieldValue)
+        ? firebase.firestore.FieldValue.delete() : null;
+    if (!del) return out;
+    deletedKids.forEach(function(id) {
+        if (cloudProgress[id] !== undefined) out[id] = del;
+    });
+    return out;
+}
+
 function _mergeKidProgress(cloud, local) {
     if (!cloud || typeof cloud !== 'object') return local || {};
     if (!local || typeof local !== 'object') return cloud;
@@ -72,8 +88,17 @@ function fsyncUserLogin(fbUser) {
 
         // Firestore is source of truth — build list from server, filtered by local deletions
         var fsKids = (doc.exists && data.kids) ? data.kids : [];
-        var deletedKids = [];
-        try { deletedKids = JSON.parse(localStorage.getItem('lmd_deleted_kids') || '[]'); } catch(e) {}
+
+        // Deletions live in the cloud so every device honours them. The local
+        // list is still read and merged in, which carries up any deletion made
+        // before this shipped — otherwise those kids keep coming back.
+        var deletedKids = Array.isArray(data.deletedKids) ? data.deletedKids.slice() : [];
+        try {
+            JSON.parse(localStorage.getItem('lmd_deleted_kids') || '[]').forEach(function(id) {
+                if (deletedKids.indexOf(id) === -1) deletedKids.push(id);
+            });
+        } catch(e) {}
+        try { localStorage.setItem('lmd_deleted_kids', JSON.stringify(deletedKids)); } catch(e) {}
 
         // Start from Firestore kids, skip any that were locally deleted
         var merged = [];
@@ -107,6 +132,13 @@ function fsyncUserLogin(fbUser) {
             mergedProgress[k.id] = _mergeKidProgress(mergedProgress[k.id], localP);
         });
 
+        // Drop progress belonging to deleted kids, otherwise it lingers in the
+        // cloud and still counts towards the stage totals in the admin panel
+        deletedKids.forEach(function(id) {
+            delete mergedProgress[id];
+            try { localStorage.removeItem('engProgress_' + id); } catch(e) {}
+        });
+
         // Save merged list to localStorage
         if (typeof saveChildren === 'function') saveChildren(merged);
         merged.forEach(function(k) {
@@ -127,7 +159,8 @@ function fsyncUserLogin(fbUser) {
             // rather than sign-ins (a restored session never counts as a sign-in)
             lastVisitAt: new Date().toISOString(),
             kids: kidsData,
-            progress: mergedProgress
+            deletedKids: deletedKids,
+            progress: _progressForCloud(mergedProgress, deletedKids, data.progress)
         };
 
         return userRef.set(updates, { merge: true });
