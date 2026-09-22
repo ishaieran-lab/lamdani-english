@@ -28,6 +28,54 @@
         .map-svg .ms-btn:hover { transform:scale(1.12) translateY(-5px); filter:drop-shadow(0 8px 18px rgba(0,0,0,0.4)); }
         .map-svg .ms-locked { cursor:not-allowed; opacity:0.55; }
         .map-svg .ms-locked:hover { transform:none; filter:none; }
+
+        .lesson-print { background:none; border:none; cursor:pointer; font-size:1.05rem;
+                        padding:0 0.4rem; margin-right:0.5rem; opacity:0.55;
+                        font-family:inherit; line-height:1; }
+        .lesson-print:hover { opacity:1; }
+
+        /* The sheet is built into #printArea but stays out of the way on screen */
+        #printArea { display:none; }
+
+        @media print {
+            body > *:not(#printArea) { display:none !important; }
+            #printArea { display:block !important; }
+
+            @page { size:A4; margin:10mm; }
+            body { background:#fff; }
+
+            .pc-group-title { text-align:center; margin-bottom:4mm; }
+            .pc-group-title span {
+                display:inline-block;
+                font-size:13pt; font-weight:700; color:#000;
+                padding-bottom:1.5mm; border-bottom:1.5pt solid #000;
+            }
+
+            /* Word cards — same sheet as the vocabulary page */
+            .pc-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:0; }
+            .pc-card {
+                position:relative; border:1px dashed #999; height:33mm;
+                display:flex; flex-direction:column;
+                align-items:center; justify-content:center; padding:2mm;
+                break-inside:avoid; page-break-inside:avoid;
+            }
+            .pc-topic { position:absolute; top:1.5mm; font-size:7pt; color:#888;
+                        max-width:90%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+            .pc-en { font-size:17pt; font-weight:700; color:#000; direction:ltr; margin-top:2mm; }
+            .pc-he { font-size:12pt; color:#333; margin-top:2mm; }
+
+            /* Examples — a plain list, kept whole across page breaks */
+            .pr-ex { padding:2.5mm 0; border-bottom:0.5pt solid #ddd;
+                     break-inside:avoid; page-break-inside:avoid; }
+            .pr-ex-en { font-size:12pt; font-weight:700; color:#000; direction:ltr; }
+            .pr-ex-he { font-size:10.5pt; color:#444; margin-top:0.5mm; }
+
+            /* The rule keeps its own markup; just make it read on paper */
+            .pr-rule { font-size:11pt; color:#000; }
+            .pr-rule table { width:100%; border-collapse:collapse; margin:3mm 0; }
+            .pr-rule th, .pr-rule td { border:0.5pt solid #999; padding:1.5mm 2mm; font-size:10pt; }
+            .pr-rule * { break-inside:avoid; page-break-inside:avoid; }
+        }
     </style>
     <!-- Google Analytics — החלף G-SM6JG73T8P במזהה שלך -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SM6JG73T8P"></script>
@@ -62,6 +110,9 @@
 </div>
 
 <!-- ═══ 1. שיעור (3 שלבים) ══════════════════════════════════════ -->
+<!-- Filled in by printLesson(); hidden on screen, revealed only when printing -->
+<div id="printArea"></div>
+
 <div id="viewLesson" class="reading-wrap" style="display:none">
     <button class="back-link" onclick="backToSelect()">→ חזור לשלבים</button>
     <div class="stage-label" id="lessonLabel" style="display:none"></div>
@@ -73,6 +124,7 @@
         <button id="lstep1" class="lesson-step" onclick="goToStep(1)">מילים</button>
         <span class="lesson-step-sep">›</span>
         <button id="lstep2" class="lesson-step" onclick="goToStep(2)">דוגמאות</button>
+        <button class="lesson-print" onclick="printLesson()" title="הדפס את הדף הנוכחי">🖨️</button>
     </div>
 
     <!-- עמוד 0: הסבר -->
@@ -1443,6 +1495,47 @@ function goToStep(n) {
     if (n===0) buildRulePage(s.rule);
     if (n===1) buildVocabPage(s);
     if (n===2) buildExamplesPage(s);
+}
+
+// ── הדפסת דף השיעור ──────────────────────────────────────────
+// One button, three outputs — it prints whichever of the three pages is open.
+function printLesson() {
+    var s = GRAMMAR[curStage];
+    var name = 'שלב ' + (curStage + 1) + ' — ' + s.title;
+    var head = '<div class="pc-group-title"><span>' + name + '</span></div>';
+    var body = '';
+
+    if (lessonStep === 1) {
+        // Cut-out cards, same as the vocabulary sheet
+        body = '<div class="pc-grid">' + (s.words || []).map(function(w) {
+            return '<div class="pc-card">' +
+                       '<div class="pc-topic">' + s.title + '</div>' +
+                       '<div class="pc-en" dir="ltr">' + w.en + '</div>' +
+                       '<div class="pc-he">' + w.he + '</div>' +
+                   '</div>';
+        }).join('') + '</div>';
+
+    } else if (lessonStep === 2) {
+        body = '<div class="pr-examples">' + (s.examples || []).map(function(ex) {
+            return '<div class="pr-ex">' +
+                       '<div class="pr-ex-en" dir="ltr">' + ex.en + '</div>' +
+                       '<div class="pr-ex-he">' + ex.he + '</div>' +
+                   '</div>';
+        }).join('') + '</div>';
+
+    } else {
+        // The rule is rendered HTML, so copy what is on screen and strip the
+        // parts that only make sense with a mouse
+        var clone = document.getElementById('lessonPageRule').cloneNode(true);
+        Array.prototype.forEach.call(
+            clone.querySelectorAll('.lesson-nav, button, .play-btn, .gr-ex-listen'),
+            function(el) { el.parentNode.removeChild(el); }
+        );
+        body = '<div class="pr-rule">' + clone.innerHTML + '</div>';
+    }
+
+    document.getElementById('printArea').innerHTML = head + body;
+    window.print();
 }
 
 function lessonPrev() { if (lessonStep > 0) goToStep(lessonStep - 1); }
