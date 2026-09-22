@@ -21,8 +21,7 @@
         .tile-locked { cursor:default; opacity:0.78; }
         .tile-locked:hover { transform:none; box-shadow:none; border-color:var(--gray-bdr); }
 
-        .print-hint { font-size:0.88rem; color:#64748b; background:#f8fafc; border:1px solid #e2e8f0;
-                      border-radius:0.6rem; padding:0.5rem 0.9rem; margin:0 0 1rem; text-align:center; }
+        .print-hint { font-size:0.88rem; color:#64748b; margin:0 0 1rem; text-align:center; }
 
         /* The flashcard sheet is built into #printArea but stays out of the way on screen */
         #printArea { display:none; }
@@ -46,12 +45,20 @@
                 height:33mm;
                 display:flex; flex-direction:column;
                 align-items:center; justify-content:center;
-                gap:2mm; padding:2mm;
+                padding:2mm;
                 /* never split a card across two pages */
                 break-inside:avoid; page-break-inside:avoid;
             }
-            .pc-en { font-size:17pt; font-weight:700; color:#000; direction:ltr; }
-            .pc-he { font-size:12pt; color:#333; }
+            /* Sits at the top of the card, out of the way of the word itself */
+            .pc-topic {
+                position:absolute; top:1.5mm;
+                font-size:7pt; color:#888;
+                max-width:90%; overflow:hidden;
+                white-space:nowrap; text-overflow:ellipsis;
+            }
+            .pc-card { position:relative; }
+            .pc-en { font-size:17pt; font-weight:700; color:#000; direction:ltr; margin-top:2mm; }
+            .pc-he { font-size:12pt; color:#333; margin-top:2mm; }
         }
     </style>
     <!-- Google Analytics — החלף G-SM6JG73T8P במזהה שלך -->
@@ -2236,7 +2243,10 @@ function printFlashcards() {
         var s = VOCAB[i];
         titles.push(s.title);
         s.words.forEach(function(w) {
+            // Topic name on every card — once cut out, a loose card has nothing
+            // else to say which topic it came from
             html += '<div class="pc-card">' +
+                        '<div class="pc-topic">' + s.title + '</div>' +
                         '<div class="pc-en" dir="ltr">' + w.en + '</div>' +
                         '<div class="pc-he">' + w.he + '</div>' +
                     '</div>';
