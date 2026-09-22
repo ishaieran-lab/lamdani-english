@@ -36,11 +36,16 @@
 
             .pc-group { margin-bottom:6mm; break-inside:auto; }
             .pc-group-title {
-                font-size:13pt; font-weight:700; color:#000;
-                padding-bottom:1.5mm; margin-bottom:2mm;
-                border-bottom:1.5pt solid #000;
+                text-align:center; margin-bottom:2mm;
                 /* a heading must never be the last thing on a page */
                 break-after:avoid; page-break-after:avoid;
+            }
+            /* inline-block so the rule sits under the words, not across the page */
+            .pc-group-title span {
+                display:inline-block;
+                font-size:13pt; font-weight:700; color:#000;
+                padding-bottom:1.5mm;
+                border-bottom:1.5pt solid #000;
             }
 
             .pc-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:0; }
@@ -99,7 +104,7 @@
 <div id="viewTopics" class="reading-wrap" style="max-width:1200px">
     <button class="back-link" id="topicsBackBtn" onclick="window.location.href='app.html'">→ חזור לפרקים</button>
     <h2 class="section-title" style="font-size:1.3rem" id="levelTitle">אוצר מילים — נושאים</h2>
-    <div class="print-hint">💡 להדפסת כרטיסיות למילים — גלול למטה ולחץ "בוחן/הדפסה"</div>
+    <div class="print-hint">להדפסת כרטיסיות למילים — גלול למטה ולחץ "בוחן/הדפסה"</div>
     <div id="vocabSummary"></div>
     <div class="topic-tiles-grid" id="stageCards"></div>
     <div class="full-quiz-wrap">
@@ -2259,7 +2264,7 @@ function printFlashcards() {
         }).join('');
         // Each topic is its own block, so one never spills into another's row
         html += '<div class="pc-group">' +
-                    '<div class="pc-group-title">' + name + '</div>' +
+                    '<div class="pc-group-title"><span>' + name + '</span></div>' +
                     '<div class="pc-grid">' + cards + '</div>' +
                 '</div>';
     });
