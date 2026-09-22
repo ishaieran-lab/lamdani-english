@@ -74,7 +74,19 @@
             .pr-rule { font-size:11pt; color:#000; }
             .pr-rule table { width:100%; border-collapse:collapse; margin:3mm 0; }
             .pr-rule th, .pr-rule td { border:0.5pt solid #999; padding:1.5mm 2mm; font-size:10pt; }
-            .pr-rule * { break-inside:avoid; page-break-inside:avoid; }
+
+            /* Only keep small units whole. Applying this to every element made
+               any block that did not fit jump to a fresh page, leaving the rest
+               of the sheet blank. */
+            .pr-rule tr, .pr-rule li { break-inside:avoid; page-break-inside:avoid; }
+
+            /* Artwork scales to the page. The height cap keeps a tall infographic
+               on a single sheet instead of straddling two. */
+            .pr-rule img, .pr-rule svg { max-width:100%; max-height:245mm; height:auto; }
+
+            /* Screen layout leaves generous gaps that waste paper */
+            .pr-rule > * { margin-top:0; margin-bottom:2mm; }
+            .pr-rule h1, .pr-rule h2, .pr-rule h3 { margin:2mm 0 1mm; }
         }
     </style>
     <!-- Google Analytics — החלף G-SM6JG73T8P במזהה שלך -->
