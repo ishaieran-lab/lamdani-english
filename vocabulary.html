@@ -20,6 +20,39 @@
         .topic-tile { position:relative; }
         .tile-locked { cursor:default; opacity:0.78; }
         .tile-locked:hover { transform:none; box-shadow:none; border-color:var(--gray-bdr); }
+
+        .print-hint { font-size:0.88rem; color:#64748b; background:#f8fafc; border:1px solid #e2e8f0;
+                      border-radius:0.6rem; padding:0.5rem 0.9rem; margin:0 0 1rem; text-align:center; }
+
+        /* The flashcard sheet is built into #printArea but stays out of the way on screen */
+        #printArea { display:none; }
+
+        @media print {
+            /* Hide the app, show only the sheet */
+            body > *:not(#printArea) { display:none !important; }
+            #printArea { display:block !important; }
+
+            @page { size:A4; margin:10mm; }
+            body { background:#fff; }
+
+            .pc-head { text-align:center; margin-bottom:6mm; }
+            .pc-title { font-size:15pt; font-weight:700; color:#000; }
+            .pc-sub { font-size:9pt; color:#444; margin-top:1mm; }
+
+            .pc-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:0; }
+
+            .pc-card {
+                border:1px dashed #999;
+                height:33mm;
+                display:flex; flex-direction:column;
+                align-items:center; justify-content:center;
+                gap:2mm; padding:2mm;
+                /* never split a card across two pages */
+                break-inside:avoid; page-break-inside:avoid;
+            }
+            .pc-en { font-size:17pt; font-weight:700; color:#000; direction:ltr; }
+            .pc-he { font-size:12pt; color:#333; }
+        }
     </style>
     <!-- Google Analytics — החלף G-SM6JG73T8P במזהה שלך -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SM6JG73T8P"></script>
@@ -48,14 +81,18 @@
 </nav>
 
 <!-- ═══ 0b. בחירת נושא ═══════════════════════════════════════════ -->
+<!-- Filled in by printFlashcards(); hidden on screen, revealed only when printing -->
+<div id="printArea"></div>
+
 <div id="viewTopics" class="reading-wrap" style="max-width:1200px">
     <button class="back-link" id="topicsBackBtn" onclick="window.location.href='app.html'">→ חזור לפרקים</button>
     <h2 class="section-title" style="font-size:1.3rem" id="levelTitle">אוצר מילים — נושאים</h2>
+    <div class="print-hint">💡 להדפסת כרטיסיות למילים — גלול למטה ולחץ "בוחן/הדפסה"</div>
     <div id="vocabSummary"></div>
     <div class="topic-tiles-grid" id="stageCards"></div>
     <div class="full-quiz-wrap">
         <div class="quiz-menu-wrap" id="quizMenuWrap">
-            <button class="btn-check-3d quiz-menu-trigger">בוחן</button>
+            <button class="btn-check-3d quiz-menu-trigger">בוחן/הדפסה</button>
             <div class="quiz-menu-panel">
                 <div class="quiz-menu-item" onclick="startFullQuiz()">
                     <span>כל המילים</span>
@@ -65,13 +102,17 @@
                     <span>בוחן על הנלמד</span>
                     <span class="quiz-menu-count" id="learnedQuizCount"></span>
                 </div>
-                <div class="quiz-menu-item" onclick="toggleSelectMode()">
+                <div class="quiz-menu-item" onclick="toggleSelectMode('quiz')">
                     <span>בחר כרטיסיות</span>
+                </div>
+                <div class="quiz-menu-item" onclick="toggleSelectMode('print')">
+                    <span>🖨️ הדפס כרטיסיות</span>
                 </div>
             </div>
         </div>
         <div class="select-action-bar" id="selectActionBar" style="display:none">
             <button class="btn-check-3d" id="btnStartCustom" onclick="startCustomQuiz()" disabled style="opacity:0.4;cursor:default">התחל בוחן</button>
+            <button class="btn-check-3d" id="btnPrintCards" onclick="printFlashcards()" disabled style="display:none;opacity:0.4;cursor:default">🖨️ הדפס</button>
             <button class="btn-check-3d" onclick="toggleSelectMode()">ביטול</button>
             <span id="selectCount" style="display:none"></span>
         </div>
@@ -2104,13 +2145,20 @@ function initStageCards() {
 
 window.onProgressUpdated = initStageCards;
 
-function toggleSelectMode() {
-    selectMode = !selectMode;
+// Selection mode serves both the custom quiz and printing; the purpose decides
+// which action button the bar shows. Called with no argument to cancel.
+var selectPurpose = 'quiz';
+
+function toggleSelectMode(purpose) {
+    selectMode = purpose ? !(selectMode && selectPurpose === purpose) : false;
+    if (selectMode) selectPurpose = purpose;
     selectedIndices = [];
     var bar = document.getElementById('selectActionBar');
     var menuWrap = document.getElementById('quizMenuWrap');
     bar.style.display = selectMode ? 'flex' : 'none';
     menuWrap.style.display = selectMode ? 'none' : 'inline-block';
+    document.getElementById('btnStartCustom').style.display = (selectMode && selectPurpose === 'quiz')  ? '' : 'none';
+    document.getElementById('btnPrintCards').style.display  = (selectMode && selectPurpose === 'print') ? '' : 'none';
     updateSelectCount();
     initStageCards();
 }
@@ -2127,7 +2175,7 @@ function toggleTile(i) {
 function updateSelectCount() {
     var totalWords = selectedIndices.reduce(function(sum, i) { return sum + VOCAB[i].words.length; }, 0);
     var el  = document.getElementById('selectCount');
-    var btn = document.getElementById('btnStartCustom');
+    var btn = document.getElementById(selectPurpose === 'print' ? 'btnPrintCards' : 'btnStartCustom');
     if (selectedIndices.length === 0) {
         el.textContent = 'לא נבחרו כרטיסיות';
         btn.disabled = true;
@@ -2173,6 +2221,38 @@ function startCustomQuiz() {
     document.getElementById('quizMenuWrap').style.display = 'inline-block';
     showView('viewQuiz');
     renderQuizWord();
+}
+
+// ════════════════════════════════════════════════════════════════
+// הדפסת כרטיסיות
+// ════════════════════════════════════════════════════════════════
+// Builds a cut-out flashcard sheet from the selected topics. The sheet lives in
+// a container that only the print stylesheet reveals, so nothing on screen moves.
+function printFlashcards() {
+    if (!selectedIndices.length) return;
+
+    var titles = [], html = '';
+    selectedIndices.forEach(function(i) {
+        var s = VOCAB[i];
+        titles.push(s.title);
+        s.words.forEach(function(w) {
+            html += '<div class="pc-card">' +
+                        '<div class="pc-en" dir="ltr">' + w.en + '</div>' +
+                        '<div class="pc-he">' + w.he + '</div>' +
+                    '</div>';
+        });
+    });
+
+    var total = selectedIndices.reduce(function(n, i) { return n + VOCAB[i].words.length; }, 0);
+    var area  = document.getElementById('printArea');
+    area.innerHTML =
+        '<div class="pc-head">' +
+            '<div class="pc-title">אוצר מילים — כרטיסיות לגזירה</div>' +
+            '<div class="pc-sub">' + titles.join(' · ') + ' — ' + total + ' מילים</div>' +
+        '</div>' +
+        '<div class="pc-grid">' + html + '</div>';
+
+    window.print();
 }
 
 // ════════════════════════════════════════════════════════════════
