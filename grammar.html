@@ -1518,12 +1518,18 @@ function printLesson() {
     var body = '';
 
     if (lessonStep === 1) {
-        // Cut-out cards, same as the vocabulary sheet
-        body = '<div class="pc-grid">' + (s.words || []).map(function(w) {
+        // Cut-out cards, same as the vocabulary sheet. Some entries hold a
+        // multi-part form ("am → is"), which the screen stacks on its own line.
+        var stack = function(t) {
+            return String(t).split(' → ').map(function(p) {
+                return '<span style="display:block">' + p + '</span>';
+            }).join('');
+        };
+        body = '<div class="pc-grid">' + (s.vocab || []).map(function(w) {
             return '<div class="pc-card">' +
                        '<div class="pc-topic">' + s.title + '</div>' +
-                       '<div class="pc-en" dir="ltr">' + w.en + '</div>' +
-                       '<div class="pc-he">' + w.he + '</div>' +
+                       '<div class="pc-en" dir="ltr">' + stack(w.en) + '</div>' +
+                       '<div class="pc-he">' + stack(w.he) + '</div>' +
                    '</div>';
         }).join('') + '</div>';
 
