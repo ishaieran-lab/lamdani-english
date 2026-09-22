@@ -34,9 +34,14 @@
             @page { size:A4; margin:10mm; }
             body { background:#fff; }
 
-            .pc-head { text-align:center; margin-bottom:6mm; }
-            .pc-title { font-size:15pt; font-weight:700; color:#000; }
-            .pc-sub { font-size:9pt; color:#444; margin-top:1mm; }
+            .pc-group { margin-bottom:6mm; break-inside:auto; }
+            .pc-group-title {
+                font-size:13pt; font-weight:700; color:#000;
+                padding-bottom:1.5mm; margin-bottom:2mm;
+                border-bottom:1.5pt solid #000;
+                /* a heading must never be the last thing on a page */
+                break-after:avoid; page-break-after:avoid;
+            }
 
             .pc-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:0; }
 
@@ -2238,30 +2243,28 @@ function startCustomQuiz() {
 function printFlashcards() {
     if (!selectedIndices.length) return;
 
-    var titles = [], html = '';
+    var html = '';
     selectedIndices.forEach(function(i) {
         var s = VOCAB[i];
-        titles.push(s.title);
-        s.words.forEach(function(w) {
-            // Topic name on every card — once cut out, a loose card has nothing
-            // else to say which topic it came from
-            html += '<div class="pc-card">' +
-                        '<div class="pc-topic">' + s.title + '</div>' +
-                        '<div class="pc-en" dir="ltr">' + w.en + '</div>' +
-                        '<div class="pc-he">' + w.he + '</div>' +
-                    '</div>';
-        });
+        // Only one topic carries this suffix, and it reads as clutter in a heading
+        var name = s.title.replace(/\s*[–-]\s*נושא\s*$/, '');
+        var cards = s.words.map(function(w) {
+            // Topic name on every card too — once cut out, a loose card has
+            // nothing else to say which topic it came from
+            return '<div class="pc-card">' +
+                       '<div class="pc-topic">' + name + '</div>' +
+                       '<div class="pc-en" dir="ltr">' + w.en + '</div>' +
+                       '<div class="pc-he">' + w.he + '</div>' +
+                   '</div>';
+        }).join('');
+        // Each topic is its own block, so one never spills into another's row
+        html += '<div class="pc-group">' +
+                    '<div class="pc-group-title">' + name + '</div>' +
+                    '<div class="pc-grid">' + cards + '</div>' +
+                '</div>';
     });
 
-    var total = selectedIndices.reduce(function(n, i) { return n + VOCAB[i].words.length; }, 0);
-    var area  = document.getElementById('printArea');
-    area.innerHTML =
-        '<div class="pc-head">' +
-            '<div class="pc-title">אוצר מילים — כרטיסיות לגזירה</div>' +
-            '<div class="pc-sub">' + titles.join(' · ') + ' — ' + total + ' מילים</div>' +
-        '</div>' +
-        '<div class="pc-grid">' + html + '</div>';
-
+    document.getElementById('printArea').innerHTML = html;
     window.print();
 }
 
