@@ -20,7 +20,11 @@ const FUNCTIONS_URL = "https://cardcomcallback-2tarox7bha-uc.a.run.app";
 // Gmail credentials — loaded from functions/.env
 const GMAIL_USER = process.env.GMAIL_USER || "";
 const GMAIL_APP_PASS = process.env.GMAIL_APP_PASS || "";
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || GMAIL_USER;
+// Two separate things that used to share one value:
+// ADMIN_EMAIL  — the account allowed to call the admin endpoints
+// NOTIFY_EMAIL — where the site's own notifications land
+const ADMIN_EMAIL  = process.env.ADMIN_EMAIL || GMAIL_USER;
+const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || ADMIN_EMAIL;
 
 async function sendMail(to, subject, text) {
   if (!GMAIL_USER || !GMAIL_APP_PASS) return;
@@ -37,7 +41,7 @@ async function sendMail(to, subject, text) {
 }
 
 async function sendAdminEmail(subject, text) {
-  return sendMail(ADMIN_EMAIL, subject, text);
+  return sendMail(NOTIFY_EMAIL, subject, text);
 }
 
 // ─── 1. Create Cardcom payment session ────────────────────────────────────────
