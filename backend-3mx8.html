@@ -668,8 +668,15 @@ function doSendBulkEmail() {
     }).then(function(res) { return res.json(); })
     .then(function(data) {
         if (data.sent !== undefined) {
-            statusEl.textContent = '✓ נשלח ל-' + data.sent + ' נמענים' + (data.failed ? ' (' + data.failed + ' נכשלו)' : '');
-            statusEl.style.color = data.failed ? '#ca8a04' : '#16a34a';
+            if (!data.sent) {
+                // Nothing went out — never dress that up with a tick
+                var why = (data.errors && data.errors[0] && data.errors[0].error) || 'שגיאה';
+                statusEl.textContent = '✗ לא נשלח — ' + why;
+                statusEl.style.color = '#dc2626';
+            } else {
+                statusEl.textContent = '✓ נשלח ל-' + data.sent + ' נמענים' + (data.failed ? ' (' + data.failed + ' נכשלו)' : '');
+                statusEl.style.color = data.failed ? '#ca8a04' : '#16a34a';
+            }
         } else {
             statusEl.textContent = '✗ ' + (data.error || 'שגיאה');
             statusEl.style.color = '#dc2626';

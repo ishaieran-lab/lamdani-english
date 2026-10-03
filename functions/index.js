@@ -26,8 +26,14 @@ const GMAIL_APP_PASS = process.env.GMAIL_APP_PASS || "";
 const ADMIN_EMAIL  = process.env.ADMIN_EMAIL || GMAIL_USER;
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || ADMIN_EMAIL;
 
+// Returns null when the mail went out, otherwise the reason it did not.
+// Still never throws, so a failed notification cannot break the request that
+// triggered it — but callers that need to report the outcome can now see it.
 async function sendMail(to, subject, text) {
-  if (!GMAIL_USER || !GMAIL_APP_PASS) return;
+  if (!GMAIL_USER || !GMAIL_APP_PASS) {
+    console.warn("Email not configured — skipped send to", to);
+    return "email not configured";
+  }
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -35,8 +41,10 @@ async function sendMail(to, subject, text) {
     });
     await transporter.sendMail({ from: `למדני אנגלית <${GMAIL_USER}>`, to, subject, text });
     console.log("Email sent to", to, ":", subject);
+    return null;
   } catch (err) {
-    console.warn("Email send failed:", err.message);
+    console.warn("Email send failed:", to, err.message);
+    return err.message;
   }
 }
 
@@ -295,13 +303,14 @@ exports.sendBulkEmail = onRequest(
     let sent = 0, failed = 0;
     const errors = [];
     for (const email of emails) {
-      try {
-        await sendMail(email, subject, message);
-        sent++;
-      } catch (err) {
+      // sendMail reports failure by return value, not by throwing — counting on
+      // a catch here is what made rejected logins show up as "sent"
+      const reason = await sendMail(email, subject, message);
+      if (reason) {
         failed++;
-        errors.push({ email, error: err.message });
-        console.warn("Bulk email failed for", email, err.message);
+        errors.push({ email, error: reason });
+      } else {
+        sent++;
       }
     }
     console.log(`Bulk email: ${sent} sent, ${failed} failed. Subject: "${subject}"`);
