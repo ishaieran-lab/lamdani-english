@@ -29,13 +29,28 @@ const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || ADMIN_EMAIL;
 // Plain text carries no direction, so mail clients lay Hebrew out left to right.
 // Sending an HTML part alongside it fixes the alignment; pre-wrap keeps the
 // original line breaks without having to rewrite them as markup.
+// The logo travels with the message rather than being linked, because clients
+// block remote images by default and a broken placeholder is worse than none.
+const LOGO_PATH = require("path").join(__dirname, "email-logo.png");
+const LOGO_CID = "lamdani-logo";
+
 function rtlHtml(text) {
   const esc = String(text)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
   return '<div dir="rtl" style="text-align:right;font-family:Arial,Helvetica,sans-serif;' +
-         'font-size:15px;line-height:1.7;white-space:pre-wrap">' + esc + '</div>';
+             'font-size:15px;line-height:1.7;white-space:pre-wrap">' + esc + '</div>' +
+         '<div dir="rtl" style="text-align:center;margin-top:28px;padding-top:18px;' +
+             'border-top:1px solid #e2e8f0">' +
+           '<img src="cid:' + LOGO_CID + '" alt="למדני אנגלית" width="160" ' +
+               'style="width:160px;max-width:60%;height:auto;display:inline-block">' +
+           '<div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;' +
+               'color:#94a3b8;margin-top:8px">' +
+             '<a href="https://lamdanien.co.il" style="color:#94a3b8;text-decoration:none">' +
+               'lamdanien.co.il</a>' +
+           '</div>' +
+         '</div>';
 }
 
 // Returns null when the mail went out, otherwise the reason it did not.
@@ -55,6 +70,7 @@ async function sendMail(to, subject, text) {
       from: `למדני אנגלית <${GMAIL_USER}>`,
       to, subject, text,
       html: rtlHtml(text),
+      attachments: [{ filename: "logo.png", path: LOGO_PATH, cid: LOGO_CID }],
     });
     console.log("Email sent to", to, ":", subject);
     return null;
