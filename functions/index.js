@@ -26,6 +26,18 @@ const GMAIL_APP_PASS = process.env.GMAIL_APP_PASS || "";
 const ADMIN_EMAIL  = process.env.ADMIN_EMAIL || GMAIL_USER;
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || ADMIN_EMAIL;
 
+// Plain text carries no direction, so mail clients lay Hebrew out left to right.
+// Sending an HTML part alongside it fixes the alignment; pre-wrap keeps the
+// original line breaks without having to rewrite them as markup.
+function rtlHtml(text) {
+  const esc = String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  return '<div dir="rtl" style="text-align:right;font-family:Arial,Helvetica,sans-serif;' +
+         'font-size:15px;line-height:1.7;white-space:pre-wrap">' + esc + '</div>';
+}
+
 // Returns null when the mail went out, otherwise the reason it did not.
 // Still never throws, so a failed notification cannot break the request that
 // triggered it — but callers that need to report the outcome can now see it.
@@ -39,7 +51,11 @@ async function sendMail(to, subject, text) {
       service: "gmail",
       auth: { user: GMAIL_USER, pass: GMAIL_APP_PASS },
     });
-    await transporter.sendMail({ from: `למדני אנגלית <${GMAIL_USER}>`, to, subject, text });
+    await transporter.sendMail({
+      from: `למדני אנגלית <${GMAIL_USER}>`,
+      to, subject, text,
+      html: rtlHtml(text),
+    });
     console.log("Email sent to", to, ":", subject);
     return null;
   } catch (err) {
