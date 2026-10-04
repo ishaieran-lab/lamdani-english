@@ -39,16 +39,22 @@ function rtlHtml(text) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
-  return '<div dir="rtl" style="text-align:right;font-family:Arial,Helvetica,sans-serif;' +
-             'font-size:15px;line-height:1.7;white-space:pre-wrap">' + esc + '</div>' +
-         '<div dir="rtl" style="text-align:center;margin-top:28px;padding-top:18px;' +
-             'border-top:1px solid #e2e8f0">' +
-           '<img src="cid:' + LOGO_CID + '" alt="למדני אנגלית" width="160" ' +
-               'style="width:160px;max-width:60%;height:auto;display:inline-block">' +
-           '<div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;' +
-               'color:#94a3b8;margin-top:8px">' +
-             '<a href="https://lamdanien.co.il" style="color:#94a3b8;text-decoration:none">' +
-               'lamdanien.co.il</a>' +
+  // Tahoma first: it renders Hebrew better than Arial and ships on Windows,
+  // Mac and Android alike, so nearly every reader gets the intended face.
+  const FONT = "Tahoma,'Segoe UI',Arial,sans-serif";
+  // Anchored right, not centred: a centred column leaves right-aligned Hebrew
+  // floating in the middle of a wide window, away from where the eye expects it.
+  return '<div dir="rtl" style="max-width:600px;margin:0 0 0 auto;padding:4px 2px">' +
+           '<div style="text-align:right;font-family:' + FONT + ';font-size:17px;' +
+               'line-height:1.85;color:#1e293b;white-space:pre-wrap">' + esc + '</div>' +
+           '<div style="text-align:center;margin-top:32px;padding-top:20px;' +
+               'border-top:1px solid #e2e8f0">' +
+             '<img src="cid:' + LOGO_CID + '" alt="למדני אנגלית" width="160" ' +
+                 'style="width:160px;max-width:60%;height:auto;display:inline-block">' +
+             '<div style="font-family:' + FONT + ';font-size:13px;color:#94a3b8;margin-top:10px">' +
+               '<a href="https://lamdanien.co.il" style="color:#94a3b8;text-decoration:none">' +
+                 'lamdanien.co.il</a>' +
+             '</div>' +
            '</div>' +
          '</div>';
 }
