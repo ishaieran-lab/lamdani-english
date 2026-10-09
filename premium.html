@@ -1,0 +1,318 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>גישה מלאה — למדני אנגלית</title>
+    <meta name="description" content="גישה מלאה לכל תכני למדני אנגלית — 149 ₪ לחצי שנה או 249 ₪ לשנה. תשלום בביט, ללא פרטי אשראי.">
+    <meta property="og:title" content="גישה מלאה — למדני אנגלית">
+    <meta property="og:description" content="גישה מלאה לכל תכני למדני אנגלית — 149 ₪ לחצי שנה או 249 ₪ לשנה. תשלום בביט, ללא פרטי אשראי.">
+    <meta property="og:url" content="https://lamdanien.co.il/premium.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://lamdanien.co.il/images/landing/classroom.png">
+    <meta property="og:locale" content="he_IL">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .pm-wrap { max-width: 760px; margin: 2.5rem auto; padding: 0 1.25rem 5rem; }
+        .pm-head { text-align: center; margin-bottom: 2rem; }
+        .pm-head h1 { font-size: 1.9rem; font-weight: 800; color: var(--navy); margin-bottom: 0.4rem; }
+        .pm-head p  { color: var(--gray-txt); font-size: 0.97rem; }
+
+        .pm-plans { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2.25rem; }
+        .pm-plan {
+            flex: 1 1 260px; max-width: 320px; background: #fff; border: 2px solid var(--gray-bdr);
+            border-radius: 16px; padding: 1.4rem 1.3rem; cursor: pointer; position: relative;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .pm-plan:hover { border-color: #93c5fd; }
+        .pm-plan.sel { border-color: var(--blue); box-shadow: 0 6px 22px rgba(37,99,235,0.15); }
+        .pm-plan-badge {
+            position: absolute; top: -0.75rem; right: 50%; transform: translateX(50%);
+            background: var(--blue); color: #fff; font-size: 0.72rem; font-weight: 700;
+            padding: 0.22rem 0.75rem; border-radius: 999px; white-space: nowrap;
+        }
+        .pm-plan-name { font-size: 1.05rem; font-weight: 800; color: var(--navy); margin-bottom: 0.3rem; }
+        .pm-plan-price { font-size: 2.1rem; font-weight: 800; color: var(--navy); line-height: 1; }
+        .pm-plan-cur { font-size: 1.1rem; font-weight: 700; }
+        .pm-plan-note { font-size: 0.8rem; color: var(--gray-txt); margin-top: 0.4rem; min-height: 1.1em; }
+        .pm-check { position: absolute; top: 0.9rem; left: 0.9rem; width: 20px; height: 20px;
+                    border-radius: 50%; border: 2px solid var(--gray-bdr); }
+        .pm-plan.sel .pm-check { border-color: var(--blue); background: var(--blue); }
+        .pm-plan.sel .pm-check::after { content: '✓'; color: #fff; font-size: 12px; font-weight: 900;
+                    display: flex; align-items: center; justify-content: center; height: 100%; }
+
+        .pm-card { background: #fff; border: 1px solid var(--gray-bdr); border-radius: 16px;
+                   padding: 1.6rem 1.4rem; margin-bottom: 1.25rem; }
+        .pm-step { display: flex; align-items: center; gap: 0.6rem; font-weight: 800;
+                   color: var(--navy); font-size: 1.05rem; margin-bottom: 1rem; }
+        .pm-step-n { width: 26px; height: 26px; border-radius: 50%; background: var(--blue); color: #fff;
+                     font-size: 0.85rem; display: flex; align-items: center; justify-content: center; flex: none; }
+
+        .pm-pay-amount { text-align: center; font-size: 1.5rem; font-weight: 800; color: var(--navy); margin-bottom: 1rem; }
+        .pm-bit-btn { display: block; max-width: 320px; margin: 0 auto 1rem; padding: 0.95rem;
+                      background: #00A0E3; color: #fff; border-radius: 12px; text-align: center;
+                      font-size: 1.05rem; font-weight: 800; text-decoration: none; }
+        .pm-qr { text-align: center; }
+        .pm-qr img { width: 190px; max-width: 70%; border: 1px solid var(--gray-bdr); border-radius: 12px; }
+        .pm-qr-cap { font-size: 0.84rem; color: var(--gray-txt); margin-top: 0.5rem; }
+
+        .pm-field { margin-bottom: 0.9rem; }
+        .pm-field label { display: block; font-size: 0.88rem; font-weight: 700; color: #374151; margin-bottom: 0.3rem; }
+        .pm-field input { width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid var(--gray-bdr);
+                          border-radius: 10px; font-size: 1rem; font-family: inherit; box-sizing: border-box; }
+        .pm-field input:focus { outline: none; border-color: var(--blue); }
+        .pm-hint { font-size: 0.8rem; color: var(--gray-txt); margin-top: 0.25rem; }
+        .pm-submit { width: 100%; padding: 0.9rem; background: var(--blue); color: #fff; border: none;
+                     border-radius: 12px; font-size: 1.05rem; font-weight: 800; cursor: pointer; font-family: inherit; }
+        .pm-submit:disabled { opacity: 0.5; cursor: default; }
+
+        .pm-msg { border-radius: 12px; padding: 1rem 1.1rem; font-size: 0.93rem; line-height: 1.7; }
+        .pm-info { background: #eff6ff; color: #1e3a8a; border: 1px solid #bfdbfe; }
+        .pm-ok   { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .pm-warn { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+        .pm-err  { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SM6JG73T8P"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-SM6JG73T8P');</script>
+</head>
+<body>
+
+<nav class="toolbar">
+    <a href="index.html" class="toolbar-brand"><span class="accent">Lamdani</span> English</a>
+    <div class="toolbar-nav">
+        <div class="nav-menu-wrap">
+            <button class="nav-icon-btn" id="navMenuBtn" onclick="toggleNavMenu()">
+                <img src="images/ui/menu.png" class="nav-icon-img" alt="תפריט">
+            </button>
+            <div class="nav-menu-panel" id="navMenuPanel">
+                <a href="app.html" class="nav-menu-item">דף הבית</a>
+                <a href="about.html" class="nav-menu-item">אודות</a>
+                <a href="contact.html" class="nav-menu-item">צור קשר</a>
+            </div>
+        </div>
+        <a href="app.html" class="nav-icon-btn">
+            <img src="images/ui/home.png" class="nav-icon-img" alt="בית">
+        </a>
+        <div id="userNavArea" style="position:relative"></div>
+    </div>
+</nav>
+
+<div class="pm-wrap">
+
+    <div class="pm-head">
+        <h1>גישה מלאה</h1>
+        <p>כל התכנים נפתחים — אוצר מילים, דקדוק, הבנת הנקרא ותרגול משפטים</p>
+    </div>
+
+    <!-- state banner: who you are decides what this page can do for you -->
+    <div id="pmState" style="margin-bottom:1.5rem"></div>
+
+    <!-- 1. choose -->
+    <div class="pm-plans">
+        <div class="pm-plan sel" id="planYear" onclick="selectPlan('year')">
+            <div class="pm-plan-badge">מומלץ · חיסכון 49 ₪</div>
+            <div class="pm-check"></div>
+            <div class="pm-plan-name">שנה שלמה</div>
+            <div class="pm-plan-price">249<span class="pm-plan-cur"> ₪</span></div>
+            <div class="pm-plan-note">במקום 298 ₪ בשתי חבילות חצי־שנתיות</div>
+        </div>
+        <div class="pm-plan" id="planHalf" onclick="selectPlan('half')">
+            <div class="pm-check"></div>
+            <div class="pm-plan-name">חצי שנה</div>
+            <div class="pm-plan-price">149<span class="pm-plan-cur"> ₪</span></div>
+            <div class="pm-plan-note">6 חודשים</div>
+        </div>
+    </div>
+
+    <!-- 2. pay -->
+    <div class="pm-card">
+        <div class="pm-step"><span class="pm-step-n">1</span> תשלום בביט</div>
+        <div class="pm-pay-amount">לתשלום: <span id="payAmount">249</span> ₪</div>
+
+        <a class="pm-bit-btn" id="bitLink"
+           href="https://www.bitpay.co.il/app/me/1D1A86FB-F566-43EC-9635-1A94670458D4"
+           target="_blank" rel="noopener">פתיחת ביט לתשלום ←</a>
+
+        <div class="pm-qr">
+            <img src="images/landing/bit-qr.jpeg" alt="קוד QR לתשלום בביט">
+            <div class="pm-qr-cap">גולשים מהמחשב — סרקו את הקוד באפליקציית ביט</div>
+        </div>
+
+        <div class="pm-msg pm-warn" style="margin-top:1.1rem">
+            חשוב: יש להקליד בביט את הסכום המדויק — <strong id="payAmount2">249</strong> ₪.
+        </div>
+    </div>
+
+    <!-- 3. tell us -->
+    <div class="pm-card">
+        <div class="pm-step"><span class="pm-step-n">2</span> אישור התשלום</div>
+
+        <div class="pm-msg pm-info" style="margin-bottom:1.1rem">
+            לאחר התשלום מלאו את הפרטים כדי שנוכל לזהות את ההעברה.
+            <strong>הגישה נפתחת לאחר אימות התשלום, לרוב תוך מספר שעות</strong> ולא יאוחר מ־24 שעות.
+            נשלח אליכם מייל ברגע שהיא נפתחת.
+        </div>
+
+        <div id="pmForm">
+            <div class="pm-field">
+                <label for="pmName">שם מלא כפי שמופיע בביט</label>
+                <input type="text" id="pmName" autocomplete="name" placeholder="לדוגמה: דנה כהן">
+                <div class="pm-hint">זה השם שנראה אצלנו בהעברה</div>
+            </div>
+            <div class="pm-field">
+                <label for="pmPhone">4 ספרות אחרונות של הטלפון</label>
+                <input type="tel" id="pmPhone" inputmode="numeric" maxlength="4" placeholder="1234">
+                <div class="pm-hint">כדי להבדיל בין שמות זהים</div>
+            </div>
+            <div id="pmError" style="color:#dc2626;font-size:0.88rem;margin-bottom:0.7rem;min-height:1.1em"></div>
+            <button class="pm-submit" id="pmSubmit" onclick="submitRequest()">שילמתי — שלחו לאישור</button>
+        </div>
+
+        <div id="pmDone" style="display:none"></div>
+    </div>
+
+    <p style="text-align:center;font-size:0.85rem;color:var(--gray-txt)">
+        <a href="cancellation.html" style="color:var(--blue)">מדיניות ביטולים</a> ·
+        <a href="terms.html" style="color:var(--blue)">תנאי שימוש</a> ·
+        <a href="contact.html" style="color:var(--blue)">צור קשר</a>
+    </p>
+</div>
+
+<footer class="site-footer">
+    <div class="site-footer-inner">
+        <div class="site-footer-links">
+            <a href="terms.html">תנאי שימוש</a>
+            <a href="privacy.html">מדיניות פרטיות</a>
+            <a href="cancellation.html">מדיניות ביטולים</a>
+            <a href="accessibility.html">הצהרת נגישות</a>
+            <a href="contact.html">צור קשר</a>
+        </div>
+        <div class="site-footer-copy">© 2026 למדני אנגלית · כל הזכויות שמורות</div>
+    </div>
+</footer>
+
+<script>
+var PLANS = {
+    year: { label: 'שנה שלמה',  amount: 249, months: 12 },
+    half: { label: 'חצי שנה',   amount: 149, months: 6  }
+};
+var curPlan = 'year';
+var _user   = null;
+
+function toggleNavMenu() { document.getElementById('navMenuPanel').classList.toggle('open'); }
+document.addEventListener('click', function(e) {
+    var p = document.getElementById('navMenuPanel'), b = document.getElementById('navMenuBtn');
+    if (p && !p.contains(e.target) && b && !b.contains(e.target)) p.classList.remove('open');
+});
+
+function selectPlan(k) {
+    curPlan = k;
+    document.getElementById('planYear').classList.toggle('sel', k === 'year');
+    document.getElementById('planHalf').classList.toggle('sel', k === 'half');
+    document.getElementById('payAmount').textContent  = PLANS[k].amount;
+    document.getElementById('payAmount2').textContent = PLANS[k].amount;
+}
+
+// ── who is looking at this page ───────────────────────────────────────────
+window.onFirebaseAuth = function (fbUser) {
+    _user = fbUser;
+    renderState();
+};
+window.onFirebaseLogout = function () { _user = null; renderState(); };
+
+function msg(cls, html) { return '<div class="pm-msg ' + cls + '">' + html + '</div>'; }
+
+function renderState() {
+    var box  = document.getElementById('pmState');
+    var form = document.getElementById('pmForm');
+
+    if (!_user) {
+        box.innerHTML = msg('pm-warn',
+            'כדי לרכוש גישה יש תחילה <a href="index.html" style="color:#92400e;font-weight:700">להירשם או להתחבר</a>. ' +
+            'ההרשמה חינמית ולוקחת פחות מדקה.');
+        form.style.display = 'none';
+        return;
+    }
+
+    form.style.display = '';
+    box.innerHTML = '';
+
+    // already premium, or a request already waiting?
+    firebase.firestore().collection('users').doc(_user.uid).get().then(function (doc) {
+        var d = doc.exists ? doc.data() : {};
+        var exp = d.premiumExpiry && d.premiumExpiry.toDate ? d.premiumExpiry.toDate() : null;
+        if (d.premium && (!exp || exp.getTime() > Date.now())) {
+            var until = exp ? exp.getDate() + '/' + (exp.getMonth() + 1) + '/' + exp.getFullYear() : null;
+            box.innerHTML = msg('pm-ok', '✓ יש לכם כבר גישה מלאה' +
+                (until ? ' — בתוקף עד <strong>' + until + '</strong>.<br>רכישה נוספת תתווסף לתקופה הקיימת.' : '.'));
+        }
+    }).catch(function () { /* status is a nicety; never block the purchase on it */ });
+
+    firebase.firestore().collection('premiumRequests')
+        .where('uid', '==', _user.uid).where('status', '==', 'pending').limit(1).get()
+        .then(function (snap) {
+            if (snap.empty) return;
+            showPending();
+        }).catch(function () {});
+}
+
+function showPending() {
+    document.getElementById('pmForm').style.display = 'none';
+    var done = document.getElementById('pmDone');
+    done.style.display = '';
+    done.innerHTML = msg('pm-ok',
+        '<strong>הבקשה התקבלה ✓</strong><br>' +
+        'נאמת את התשלום ונפתח את הגישה — לרוב תוך מספר שעות, ולא יאוחר מ־24 שעות. ' +
+        'יישלח אליכם מייל ברגע שהגישה נפתחת.<br><br>' +
+        'לא קיבלתם אישור? <a href="contact.html" style="color:#166534;font-weight:700">צרו קשר</a>.');
+}
+
+// ── filing the request ────────────────────────────────────────────────────
+
+function submitRequest() {
+    var err   = document.getElementById('pmError');
+    var btn   = document.getElementById('pmSubmit');
+    var name  = (document.getElementById('pmName').value  || '').trim();
+    var phone = (document.getElementById('pmPhone').value || '').trim();
+    err.textContent = '';
+
+    if (!_user)              { err.textContent = 'יש להתחבר תחילה.'; return; }
+    if (name.length < 2)     { err.textContent = 'נא למלא שם מלא כפי שמופיע בביט.'; return; }
+    if (!/^\d{4}$/.test(phone)) { err.textContent = 'נא למלא בדיוק 4 ספרות אחרונות של הטלפון.'; return; }
+
+    btn.disabled = true; btn.textContent = 'שולח…';
+
+    firebase.firestore().collection('premiumRequests').add({
+        uid:       _user.uid,
+        email:     _user.email || '',
+        payerName: name,
+        phoneLast4: phone,
+        plan:      curPlan,
+        months:    PLANS[curPlan].months,
+        amount:    PLANS[curPlan].amount,
+        status:    'pending',
+        createdAt: new Date().toISOString()
+    }).then(function () {
+        showPending();
+    }).catch(function (e) {
+        btn.disabled = false; btn.textContent = 'שילמתי — שלחו לאישור';
+        err.textContent = 'לא הצלחנו לשלוח את הבקשה. נסו שוב, או צרו קשר.';
+        console.error('premium request failed:', e.code, e.message);
+    });
+}
+
+selectPlan('year');
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-auth.js"></script>
+<script src="user.js"></script>
+<script src="cookie-consent.js"></script>
+</body>
+</html>

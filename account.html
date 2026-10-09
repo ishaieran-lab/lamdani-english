@@ -82,10 +82,8 @@
         <!-- סטטוס גישה -->
         <div class="acc-card">
             <h2>גישה</h2>
-            <div style="display:flex;align-items:center;gap:0.6rem;padding:0.3rem 0;">
-                <span style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;padding:0.2rem 0.75rem;border-radius:20px;font-size:0.85rem;font-weight:700;">✓ גישה מלאה</span>
-                <span style="font-size:0.88rem;color:#64748b;">לכל התכנים · ללא תשלום</span>
-            </div>
+            <!-- filled by renderAccess() — the real state, not a fixed badge -->
+            <div id="accessRow" style="display:flex;align-items:center;gap:0.6rem;padding:0.3rem 0;flex-wrap:wrap;"></div>
         </div>
 
         <!-- מחיקת חשבון -->
@@ -139,6 +137,46 @@ function loadAccount(fbUser) {
     document.getElementById('accEmail').textContent = fbUser.email || '—';
     document.getElementById('accLoader').style.display = 'none';
     document.getElementById('accContent').style.display = 'block';
+    renderAccess(fbUser);
+}
+
+// Shows the real access state. Reads from Firestore rather than trusting
+// anything held locally, since this is what the parent will judge us by.
+function renderAccess(fbUser) {
+    var row = document.getElementById('accessRow');
+    if (!row) return;
+    row.innerHTML = '<span style="font-size:0.88rem;color:#94a3b8">טוען…</span>';
+
+    var pill = function (bg, fg, bd, txt) {
+        return '<span style="background:' + bg + ';color:' + fg + ';border:1px solid ' + bd +
+               ';padding:0.2rem 0.75rem;border-radius:20px;font-size:0.85rem;font-weight:700">' + txt + '</span>';
+    };
+    var note = function (t) {
+        return '<span style="font-size:0.88rem;color:#64748b">' + t + '</span>';
+    };
+    var buy = '<a href="premium.html" style="font-size:0.88rem;color:#2563eb;font-weight:700;text-decoration:none">גישה מלאה ←</a>';
+
+    firebase.firestore().collection('users').doc(fbUser.uid).get().then(function (doc) {
+        var d = doc.exists ? doc.data() : {};
+        var exp = d.premiumExpiry && d.premiumExpiry.toDate ? d.premiumExpiry.toDate() : null;
+        var expired = exp ? exp.getTime() < Date.now() : false;
+        var fmt = exp ? exp.getDate() + '/' + (exp.getMonth() + 1) + '/' + exp.getFullYear() : '';
+
+        if (d.premium && !expired) {
+            var left = exp ? Math.ceil((exp.getTime() - Date.now()) / 86400000) : null;
+            row.innerHTML = pill('#f0fdf4', '#15803d', '#bbf7d0', '✓ גישה מלאה') +
+                (exp ? note('בתוקף עד ' + fmt + ' · נותרו ' + left + ' ימים')
+                     : note('ללא הגבלת זמן'));
+        } else if (d.premium && expired) {
+            row.innerHTML = pill('#fffbeb', '#b45309', '#fde68a', 'הסתיימה') +
+                note('הגישה המלאה הסתיימה ב-' + fmt + ' · ההתקדמות נשמרה') + buy;
+        } else {
+            row.innerHTML = pill('#f1f5f9', '#475569', '#e2e8f0', 'חשבון רשום') +
+                note('נושאים נבחרים פתוחים') + buy;
+        }
+    }).catch(function () {
+        row.innerHTML = note('לא ניתן לטעון את סטטוס הגישה כעת');
+    });
 }
 
 function doChangePassword() {

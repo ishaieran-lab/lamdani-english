@@ -321,7 +321,18 @@
         .section-hdr { text-align: center; margin-bottom: 2.5rem; }
         .section-hdr h2 { font-size: 1.9rem; font-weight: 800; color: var(--navy); margin-bottom: 0.4rem; }
         .section-hdr p  { color: var(--muted); font-size: 1rem; }
-        .pricing-inner  { max-width: 860px; margin: 0 auto; }
+        .pricing-inner  { max-width: 1060px; margin: 0 auto; }
+        .plans-row { display: flex; gap: 1.25rem; align-items: stretch; justify-content: center; flex-wrap: wrap; }
+        .plans-row .plan-card { flex: 1 1 280px; max-width: 330px; display: flex; flex-direction: column; }
+        .plans-row .plan-features { flex: 1; }
+        /* the recommended plan sits slightly proud of the other two */
+        .plan-featured { position: relative; border-color: var(--blue); box-shadow: 0 8px 28px rgba(37,99,235,0.16); }
+        .plan-badge { position: absolute; top: -0.8rem; right: 50%; transform: translateX(50%);
+                      background: var(--blue); color: #fff; font-size: 0.74rem; font-weight: 700;
+                      padding: 0.25rem 0.8rem; border-radius: 999px; white-space: nowrap; }
+        .price-cur { font-size: 1.4rem; font-weight: 700; color: var(--navy); }
+        .plan-compare { font-size: 0.8rem; color: var(--muted); margin: -1rem 0 1.25rem; }
+        .plan-cta-ghost { background: #fff !important; color: var(--blue) !important; border: 2px solid var(--blue) !important; }
         .plan-card {
             background: #fff; border: 2px solid var(--blue);
             border-radius: 20px; padding: 2rem 1.75rem;
@@ -413,9 +424,9 @@
   "@type": "FAQPage",
   "mainEntity": [
     {"@type":"Question","name":"האם ניתן לגשת מכל מכשיר?","acceptedAnswer":{"@type":"Answer","text":"בהחלט. האתר מותאם למחשב, טאבלט וסמארטפון. ההתקדמות נשמרת ומסונכרנת בין המכשירים."}},
-    {"@type":"Question","name":"מה אמצעי התשלום המקובלים?","acceptedAnswer":{"@type":"Answer","text":"כרטיס אשראי (Visa, Mastercard, American Express). תשלום מאובטח ומוצפן."}},
-    {"@type":"Question","name":"האם יש הנחה לבתי ספר?","acceptedAnswer":{"@type":"Answer","text":"כן. לרכישה קבוצתית לכיתות ובתי ספר נציע מחיר מיוחד."}},
-    {"@type":"Question","name":"האם ניתן לבטל את המנוי?","acceptedAnswer":{"@type":"Answer","text":"כן, ניתן לבטל בכל עת מהגדרות החשבון. לאחר הביטול תישמר גישה עד סוף תקופת התשלום הנוכחית."}},
+    {"@type":"Question","name":"מה פתוח בחינם ומה בתשלום?","acceptedAnswer":{"@type":"Answer","text":"ההרשמה חינמית ואינה דורשת פרטי תשלום. לאחר ההרשמה פתוחים נושאים נבחרים בכל אחד מהמודולים — אוצר מילים, דקדוק, הבנת הנקרא ותרגול משפטים. גישה לכלל התכנים ניתנת בחבילה בתשלום: 149 ₪ לחצי שנה או 249 ₪ לשנה."}},
+    {"@type":"Question","name":"מה אמצעי התשלום?","acceptedAnswer":{"@type":"Answer","text":"התשלום מתבצע בביט. אין צורך בפרטי כרטיס אשראי."}},
+    {"@type":"Question","name":"האם ניתן להשתמש באתר בכיתה או בבית ספר?","acceptedAnswer":{"@type":"Answer","text":"בהחלט. כל מורה ותלמיד יכולים להירשם ולהתחיל מיד מהתכנים הפתוחים. לשימוש כיתתי רחב יותר ניתן ליצור קשר להתאמת הסדר לבית הספר."}},
     {"@type":"Question","name":"לאילו כיתות מתאים האתר?","acceptedAnswer":{"@type":"Answer","text":"האתר מתאים לתלמידי בית ספר יסודי. התכנים מכסים את נושאי הליבה הנלמדים בכיתות ב'–ו' ומתאימים לחיזוק, לימוד ותרגול עצמאי לצד הלימוד בבית הספר."}},
     {"@type":"Question","name":"כמה זמן ביום מומלץ ללמוד?","acceptedAnswer":{"@type":"Answer","text":"10–15 דקות ביום מספיקות. הפלטפורמה בנויה לסשנים קצרים ויעילים — עדיף קצת כל יום מאשר שעה פעם בשבוע."}},
     {"@type":"Question","name":"האם התוכן תואם לספרי הלימוד בבית הספר?","acceptedAnswer":{"@type":"Answer","text":"התכנים מתואמים לתוכנית הלימודים של משרד החינוך לאנגלית בחינוך היסודי, ומשלימים את מה שנלמד בכיתה."}},
@@ -428,16 +439,27 @@
 {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": "למדני אנגלית — מנוי מלא",
-  "description": "גישה לכל התכנים ללא הגבלה — אוצר מילים, דקדוק, הבנת הנקרא ותרגול משפטים",
+  "name": "למדני אנגלית — גישה מלאה",
+  "description": "גישה לכל התכנים — אוצר מילים, דקדוק, הבנת הנקרא ותרגול משפטים",
   "url": "https://lamdanien.co.il/",
-  "offers": {
-    "@type": "Offer",
-    "price": "35",
-    "priceCurrency": "ILS",
-    "availability": "https://schema.org/InStock",
-    "url": "https://lamdanien.co.il/app.html"
-  }
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "גישה מלאה — חצי שנה",
+      "price": "149",
+      "priceCurrency": "ILS",
+      "availability": "https://schema.org/InStock",
+      "url": "https://lamdanien.co.il/premium.html"
+    },
+    {
+      "@type": "Offer",
+      "name": "גישה מלאה — שנה",
+      "price": "249",
+      "priceCurrency": "ILS",
+      "availability": "https://schema.org/InStock",
+      "url": "https://lamdanien.co.il/premium.html"
+    }
+  ]
 }
 </script>
 </head>
@@ -807,26 +829,60 @@ function fbSubmitEmail() {
 <section class="pricing-section" id="pricing">
     <div class="pricing-inner">
         <div class="section-hdr">
-            <h2>הצטרפו בחינם</h2>
-            <p>הרשמה פשוטה — גישה מיידית לכל התכנים</p>
+            <h2>התחילו בחינם</h2>
+            <p>ההרשמה חינמית · חלק מהתכנים פתוחים לכולם · גישה מלאה בתשלום</p>
         </div>
-        <div style="display:flex;align-items:center;gap:2.5rem;flex-wrap:wrap;justify-content:center;">
-            <img src="images/landing/ילד למדני.png" alt="ילד לומד אנגלית" style="width:280px;max-width:100%;border-radius:16px;">
+        <div class="plans-row">
+            <!-- free tier first: it is the real entry point, not a lesser option -->
             <div class="plan-card">
-                <div class="plan-name">גישה מלאה</div>
-                <div class="plan-desc">לכל התכנים, ללא תשלום</div>
+                <div class="plan-name">הרשמה חינם</div>
+                <div class="plan-desc">להתרשם ולהתחיל, בלי תשלום</div>
                 <div class="plan-price">
-                    <span class="price-amount" style="font-size:2.5rem">חינם</span>
+                    <span class="price-amount">חינם</span>
+                </div>
+                <ul class="plan-features">
+                    <li>נושאים נבחרים בכל מודול</li>
+                    <li>פרופיל לכל ילד</li>
+                    <li>מעקב התקדמות</li>
+                    <li>גישה מהמחשב ומהטלפון</li>
+                </ul>
+                <button onclick="openLoginModal('register')" class="plan-cta-btn plan-cta-ghost">הרשמה ←</button>
+            </div>
+
+            <div class="plan-card plan-featured">
+                <div class="plan-badge">מומלץ · חיסכון 49 ₪</div>
+                <div class="plan-name">גישה מלאה — שנה</div>
+                <div class="plan-desc">כל התכנים, שנה שלמה</div>
+                <div class="plan-price">
+                    <span class="price-amount">249</span><span class="price-cur">₪</span>
+                </div>
+                <div class="plan-compare">במקום 298 ₪ בשתי חבילות חצי־שנתיות</div>
+                <ul class="plan-features">
+                    <li>כל 51 נושאי אוצר המילים</li>
+                    <li>כל שלבי הדקדוק</li>
+                    <li>כל קטעי הבנת הנקרא (10 רמות)</li>
+                    <li>כל תרגולי המשפטים</li>
+                    <li>הדפסת כרטיסיות ודפי עבודה</li>
+                    <li>מעקב התקדמות מפורט</li>
+                </ul>
+                <a href="premium.html" class="plan-cta-btn">לרכישה ←</a>
+            </div>
+
+            <div class="plan-card">
+                <div class="plan-name">גישה מלאה — חצי שנה</div>
+                <div class="plan-desc">כל התכנים, 6 חודשים</div>
+                <div class="plan-price">
+                    <span class="price-amount">149</span><span class="price-cur">₪</span>
                 </div>
                 <ul class="plan-features">
                     <li>כל 51 נושאי אוצר המילים</li>
                     <li>כל שלבי הדקדוק</li>
                     <li>כל קטעי הבנת הנקרא (10 רמות)</li>
-                    <li>תרגול צירופי מילים</li>
+                    <li>כל תרגולי המשפטים</li>
+                    <li>הדפסת כרטיסיות ודפי עבודה</li>
                     <li>מעקב התקדמות מפורט</li>
-                    <li>גישה מהמחשב ומהטלפון</li>
                 </ul>
-                <button onclick="openLoginModal('register')" class="plan-cta-btn">הרשמה והתחלה — חינם</button>
+                <a href="premium.html" class="plan-cta-btn plan-cta-ghost">לרכישה ←</a>
             </div>
         </div>
         <p style="text-align:center;margin-top:1.5rem;font-size:0.85rem;color:var(--muted)">
@@ -844,12 +900,12 @@ function fbSubmitEmail() {
             <div class="faq-a">בהחלט. האתר מותאם למחשב, טאבלט וסמארטפון. ההתקדמות נשמרת ומסונכרנת בין המכשירים.</div>
         </div>
         <div class="faq-item">
-            <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">האם האתר באמת חינמי לחלוטין?</div>
-            <div class="faq-a">כן. ההרשמה חינמית ומעניקה גישה מיידית לכל התכנים — אוצר מילים, דקדוק, הבנת הנקרא ותרגול משפטים. אין צורך בכרטיס אשראי.</div>
+            <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">מה פתוח בחינם ומה בתשלום?</div>
+            <div class="faq-a">ההרשמה חינמית ואינה דורשת פרטי תשלום. לאחר ההרשמה פתוחים נושאים נבחרים בכל אחד מהמודולים — אוצר מילים, דקדוק, הבנת הנקרא ותרגול משפטים — כדי שתוכלו להתרשם לפני שאתם מחליטים. גישה לכלל התכנים ניתנת בחבילה בתשלום: 149 ₪ לחצי שנה או 249 ₪ לשנה.</div>
         </div>
         <div class="faq-item">
             <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">האם ניתן להשתמש באתר בכיתה או בבית ספר?</div>
-            <div class="faq-a">בהחלט. האתר חינמי לכולם — כולל שימוש בבתי ספר. כל מורה ותלמיד יכולים להירשם ולהתחיל מיד. <a href="contact.html" style="color:var(--blue)">צרו קשר</a> לשיתוף פעולה.</div>
+            <div class="faq-a">בהחלט. כל מורה ותלמיד יכולים להירשם ולהתחיל מיד מהתכנים הפתוחים. לשימוש כיתתי רחב יותר <a href="contact.html" style="color:var(--blue)">צרו קשר</a> — נשמח להתאים הסדר לבית הספר.</div>
         </div>
         <div class="faq-item">
             <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">לאילו כיתות מתאים האתר?</div>
@@ -864,8 +920,8 @@ function fbSubmitEmail() {
             <div class="faq-a">התכנים מתואמים לתוכנית הלימודים של משרד החינוך לאנגלית בחינוך היסודי, ומשלימים את מה שנלמד בכיתה.</div>
         </div>
         <div class="faq-item">
-            <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">האם צריך למסור פרטי תשלום?</div>
-            <div class="faq-a">לא. ההרשמה דורשת כתובת אימייל בלבד. אין צורך בכרטיס אשראי או כל פרט תשלום.</div>
+            <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">האם צריך למסור פרטי תשלום בהרשמה?</div>
+            <div class="faq-a">לא. ההרשמה דורשת כתובת אימייל בלבד, ואינה מחייבת בשום שלב. גם בעת רכישת חבילה אין צורך בפרטי כרטיס אשראי — התשלום מתבצע בביט.</div>
         </div>
         <div class="faq-item">
             <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">האם הורה יכול לעקוב אחר ההתקדמות?</div>

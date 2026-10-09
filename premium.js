@@ -59,9 +59,32 @@ function requirePremium() {
     return false;
 }
 
+// The overlay says different things to a guest and to a registered user who
+// has not bought yet — telling a signed-in parent to "register" would be
+// nonsense, and telling a guest to pay skips the free tier entirely.
 function showPaywall() {
     var el = document.getElementById('paywallOverlay');
-    if (el) el.style.display = 'flex';
+    if (!el) return;
+
+    var title = document.getElementById('pwTitle');
+    var text  = document.getElementById('pwCta') ? document.getElementById('pwText') : null;
+    var cta   = document.getElementById('pwCta');
+
+    if (!isLoggedIn()) {
+        if (title) title.textContent = 'נדרשת התחברות';
+        if (text)  text.textContent  = 'חלק מהתכנים פתוחים לכל מי שנרשם, וההרשמה חינמית. הירשמו כדי להתחיל.';
+        if (cta)   { cta.textContent = 'הירשם / התחבר ←'; cta.href = 'index.html'; }
+    } else if (isPremiumExpired()) {
+        if (title) title.textContent = 'תוקף הגישה הסתיים';
+        if (text)  text.textContent  = 'הגישה המלאה הסתיימה. ההתקדמות של הילדים נשמרה במלואה — חידוש יפתח מחדש את כל התכנים.';
+        if (cta)   { cta.textContent = 'חידוש גישה ←'; cta.href = 'premium.html'; }
+    } else {
+        if (title) title.textContent = 'תוכן בגישה מלאה';
+        if (text)  text.textContent  = 'התוכן הזה כלול בגישה המלאה — 149 ₪ לחצי שנה או 249 ₪ לשנה. חלק מהנושאים פתוחים בחינם וממשיכים להיות זמינים.';
+        if (cta)   { cta.textContent = 'לפרטים ורכישה ←'; cta.href = 'premium.html'; }
+    }
+
+    el.style.display = 'flex';
 }
 
 function closePaywall() {
