@@ -366,6 +366,14 @@ exports.onPremiumRequest = onDocumentCreated(
     const r = snap.data() || {};
     if (r.status !== "pending") return;
 
+    // A request with no payer name or address cannot be matched to a transfer,
+    // so notifying about it only produces a message the owner cannot act on.
+    if (!r.payerName || !r.email) {
+      await snap.ref.update({ status: "invalid", note: "חסרים פרטי מזהה" });
+      console.warn("Premium request missing payerName/email — ignored");
+      return;
+    }
+
     // One open request per account. Without this a single person could file
     // dozens and bury the real ones in the owner's inbox.
     const existing = await db.collection("premiumRequests")
