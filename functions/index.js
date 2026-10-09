@@ -59,6 +59,23 @@ function rtlHtml(text) {
          '</div>';
 }
 
+// One pooled connection for the life of the instance. Opening a fresh SMTP
+// session per message cost seconds each, which is what pushed a 27-recipient
+// send past the function's time limit and dropped the caller's connection.
+let _transport = null;
+function mailer() {
+  if (!_transport) {
+    _transport = nodemailer.createTransport({
+      service: "gmail",
+      auth: { user: GMAIL_USER, pass: GMAIL_APP_PASS },
+      pool: true,
+      maxConnections: 5,
+      maxMessages: 100,
+    });
+  }
+  return _transport;
+}
+
 // Returns null when the mail went out, otherwise the reason it did not.
 // Still never throws, so a failed notification cannot break the request that
 // triggered it — but callers that need to report the outcome can now see it.
@@ -68,11 +85,7 @@ async function sendMail(to, subject, text) {
     return "email not configured";
   }
   try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: { user: GMAIL_USER, pass: GMAIL_APP_PASS },
-    });
-    await transporter.sendMail({
+    await mailer().sendMail({
       from: `למדני אנגלית <${GMAIL_USER}>`,
       to, subject, text,
       html: rtlHtml(text),
@@ -320,7 +333,8 @@ exports.deleteAccount = onRequest(
 // ─── 7. Bulk email ────────────────────────────────────────────────────────────
 // Admin sends email to a list of addresses
 exports.sendBulkEmail = onRequest(
-  { cors: [SITE_URL] },
+  // Headroom for a long list; the default minute is not enough as the list grows
+  { cors: [SITE_URL], timeoutSeconds: 540 },
   async (req, res) => {
     if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
     const authHeader = req.headers.authorization || "";
@@ -340,16 +354,21 @@ exports.sendBulkEmail = onRequest(
     }
     let sent = 0, failed = 0;
     const errors = [];
-    for (const email of emails) {
+    // Sent in small parallel batches over the pooled connection. One at a time
+    // took seconds per recipient and ran the function out of time partway
+    // through a list, leaving the sender with an error and no idea who got it.
+    const BATCH = 5;
+    for (let i = 0; i < emails.length; i += BATCH) {
+      const slice = emails.slice(i, i + BATCH);
       // sendMail reports failure by return value, not by throwing — counting on
       // a catch here is what made rejected logins show up as "sent"
-      const reason = await sendMail(email, subject, message);
-      if (reason) {
-        failed++;
-        errors.push({ email, error: reason });
-      } else {
-        sent++;
-      }
+      const reasons = await Promise.all(
+        slice.map((email) => sendMail(email, subject, message))
+      );
+      reasons.forEach((reason, n) => {
+        if (reason) { failed++; errors.push({ email: slice[n], error: reason }); }
+        else sent++;
+      });
     }
     console.log(`Bulk email: ${sent} sent, ${failed} failed. Subject: "${subject}"`);
     res.json({ sent, failed, errors });
