@@ -1,5 +1,6 @@
 const { onRequest } = require("firebase-functions/v2/https");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { setGlobalOptions } = require("firebase-functions/v2");
 const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
@@ -9,13 +10,10 @@ const db = admin.firestore();
 
 setGlobalOptions({ maxInstances: 10, region: "us-central1" });
 
-// Cardcom credentials — loaded from functions/.env (not committed to git)
-const CARDCOM_TERMINAL = parseInt(process.env.CARDCOM_TERMINAL) || 1000;
-const CARDCOM_API_NAME = process.env.CARDCOM_API_NAME || "";
-const CARDCOM_API_PASS = process.env.CARDCOM_API_PASS || "";
-const CARDCOM_API_URL = "https://secure.cardcom.solutions/api/v11";
 const SITE_URL = "https://lamdanien.co.il";
-const FUNCTIONS_URL = "https://cardcomcallback-2tarox7bha-uc.a.run.app";
+
+// Cardcom credentials are no longer read here — the card endpoints are gone.
+// The values remain in functions/.env should card payments ever return.
 
 // Gmail credentials — loaded from functions/.env
 const GMAIL_USER = process.env.GMAIL_USER || "";
@@ -103,160 +101,12 @@ async function sendAdminEmail(subject, text) {
   return sendMail(NOTIFY_EMAIL, subject, text);
 }
 
-// ─── 1. Create Cardcom payment session ────────────────────────────────────────
-// Called from the client (authenticated user) to get a payment URL
-exports.createPaymentSession = onRequest(
-  { cors: [SITE_URL] },
-  async (req, res) => {
-    if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
-
-    // Verify Firebase Auth token
-    const authHeader = req.headers.authorization || "";
-    const idToken = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
-    if (!idToken) return res.status(401).json({ error: "Unauthorized" });
-
-    let uid, email, displayName;
-    try {
-      const decoded = await admin.auth().verifyIdToken(idToken);
-      uid = decoded.uid;
-      email = decoded.email || "";
-      displayName = decoded.name || email;
-    } catch {
-      return res.status(401).json({ error: "Invalid token" });
-    }
-
-    const payload = {
-      TerminalNumber: CARDCOM_TERMINAL,
-      ApiName: CARDCOM_API_NAME,
-      ApiPass: CARDCOM_API_PASS,
-      ReturnValue: uid,
-      Amount: 35,
-      CoinID: 1,
-      MaxPayments: 1,
-      ProductName: "מנוי חודשי למדני אנגלית",
-      SuccessRedirectUrl: `${SITE_URL}/payment-success.html`,
-      FailedRedirectUrl: `${SITE_URL}/payment-failed.html`,
-      WebHookUrl: FUNCTIONS_URL,
-    };
-
-    try {
-      const response = await fetch(`${CARDCOM_API_URL}/LowProfile/Create`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json();
-      console.log("Cardcom response:", JSON.stringify(data));
-
-      if (data.ResponseCode !== 0) {
-        console.error("Cardcom error:", data);
-        return res.status(500).json({ error: data.Description || "שגיאה בשירות התשלום" });
-      }
-
-      // Use Url field if returned, otherwise build from LowProfileCode
-      const paymentUrl = data.Url ||
-        (data.LowProfileCode
-          ? `https://secure.cardcom.solutions/Interface/Lowprofile.aspx?LowProfileCode=${data.LowProfileCode}`
-          : null);
-
-      if (!paymentUrl) {
-        console.error("No payment URL in response:", data);
-        return res.status(500).json({ error: "לא התקבל קישור תשלום מקארדקום" });
-      }
-
-      res.json({ url: paymentUrl });
-    } catch (err) {
-      console.error("createPaymentSession error:", err);
-      res.status(500).json({ error: "שירות התשלום אינו זמין כרגע" });
-    }
-  }
-);
-
-// ─── 2. Cardcom payment callback (webhook) ────────────────────────────────────
-// Cardcom calls this URL after a completed payment
-exports.cardcomCallback = onRequest(async (req, res) => {
-  const body = req.body;
-
-  if (String(body.ResponseCode) !== "0") {
-    console.log("Payment not successful, ResponseCode:", body.ResponseCode);
-    return res.status(200).send("Payment failed");
-  }
-
-  const uid = body.ReturnValue;
-  const cardToken = body.Token || null;
-  const last4 = body.Last4Digits || "";
-
-  if (!uid) return res.status(400).send("Missing uid");
-
-  const now = new Date();
-  const expiry = new Date(now);
-  expiry.setMonth(expiry.getMonth() + 1);
-
-  await db.collection("users").doc(uid).set(
-    {
-      premium: true,
-      premiumSince: admin.firestore.FieldValue.serverTimestamp(),
-      premiumExpiry: admin.firestore.Timestamp.fromDate(expiry),
-      cardcomToken: cardToken,
-      last4: last4,
-      chargeFailedAt: admin.firestore.FieldValue.delete(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    },
-    { merge: true }
-  );
-
-  console.log(`User ${uid} activated premium until ${expiry.toISOString()}`);
-
-  // Send admin notification
-  const userRecord = await admin.auth().getUser(uid).catch(() => null);
-  const userEmail = userRecord ? userRecord.email : uid;
-  await sendAdminEmail(
-    `מנוי חדש — ${userEmail}`,
-    `משתמש חדש רכש מנוי חודשי.\n\nאימייל: ${userEmail}\nUID: ${uid}\nתאריך: ${now.toISOString()}`
-  );
-
-  res.status(200).send("OK");
-});
-
-// ─── 3. (removed) Monthly recurring charge ────────────────────────────────────
-// The site is free. The scheduled charge job was deleted so no card can ever be
-// charged, even if a premium flag is set by mistake. See git history to restore.
-
-// ─── 4. Cancel subscription ───────────────────────────────────────────────────
-// Called from client to cancel at end of current period
-exports.cancelSubscription = onRequest(
-  { cors: [SITE_URL] },
-  async (req, res) => {
-    if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
-
-    const authHeader = req.headers.authorization || "";
-    const idToken = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
-    if (!idToken) return res.status(401).json({ error: "Unauthorized" });
-
-    let uid;
-    try {
-      const decoded = await admin.auth().verifyIdToken(idToken);
-      uid = decoded.uid;
-    } catch {
-      return res.status(401).json({ error: "Invalid token" });
-    }
-
-    await db.collection("users").doc(uid).update({
-      cancelAtPeriodEnd: true,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-
-    // Send admin notification
-    const userRecord = await admin.auth().getUser(uid).catch(() => null);
-    const userEmail = userRecord ? userRecord.email : uid;
-    await sendAdminEmail(
-      `ביטול מנוי — ${userEmail}`,
-      `משתמש ביטל את המנוי שלו.\n\nאימייל: ${userEmail}\nUID: ${uid}\nתאריך: ${new Date().toISOString()}`
-    );
-
-    res.json({ success: true });
-  }
-);
+// ─── Cardcom endpoints removed ────────────────────────────────────────────────
+// createPaymentSession / cardcomCallback / cancelSubscription belonged to the
+// monthly card subscription. cardcomCallback took a uid from the request body
+// and granted premium with no authentication of any kind — it was meant to be
+// called by Cardcom alone. Payment is by Bit now, so they are gone rather than
+// guarded. See git history if card payments ever return.
 
 // ─── 5. Admin delete user ─────────────────────────────────────────────────────
 // Deletes a user from both Firebase Auth and Firestore (admin only)
@@ -516,6 +366,20 @@ exports.onPremiumRequest = onDocumentCreated(
     const r = snap.data() || {};
     if (r.status !== "pending") return;
 
+    // One open request per account. Without this a single person could file
+    // dozens and bury the real ones in the owner's inbox.
+    const existing = await db.collection("premiumRequests")
+      .where("uid", "==", r.uid).where("status", "==", "pending").get();
+    const others = existing.docs.filter((d) => d.id !== event.params.reqId);
+    if (others.length) {
+      await snap.ref.update({
+        status: "duplicate",
+        note: "בקשה פתוחה כבר קיימת",
+      });
+      console.log("Duplicate premium request from", r.email, "— ignored");
+      return;
+    }
+
     // Single-use secret so the approve link works from the phone without a
     // login, and only for whoever received this email.
     const token = require("crypto").randomBytes(24).toString("hex");
@@ -675,6 +539,76 @@ exports.adminRevokePremium = onRequest(
     }, { merge: true });
 
     res.json({ ok: true });
+  }
+);
+
+// Runs once a day: warns anyone a week from expiry, and clears out requests
+// nobody acted on. Deliberately the only scheduled job on the project, and it
+// cannot charge anything — it only sends mail and tidies up.
+exports.dailyMaintenance = onSchedule(
+  { schedule: "0 9 * * *", timeZone: "Asia/Jerusalem", timeoutSeconds: 540 },
+  async () => {
+    const now = Date.now();
+    const DAY = 86400000;
+
+    // ── expiry reminders, 7 days out ──────────────────────────────────────
+    const soon = admin.firestore.Timestamp.fromDate(new Date(now + 7 * DAY));
+    const today = admin.firestore.Timestamp.fromDate(new Date(now));
+    const due = await db.collection("users")
+      .where("premium", "==", true)
+      .where("premiumExpiry", ">", today)
+      .where("premiumExpiry", "<=", soon)
+      .get();
+
+    let reminded = 0;
+    for (const doc of due.docs) {
+      const d = doc.data();
+      // once only — otherwise they get the same warning every morning for a week
+      if (d.renewalReminderSent) continue;
+
+      const exp = d.premiumExpiry.toDate();
+      const days = Math.ceil((exp.getTime() - now) / DAY);
+      const rec = await admin.auth().getUser(doc.id).catch(() => null);
+      const to = rec && rec.email ? rec.email : d.email;
+      if (!to) continue;
+
+      const reason = await sendMail(to, "הגישה שלך מסתיימת בקרוב — למדני אנגלית",
+        `שלום,\n\n` +
+        `הגישה המלאה שלך בלמדני אנגלית מסתיימת בעוד ${days} ימים, בתאריך ${fmtDate(exp)}.\n\n` +
+        `לחידוש:\nhttps://lamdanien.co.il/premium.html\n\n` +
+        `חשוב לדעת: הגישה לא תיחסם. החשבון יחזור למצב רשום, ` +
+        `הנושאים הפתוחים יישארו זמינים, וכל ההתקדמות של הילדים תישמר במלואה.\n\n` +
+        `תודה,\nלמדני אנגלית`);
+
+      if (!reason) {
+        await doc.ref.update({ renewalReminderSent: new Date().toISOString() });
+        reminded++;
+      }
+    }
+
+    // Clear the flag once renewed, so the next cycle can warn again
+    const future = admin.firestore.Timestamp.fromDate(new Date(now + 8 * DAY));
+    const renewed = await db.collection("users")
+      .where("premiumExpiry", ">", future).get();
+    let cleared = 0;
+    for (const doc of renewed.docs) {
+      if (!doc.data().renewalReminderSent) continue;
+      await doc.ref.update({ renewalReminderSent: admin.firestore.FieldValue.delete() });
+      cleared++;
+    }
+
+    // ── stale requests ────────────────────────────────────────────────────
+    const cutoff = new Date(now - 14 * DAY).toISOString();
+    const old = await db.collection("premiumRequests")
+      .where("status", "==", "pending").get();
+    let closed = 0;
+    for (const doc of old.docs) {
+      if (String(doc.data().createdAt || "") >= cutoff) continue;
+      await doc.ref.update({ status: "expired", expiredAt: new Date().toISOString() });
+      closed++;
+    }
+
+    console.log(`dailyMaintenance: ${reminded} reminded, ${cleared} flags cleared, ${closed} stale requests closed`);
   }
 );
 

@@ -7,7 +7,7 @@ service cloud.firestore {
     function protectedFields() {
       return [
         'premium', 'premiumSince', 'premiumExpiry', 'premiumUntil',
-        'premiumPlan', 'payments', 'amountPaid',
+        'premiumPlan', 'payments', 'amountPaid', 'renewalReminderSent',
         '_deleted', '_deletedAt',
         'cardcomToken', 'last4', 'cancelAtPeriodEnd', 'chargeFailedAt',
         'note', 'price'
