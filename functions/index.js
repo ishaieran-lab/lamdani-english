@@ -416,7 +416,11 @@ exports.adminListUsers = onRequest(
             note: d.note || "",
             price: d.price || "",
             premium: !!d.premium,
-            premiumUntil: toIso(d.premiumUntil),
+            // premiumExpiry is the field that is actually written; premiumUntil
+            // was the older name and is still read so nothing from before is lost
+            premiumUntil: toIso(d.premiumExpiry) || toIso(d.premiumUntil),
+            premiumPlan: d.premiumPlan || null,
+            payments: Array.isArray(d.payments) ? d.payments : [],
             lastSyncAt: toIso(d.lastSyncAt),
             lastVisitAt: toIso(d.lastVisitAt),
           };
@@ -432,6 +436,229 @@ exports.adminListUsers = onRequest(
 
 // ─── 9. הרשמת משתמש חדש ───────────────────────────────────────────────────────
 // מופעלת אוטומטית כשנוצר מסמך חדש ב-users (כלומר, משתמש נרשם לראשונה)
+// ─── Premium: grant, request, approve ─────────────────────────────────────────
+
+const PLANS = {
+  half: { label: "חצי שנה", months: 6,  amount: 149 },
+  year: { label: "שנה",     months: 12, amount: 249 },
+};
+
+// Extends from whichever is later: today, or an existing expiry. Renewing early
+// must not cost the customer the days they already paid for.
+function addMonths(from, months) {
+  const d = new Date(from.getTime());
+  d.setMonth(d.getMonth() + months);
+  return d;
+}
+
+async function grantPremium(uid, { months, amount, plan, method, note }) {
+  const ref = db.collection("users").doc(uid);
+  const snap = await ref.get();
+  const data = snap.exists ? snap.data() : {};
+
+  const now = new Date();
+  const current = data.premiumExpiry && data.premiumExpiry.toDate
+    ? data.premiumExpiry.toDate() : null;
+  const base = (current && current > now) ? current : now;
+  const expiry = addMonths(base, months);
+
+  const payment = {
+    at: new Date().toISOString(),
+    plan: plan || null,
+    months,
+    amount: amount == null ? null : Number(amount),
+    method: method || "bit",
+  };
+  if (note) payment.note = note;
+
+  await ref.set({
+    premium: true,
+    premiumSince: data.premiumSince || admin.firestore.Timestamp.fromDate(now),
+    premiumExpiry: admin.firestore.Timestamp.fromDate(expiry),
+    premiumPlan: plan || null,
+    payments: admin.firestore.FieldValue.arrayUnion(payment),
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  }, { merge: true });
+
+  return { expiry, extended: !!(current && current > now) };
+}
+
+function fmtDate(d) {
+  return d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
+}
+
+// A request filed from the site tells the owner someone claims to have paid.
+// It grants nothing — the money is verified in Bit, then approved by hand.
+exports.onPremiumRequest = onDocumentCreated(
+  { document: "premiumRequests/{reqId}", region: "us-central1" },
+  async (event) => {
+    const snap = event.data;
+    if (!snap) return;
+    const r = snap.data() || {};
+    if (r.status !== "pending") return;
+
+    // Single-use secret so the approve link works from the phone without a
+    // login, and only for whoever received this email.
+    const token = require("crypto").randomBytes(24).toString("hex");
+    await snap.ref.update({ approveToken: token });
+
+    const plan = PLANS[r.plan] || { label: r.plan || "—", months: r.months || 0 };
+    const base = `https://us-central1-lamdani-eng.cloudfunctions.net/approvePremium`;
+    const link = `${base}?id=${event.params.reqId}&token=${token}`;
+
+    await sendMail(ADMIN_EMAIL,
+      `בקשת גישה — ${r.payerName || r.email} · ${plan.label} ${r.amount || ""}₪`,
+      `בקשת גישה מלאה\n` +
+      `────────────────────\n` +
+      `שם בביט : ${r.payerName || "—"}\n` +
+      `טלפון   : ···${r.phoneLast4 || "—"}\n` +
+      `אימייל  : ${r.email || "—"}\n` +
+      `חבילה   : ${plan.label} · ${r.amount || "—"} ₪\n\n` +
+      `ודא בביט שהתשלום נכנס, ורק אז אשר:\n\n` +
+      `${link}\n\n` +
+      `הקישור חד-פעמי. אישור יפתח את הגישה ל-${plan.months} חודשים ` +
+      `וישלח הודעה למשתמש.`
+    );
+  }
+);
+
+// Opened from the approval email. Verifies the one-time token, grants the
+// access and tells the customer — all from a single tap on a phone.
+exports.approvePremium = onRequest(async (req, res) => {
+  res.set("Content-Type", "text/html; charset=utf-8");
+  const page = (title, body, colour) => `<!doctype html><html lang="he" dir="rtl"><head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>${title}</title></head>
+    <body style="font-family:Arial,sans-serif;background:#f8fafc;margin:0;padding:2rem">
+    <div style="max-width:420px;margin:3rem auto;background:#fff;border-radius:16px;
+                padding:2rem;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.08)">
+      <div style="font-size:2.6rem">${colour}</div>
+      <h1 style="font-size:1.3rem;color:#0f172a;margin:.6rem 0 1rem">${title}</h1>
+      <div style="color:#475569;line-height:1.8;font-size:.98rem">${body}</div>
+    </div></body></html>`;
+
+  const { id, token } = req.query || {};
+  if (!id || !token) return res.status(400).send(page("בקשה לא תקינה", "חסרים פרטים בקישור.", "⚠️"));
+
+  try {
+    const ref = db.collection("premiumRequests").doc(String(id));
+    const snap = await ref.get();
+    if (!snap.exists) return res.status(404).send(page("הבקשה לא נמצאה", "ייתכן שנמחקה.", "⚠️"));
+
+    const r = snap.data();
+    if (r.approveToken !== token) {
+      return res.status(403).send(page("קישור לא תקף", "הקישור שגוי או כבר נוצל.", "🚫"));
+    }
+    if (r.status === "approved") {
+      return res.send(page("כבר אושר", "הבקשה הזו אושרה קודם לכן. לא בוצע שינוי נוסף.", "✓"));
+    }
+
+    const plan = PLANS[r.plan] || { label: r.plan, months: r.months || 6 };
+    const { expiry, extended } = await grantPremium(r.uid, {
+      months: plan.months, amount: r.amount, plan: r.plan, method: "bit",
+      note: `${r.payerName || ""} ···${r.phoneLast4 || ""}`.trim(),
+    });
+
+    await ref.update({
+      status: "approved",
+      approvedAt: new Date().toISOString(),
+      approveToken: admin.firestore.FieldValue.delete(),   // burn the one-time link
+    });
+
+    if (r.email) {
+      await sendMail(r.email, "הגישה נפתחה — למדני אנגלית",
+        `שלום,\n\nהתשלום אומת והגישה המלאה נפתחה.\n\n` +
+        `החבילה : ${plan.label}\n` +
+        `בתוקף עד : ${fmtDate(expiry)}\n\n` +
+        `כל התכנים פתוחים עכשיו — אוצר מילים, דקדוק, הבנת הנקרא ותרגול משפטים.\n\n` +
+        `https://lamdanien.co.il/app.html\n\nתודה,\nלמדני אנגלית`);
+    }
+
+    res.send(page("הגישה נפתחה ✓",
+      `<b>${r.payerName || r.email}</b><br>${plan.label} · ${r.amount || "—"} ₪<br><br>` +
+      `בתוקף עד <b>${fmtDate(expiry)}</b>` +
+      (extended ? "<br><small>נוסף על התקופה הקיימת</small>" : "") +
+      `<br><br><small>נשלחה הודעה למשתמש.</small>`, "✅"));
+
+  } catch (err) {
+    console.error("approvePremium:", err);
+    res.status(500).send(page("שגיאה", "לא הצלחנו להשלים את הפעולה. נסה שוב.", "⚠️"));
+  }
+});
+
+// Admin panel: grant access by hand — a gift, a trial, or a payment that came
+// in some other way.
+exports.adminGrantPremium = onRequest(
+  { cors: [SITE_URL] },
+  async (req, res) => {
+    if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
+    const authHeader = req.headers.authorization || "";
+    const idToken = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+    if (!idToken) return res.status(401).json({ error: "Unauthorized" });
+    let callerEmail;
+    try {
+      callerEmail = (await admin.auth().verifyIdToken(idToken)).email;
+    } catch {
+      return res.status(401).json({ error: "Invalid token" });
+    }
+    if (callerEmail !== ADMIN_EMAIL) return res.status(403).json({ error: "Forbidden" });
+
+    const { uid, months, amount, plan, notify } = req.body || {};
+    const m = parseInt(months, 10);
+    if (!uid || !m || m < 1) return res.status(400).json({ error: "Missing uid or months" });
+
+    try {
+      const { expiry, extended } = await grantPremium(uid, {
+        months: m, amount, plan: plan || null, method: "manual",
+      });
+
+      if (notify) {
+        const u = await admin.auth().getUser(uid).catch(() => null);
+        if (u && u.email) {
+          await sendMail(u.email, "הגישה נפתחה — למדני אנגלית",
+            `שלום,\n\nהגישה המלאה לאתר נפתחה עבורך.\n\n` +
+            `בתוקף עד : ${fmtDate(expiry)}\n\n` +
+            `https://lamdanien.co.il/app.html\n\nתודה,\nלמדני אנגלית`);
+        }
+      }
+      res.json({ ok: true, expiry: expiry.toISOString(), extended });
+    } catch (err) {
+      console.error("adminGrantPremium:", err);
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
+
+// Admin panel: revoke access, for a refund or a mistake.
+exports.adminRevokePremium = onRequest(
+  { cors: [SITE_URL] },
+  async (req, res) => {
+    if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
+    const authHeader = req.headers.authorization || "";
+    const idToken = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+    if (!idToken) return res.status(401).json({ error: "Unauthorized" });
+    let callerEmail;
+    try {
+      callerEmail = (await admin.auth().verifyIdToken(idToken)).email;
+    } catch {
+      return res.status(401).json({ error: "Invalid token" });
+    }
+    if (callerEmail !== ADMIN_EMAIL) return res.status(403).json({ error: "Forbidden" });
+
+    const { uid } = req.body || {};
+    if (!uid) return res.status(400).json({ error: "Missing uid" });
+
+    await db.collection("users").doc(uid).set({
+      premium: false,
+      premiumExpiry: admin.firestore.FieldValue.delete(),
+      premiumPlan: admin.firestore.FieldValue.delete(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+
+    res.json({ ok: true });
+  }
+);
+
 exports.onNewUser = onDocumentCreated(
   { document: "users/{uid}", region: "us-central1" },
   async (event) => {

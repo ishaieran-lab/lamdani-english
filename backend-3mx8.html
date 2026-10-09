@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+'<td>' + premiumCell(u) + '</td>' +﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -66,6 +66,27 @@ td{padding:0.8rem 1rem;border-top:1px solid #f1f5f9;vertical-align:middle}
 .user-email{font-size:0.76rem;color:#94a3b8;direction:ltr;text-align:right;margin-top:0.1rem}
 .date-cell{font-size:0.78rem;color:#64748b;white-space:nowrap}
 .never-used{font-size:0.68rem;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:0.3rem;padding:0.05rem 0.35rem;display:inline-block;margin-top:0.2rem}
+
+/* ── pending requests ────────────────────────────────── */
+.req-card{background:#fff;border:2px solid #fbbf24;border-radius:1rem;box-shadow:0 1px 3px rgba(0,0,0,0.04);padding:1.1rem 1.3rem;margin-bottom:1.25rem}
+.req-hd{display:flex;align-items:center;gap:0.5rem;font-weight:800;color:#92400e;margin-bottom:0.85rem}
+.req-row{display:flex;align-items:center;gap:0.9rem;flex-wrap:wrap;padding:0.7rem 0;border-top:1px solid #f1f5f9}
+.req-row:first-of-type{border-top:none}
+.req-who{flex:1;min-width:200px}
+.req-name{font-weight:700;color:#0f172a;font-size:0.95rem}
+.req-meta{font-size:0.78rem;color:#64748b;margin-top:0.12rem}
+.req-plan{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:0.45rem;padding:0.22rem 0.6rem;font-size:0.82rem;font-weight:700;white-space:nowrap}
+
+/* ── premium status ──────────────────────────────────── */
+.pstat{display:inline-block;padding:0.18rem 0.55rem;border-radius:0.4rem;font-size:0.73rem;font-weight:700;white-space:nowrap}
+.pstat-on{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+.pstat-soon{background:#fffbeb;color:#b45309;border:1px solid #fde68a}
+.pstat-off{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}
+.pstat-free{background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0}
+.grant-row{display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap}
+.grant-btn{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:0.45rem;padding:0.3rem 0.7rem;font-size:0.82rem;font-weight:700;cursor:pointer;font-family:inherit}
+.grant-btn:hover{background:#dbeafe}
+.pay-hist{font-size:0.78rem;color:#64748b;margin-top:0.5rem;line-height:1.7}
 .note-preview{font-size:0.78rem;color:#64748b;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 th.sortable{cursor:pointer;user-select:none}
 th.sortable:hover{color:#475569;background:#f1f5f9}
@@ -248,8 +269,11 @@ input[type="checkbox"].row-cb{width:15px;height:15px;cursor:pointer;accent-color
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input class="search-input" type="text" id="searchInput" placeholder="חפש שם / אימייל..." oninput="filterUsers()" dir="rtl">
       </div>
-      <button class="btn-sm btn-ghost" onclick="loadUsers()">↻ רענן</button>
+      <button class="btn-sm btn-ghost" onclick="loadUsers();loadRequests()">↻ רענן</button>
     </div>
+
+    <!-- Only rendered when something is waiting, so it never becomes furniture -->
+    <div id="requestsSection" style="display:none"></div>
 
     <div id="emailSection" class="email-section">
       <div class="email-toolbar">
@@ -283,11 +307,12 @@ input[type="checkbox"].row-cb{width:15px;height:15px;cursor:pointer;accent-color
             <th class="sortable" onclick="sortBy('activity')">סנכרון/פעילות אחרונה<span class="sort-arrow idle" id="sa-activity">⇅</span></th>
             <th class="sortable" onclick="sortBy('kids')">ילדים<span class="sort-arrow idle" id="sa-kids">⇅</span></th>
             <th class="sortable" onclick="sortBy('stages')">שלבים<span class="sort-arrow idle" id="sa-stages">⇅</span></th>
+            <th class="sortable" onclick="sortBy('premium')">גישה<span class="sort-arrow idle" id="sa-premium">⇅</span></th>
             <th>הערה</th>
           </tr>
         </thead>
         <tbody id="usersBody">
-          <tr class="empty-row"><td colspan="8"><span class="spinner"></span> טוען משתמשים...</td></tr>
+          <tr class="empty-row"><td colspan="9"><span class="spinner"></span> טוען משתמשים...</td></tr>
         </tbody>
       </table>
     </div>
@@ -322,6 +347,7 @@ window.onFirebaseAuth = function(fbUser) {
     document.getElementById('adminEmailDisplay').textContent = fbUser.email;
     showState('stateDashboard');
     loadUsers();
+    loadRequests();
 };
 window.onFirebaseLogout = function() { showState('stateLogin'); };
 function doLogout() { if (window._firebaseAuth) window._firebaseAuth.signOut(); }
@@ -331,7 +357,7 @@ function doLogout() { if (window._firebaseAuth) window._firebaseAuth.signOut(); 
 function loadUsers(keepUid) {
     var auth = window._firebaseAuth;
     var tbody = document.getElementById('usersBody');
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="8"><span class="spinner"></span> טוען...</td></tr>';
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="9"><span class="spinner"></span> טוען...</td></tr>';
     _expandedUid = null;
     if (!auth || !auth.currentUser) { setTimeout(function() { loadUsers(keepUid); }, 500); return; }
     auth.currentUser.getIdToken().then(function(token) {
@@ -351,7 +377,7 @@ function loadUsers(keepUid) {
         }
     })
     .catch(function(e) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="8">שגיאה: ' + e.message + '</td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="9">שגיאה: ' + e.message + '</td></tr>';
     });
 }
 
@@ -374,6 +400,123 @@ function renderStats(users) {
     document.getElementById('statKids').textContent   = kids;
 }
 
+// ── Premium ──────────────────────────────────────────────
+var PLAN_LABEL = { half: 'חצי שנה', year: 'שנה' };
+var FN = 'https://us-central1-lamdani-eng.cloudfunctions.net';
+
+function adminPost(path, body) {
+    var auth = window._firebaseAuth;
+    if (!auth || !auth.currentUser) return Promise.reject(new Error('לא מחובר'));
+    return auth.currentUser.getIdToken().then(function (t) {
+        return fetch(FN + path, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + t },
+            body: JSON.stringify(body)
+        });
+    }).then(function (r) { return r.json(); });
+}
+
+// Pending requests sit above everything — they are the only thing on this page
+// that someone is actively waiting on.
+function loadRequests() {
+    var db = window._firebaseDb, box = document.getElementById('requestsSection');
+    if (!db || !box) return;
+    db.collection('premiumRequests').where('status', '==', 'pending').get()
+        .then(function (snap) {
+            if (snap.empty) { box.style.display = 'none'; box.innerHTML = ''; return; }
+            var rows = [];
+            snap.forEach(function (d) { var r = d.data(); r._id = d.id; rows.push(r); });
+            rows.sort(function (a, b) { return String(a.createdAt) < String(b.createdAt) ? 1 : -1; });
+
+            var html = '<div class="req-card"><div class="req-hd">⏳ בקשות ממתינות (' + rows.length + ')</div>';
+            rows.forEach(function (r) {
+                html +=
+                '<div class="req-row" id="req-' + r._id + '">' +
+                  '<div class="req-who">' +
+                    '<div class="req-name">' + esc(r.payerName || '—') +
+                      ' <span style="font-weight:400;color:#94a3b8">· טלפון ···' + esc(r.phoneLast4 || '—') + '</span></div>' +
+                    '<div class="req-meta">' + esc(r.email || '—') + ' · ' + fmtSyncDate(r.createdAt) + '</div>' +
+                  '</div>' +
+                  '<span class="req-plan">' + (PLAN_LABEL[r.plan] || r.plan || '—') + ' · ' + (r.amount || '—') + ' ₪</span>' +
+                  '<button class="btn-sm btn-success" onclick="approveRequest(\'' + r._id + '\')">אשר</button>' +
+                  '<button class="btn-sm btn-danger" onclick="rejectRequest(\'' + r._id + '\')">דחה</button>' +
+                  '<span class="mgmt-feedback" id="rf-' + r._id + '"></span>' +
+                '</div>';
+            });
+            box.innerHTML = html + '</div>';
+            box.style.display = '';
+        })
+        .catch(function (e) { console.warn('loadRequests:', e.message); });
+}
+
+function approveRequest(id) {
+    var db = window._firebaseDb;
+    var fb = document.getElementById('rf-' + id);
+    db.collection('premiumRequests').doc(id).get().then(function (d) {
+        if (!d.exists) return;
+        var r = d.data();
+        var months = r.months || (r.plan === 'year' ? 12 : 6);
+        if (!confirm('לאשר גישה ל-' + (r.payerName || r.email) + '?\n\n' +
+                     (PLAN_LABEL[r.plan] || r.plan) + ' · ' + (r.amount || '—') + ' ₪\n' +
+                     'ודא שהתשלום אכן נכנס בביט.')) return;
+        if (fb) fb.textContent = '…';
+        return adminPost('/adminGrantPremium', {
+            uid: r.uid, months: months, amount: r.amount, plan: r.plan, notify: true
+        }).then(function (res) {
+            if (!res.ok) throw new Error(res.error || 'שגיאה');
+            return db.collection('premiumRequests').doc(id).update({
+                status: 'approved', approvedAt: new Date().toISOString()
+            });
+        }).then(function () { loadRequests(); loadUsers(); });
+    }).catch(function (e) {
+        if (fb) fb.textContent = '';
+        alert('שגיאה: ' + e.message);
+    });
+}
+
+function rejectRequest(id) {
+    if (!confirm('לדחות את הבקשה?\n\nהמשתמש לא יקבל גישה. ניתן להגיש בקשה חדשה.')) return;
+    window._firebaseDb.collection('premiumRequests').doc(id)
+        .update({ status: 'rejected', rejectedAt: new Date().toISOString() })
+        .then(loadRequests)
+        .catch(function (e) { alert('שגיאה: ' + e.message); });
+}
+
+function grantPremium(uid, months, label) {
+    var amt = prompt('סכום ששולם עבור ' + label + ' (₪) — ריק אם מתנה:', months === 12 ? '249' : (months === 6 ? '149' : ''));
+    if (amt === null) return;
+    adminPost('/adminGrantPremium', {
+        uid: uid, months: months, amount: amt === '' ? null : Number(amt),
+        plan: months === 12 ? 'year' : (months === 6 ? 'half' : null), notify: true
+    }).then(function (res) {
+        if (!res.ok) throw new Error(res.error || 'שגיאה');
+        var d = new Date(res.expiry);
+        alert('✓ הגישה נפתחה עד ' + d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear() +
+              (res.extended ? '\n(נוסף על התקופה הקיימת)' : '') + '\nנשלחה הודעה למשתמש.');
+        loadUsers(uid);
+    }).catch(function (e) { alert('שגיאה: ' + e.message); });
+}
+
+function revokePremium(uid, name) {
+    if (!confirm('לבטל את הגישה המלאה של "' + name + '"?\n\nהחשבון יחזור למצב רשום. ההתקדמות נשמרת.')) return;
+    adminPost('/adminRevokePremium', { uid: uid }).then(function (res) {
+        if (!res.ok) throw new Error(res.error || 'שגיאה');
+        loadUsers(uid);
+    }).catch(function (e) { alert('שגיאה: ' + e.message); });
+}
+
+// status pill for the table — flags anything expiring inside two weeks
+function premiumCell(u) {
+    if (!u.premium) return '<span class="pstat pstat-free">רשום</span>';
+    if (!u.premiumUntil) return '<span class="pstat pstat-on">⭐ ללא הגבלה</span>';
+    var t = Date.parse(u.premiumUntil);
+    if (isNaN(t)) return '<span class="pstat pstat-free">רשום</span>';
+    var days = Math.ceil((t - Date.now()) / 86400000);
+    if (days < 0)  return '<span class="pstat pstat-off">פג ' + fmtDate(u.premiumUntil) + '</span>';
+    if (days <= 14) return '<span class="pstat pstat-soon">⚠ ' + days + ' ימים</span>';
+    return '<span class="pstat pstat-on">⭐ ' + fmtDate(u.premiumUntil) + '</span>';
+}
+
 // ── Sorting ──────────────────────────────────────────────
 // Click a header to sort by it; click again to reverse.
 // Text starts A-Z, dates and numbers start with the largest first.
@@ -391,6 +534,7 @@ function _sortVal(u) {
         case 'activity': return u.lastSyncAt  ? Date.parse(u.lastSyncAt)  : null;
         case 'kids':     return Array.isArray(u.kids) ? u.kids.length : 0;
         case 'stages':   return countDone(u.progress);
+        case 'premium':  return u.premium ? (u.premiumUntil ? Date.parse(u.premiumUntil) : 8.64e15) : null;
     }
     return null;
 }
@@ -412,7 +556,7 @@ function applySort(users) {
 }
 
 function updateSortArrows() {
-    ['name','joined','visit','activity','kids','stages'].forEach(function(k) {
+    ['name','joined','visit','activity','kids','stages','premium'].forEach(function(k) {
         var el = document.getElementById('sa-' + k);
         if (!el) return;
         var th = el.parentElement;
@@ -467,7 +611,7 @@ function renderTable(users) {
     updateSortArrows();
     users = applySort(users);
     if (!users.length) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="8">לא נמצאו משתמשים</td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="9">לא נמצאו משתמשים</td></tr>';
         return;
     }
     var html = '';
@@ -492,10 +636,11 @@ function renderTable(users) {
           '<td class="date-cell">' + fmtSyncDate(u.lastSyncAt) + '</td>' +
           '<td style="font-weight:600">' + kids.length + '</td>' +
           '<td style="font-weight:600">' + done + '</td>' +
+          '<td>' + premiumCell(u) + '</td>' +
           '<td class="note-preview">' + (note || '<span style="color:#cbd5e1">—</span>') + '</td>' +
         '</tr>' +
         '<tr class="detail-row" id="detail-' + uid + '" style="display:none">' +
-          '<td colspan="8"><div class="detail-inner">' + renderDetail(u) + '</div></td>' +
+          '<td colspan="9"><div class="detail-inner">' + renderDetail(u) + '</div></td>' +
         '</tr>';
     });
     tbody.innerHTML = html;
@@ -529,6 +674,21 @@ function renderDetail(u) {
         kidsHtml += '</div>';
     }
 
+    // Access: current state, the grant buttons, and what has been paid so far
+    var access =
+    '<hr class="mgmt-divider">' +
+    '<div class="detail-section-lbl">גישה</div>' +
+    '<div style="margin-bottom:0.7rem">' + premiumCell(u) + '</div>' +
+    '<div class="grant-row">' +
+      '<span style="font-size:0.78rem;color:#64748b;margin-left:0.3rem">הענק:</span>' +
+      '<button class="grant-btn" onclick="grantPremium(\'' + uid + '\',12,\'שנה\')">שנה</button>' +
+      '<button class="grant-btn" onclick="grantPremium(\'' + uid + '\',6,\'חצי שנה\')">חצי שנה</button>' +
+      '<button class="grant-btn" onclick="grantPremium(\'' + uid + '\',1,\'חודש\')">חודש</button>' +
+      (u.premium ? '<button class="btn-sm btn-danger" style="margin-right:0.4rem" onclick="revokePremium(\'' +
+                   uid + '\',\'' + esc(u.name || u.email || '?') + '\')">בטל גישה</button>' : '') +
+    '</div>' +
+    paymentsHtml(u);
+
     // Management fields
     var mgmt =
     '<hr class="mgmt-divider">' +
@@ -549,7 +709,21 @@ function renderDetail(u) {
       '<button class="btn-delete" onclick="deleteUser(\'' + uid + '\',\'' + esc(u.name||u.email||'?') + '\')">🗑 מחק משתמש</button>' +
     '</div>';
 
-    return kidsHtml + mgmt;
+    return kidsHtml + access + mgmt;
+}
+
+function paymentsHtml(u) {
+    var ps = Array.isArray(u.payments) ? u.payments : [];
+    if (!ps.length) return '';
+    var rows = ps.slice().sort(function (a, b) { return String(a.at) < String(b.at) ? 1 : -1; })
+        .map(function (p) {
+            return '• ' + (p.amount != null ? p.amount + ' ₪' : 'ללא תשלום') +
+                   ' · ' + (p.method === 'manual' ? 'ידני' : 'ביט') +
+                   ' · ' + (p.months || '?') + ' חודשים' +
+                   ' · ' + fmtDate(p.at) +
+                   (p.note ? ' · ' + esc(p.note) : '');
+        }).join('<br>');
+    return '<div class="pay-hist"><strong>תשלומים:</strong><br>' + rows + '</div>';
 }
 
 // ── Expand/collapse ──────────────────────────────────────
