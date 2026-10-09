@@ -129,7 +129,9 @@
     </div>
 
     <!-- 2. pay -->
-    <div class="pm-card">
+    <!-- Hidden until sign-in: paying before there is an account to credit
+         produces a transfer nobody can match to anyone. -->
+    <div class="pm-card" id="payCard" style="display:none">
         <div class="pm-step"><span class="pm-step-n">1</span> תשלום בביט</div>
         <div class="pm-pay-amount">לתשלום: <span id="payAmount">249</span> ₪</div>
 
@@ -148,7 +150,7 @@
     </div>
 
     <!-- 3. tell us -->
-    <div class="pm-card">
+    <div class="pm-card" id="confirmCard" style="display:none">
         <div class="pm-step"><span class="pm-step-n">2</span> אישור התשלום</div>
 
         <div class="pm-msg pm-info" style="margin-bottom:1.1rem">
@@ -227,17 +229,30 @@ window.onFirebaseLogout = function () { _user = null; renderState(); };
 function msg(cls, html) { return '<div class="pm-msg ' + cls + '">' + html + '</div>'; }
 
 function renderState() {
-    var box  = document.getElementById('pmState');
-    var form = document.getElementById('pmForm');
+    var box     = document.getElementById('pmState');
+    var form    = document.getElementById('pmForm');
+    var pay     = document.getElementById('payCard');
+    var confirm = document.getElementById('confirmCard');
 
     if (!_user) {
-        box.innerHTML = msg('pm-warn',
-            'כדי לרכוש גישה יש תחילה <a href="index.html" style="color:#92400e;font-weight:700">להירשם או להתחבר</a>. ' +
-            'ההרשמה חינמית ולוקחת פחות מדקה.');
-        form.style.display = 'none';
+        // Show the prices, but not the means to pay — the account has to exist
+        // first so the transfer can be credited to someone.
+        pay.style.display = 'none';
+        confirm.style.display = 'none';
+        box.innerHTML =
+            '<div class="pm-msg pm-warn" style="text-align:center">' +
+              '<strong>תחילה יש להירשם</strong><br>' +
+              'הרכישה מתבצעת מתוך החשבון, כדי שנוכל לשייך את התשלום אליכם. ' +
+              'ההרשמה חינמית ולוקחת פחות מדקה.' +
+              '<a href="index.html" style="display:inline-block;margin-top:0.9rem;background:#2563eb;' +
+                 'color:#fff;font-weight:800;padding:0.7rem 1.6rem;border-radius:12px;' +
+                 'text-decoration:none">הרשמה / התחברות ←</a>' +
+            '</div>';
         return;
     }
 
+    pay.style.display = '';
+    confirm.style.display = '';
     form.style.display = '';
     box.innerHTML = '';
 
@@ -306,6 +321,9 @@ function submitRequest() {
 }
 
 selectPlan('year');
+// Render the signed-out state straight away rather than waiting on Firebase —
+// otherwise the page sits blank, and if auth never resolves it stays that way.
+renderState();
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
