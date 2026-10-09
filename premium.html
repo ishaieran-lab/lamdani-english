@@ -197,6 +197,12 @@
     </div>
 </footer>
 
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-auth.js"></script>
+<script src="user.js"></script>
 <script>
 var PLANS = {
     year: { label: 'שנה שלמה',  amount: 249, months: 12 },
@@ -220,11 +226,25 @@ function selectPlan(k) {
 }
 
 // ── who is looking at this page ───────────────────────────────────────────
+// user.js owns these callbacks and draws the nav from them, so chain rather
+// than replace — overwriting them left this page thinking nobody was signed in.
+var _origAuth   = window.onFirebaseAuth;
+var _origLogout = window.onFirebaseLogout;
+
 window.onFirebaseAuth = function (fbUser) {
+    if (typeof _origAuth === 'function') _origAuth(fbUser);
     _user = fbUser;
     renderState();
 };
-window.onFirebaseLogout = function () { _user = null; renderState(); };
+window.onFirebaseLogout = function () {
+    if (typeof _origLogout === 'function') _origLogout();
+    _user = null;
+    renderState();
+};
+
+// A session restored before this script ran would never fire the callback
+var _a = window._firebaseAuth;
+if (_a && _a.currentUser) { _user = _a.currentUser; renderState(); }
 
 function msg(cls, html) { return '<div class="pm-msg ' + cls + '">' + html + '</div>'; }
 
@@ -325,12 +345,6 @@ selectPlan('year');
 // otherwise the page sits blank, and if auth never resolves it stays that way.
 renderState();
 </script>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-auth.js"></script>
-<script src="user.js"></script>
 <script src="cookie-consent.js"></script>
 </body>
 </html>

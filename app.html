@@ -55,6 +55,9 @@
         <p id="homeTitle" class="home-greeting">בי"ס יסודי</p>
     </div>
 
+    <!-- Shown only to accounts without full access; filled by renderAccessBar() -->
+    <div id="accessBar" style="display:none"></div>
+
     <div id="viewElementary">
         <div class="stages-grid">
 
@@ -125,7 +128,54 @@ window.onFirebaseAuth = function(fbUser) {
     document.getElementById('appMain').style.display = '';
     document.getElementById('authLoader').style.display = 'none';
     if (typeof _origAuth === 'function') _origAuth(fbUser);
+    renderAccessBar(fbUser);
 };
+
+// Without this a parent who has just registered has no way of knowing that
+// full access exists, let alone how to get it.
+function renderAccessBar(fbUser) {
+    var bar = document.getElementById('accessBar');
+    if (!bar) return;
+
+    firebase.firestore().collection('users').doc(fbUser.uid).get().then(function(doc) {
+        var d   = doc.exists ? doc.data() : {};
+        var exp = d.premiumExpiry && d.premiumExpiry.toDate ? d.premiumExpiry.toDate() : null;
+        var active  = d.premium && (!exp || exp.getTime() > Date.now());
+        var expired = d.premium && exp && exp.getTime() <= Date.now();
+
+        var days = exp ? Math.ceil((exp.getTime() - Date.now()) / 86400000) : null;
+
+        // Full access and plenty of time left: say nothing, sell nothing.
+        if (active && (days === null || days > 14)) { bar.style.display = 'none'; return; }
+
+        var box = function (bg, bd, fg, html) {
+            return '<div style="background:' + bg + ';border:1px solid ' + bd + ';color:' + fg +
+                   ';border-radius:14px;padding:0.9rem 1.1rem;margin:0 auto 1.25rem;max-width:620px;' +
+                   'display:flex;align-items:center;gap:0.9rem;flex-wrap:wrap;justify-content:center;' +
+                   'text-align:center;font-size:0.95rem;line-height:1.6">' + html + '</div>';
+        };
+        var cta = function (txt, bg) {
+            return '<a href="premium.html" style="background:' + bg + ';color:#fff;font-weight:800;' +
+                   'padding:0.6rem 1.3rem;border-radius:10px;text-decoration:none;white-space:nowrap">' +
+                   txt + '</a>';
+        };
+
+        if (active) {
+            bar.innerHTML = box('#fffbeb', '#fde68a', '#92400e',
+                '<span>הגישה המלאה מסתיימת בעוד <strong>' + days + ' ימים</strong></span>' +
+                cta('חידוש ←', '#d97706'));
+        } else if (expired) {
+            bar.innerHTML = box('#fef2f2', '#fecaca', '#b91c1c',
+                '<span>הגישה המלאה הסתיימה · ההתקדמות נשמרה</span>' +
+                cta('חידוש ←', '#dc2626'));
+        } else {
+            bar.innerHTML = box('#eff6ff', '#bfdbfe', '#1e3a8a',
+                '<span><strong>פתחו את כל התכנים</strong> — כרגע פתוחים נושאים נבחרים בלבד</span>' +
+                cta('לפרטים ←', '#2563eb'));
+        }
+        bar.style.display = '';
+    }).catch(function () { /* a nudge is optional; never break the home page over it */ });
+}
 window.onFirebaseLogout = function() {
     window.location.href = 'index.html';
 };
