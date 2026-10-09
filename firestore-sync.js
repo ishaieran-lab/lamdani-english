@@ -84,7 +84,14 @@ function fsyncUserLogin(fbUser) {
             return;
         }
 
-        if (data.premium) window._fsUserPremium = true;
+        // Premium state comes from the server on every sign-in. Both values are
+        // set together so a stale flag can never outlive its expiry date.
+        window._fsPremium       = !!data.premium;
+        window._fsPremiumExpiry = data.premiumExpiry
+            ? (data.premiumExpiry.toDate ? data.premiumExpiry.toDate().toISOString()
+                                         : String(data.premiumExpiry))
+            : null;
+        window._fsUserPremium   = window._fsPremium;   // שם ישן, לתאימות
 
         // Firestore is source of truth — build list from server, filtered by local deletions
         var fsKids = (doc.exists && data.kids) ? data.kids : [];
