@@ -32,7 +32,7 @@ const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || ADMIN_EMAIL;
 const LOGO_PATH = require("path").join(__dirname, "email-logo.png");
 const LOGO_CID = "lamdani-logo";
 
-function rtlHtml(text) {
+function rtlHtml(text, action) {
   const esc = String(text)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -45,6 +45,15 @@ function rtlHtml(text) {
   return '<div dir="rtl" style="max-width:600px;margin:0 0 0 auto;padding:4px 2px">' +
            '<div style="text-align:right;font-family:' + FONT + ';font-size:17px;' +
                'line-height:1.85;color:#1e293b;white-space:pre-wrap">' + esc + '</div>' +
+           // A real button. A bare URL left for the client to auto-link breaks when
+           // it wraps inside a right-to-left block, which is how an approval link
+           // arrived unclickable.
+           (action ? '<div style="text-align:center;margin:26px 0 6px">' +
+                       '<a href="' + action.url + '" dir="ltr" style="display:inline-block;' +
+                           'background:#2563eb;color:#fff;font-family:' + FONT + ';font-size:17px;' +
+                           'font-weight:700;padding:14px 34px;border-radius:10px;' +
+                           'text-decoration:none">' + action.label + '</a>' +
+                     '</div>' : '') +
            '<div style="text-align:center;margin-top:32px;padding-top:20px;' +
                'border-top:1px solid #e2e8f0">' +
              '<img src="cid:' + LOGO_CID + '" alt="למדני אנגלית" width="160" ' +
@@ -77,7 +86,7 @@ function mailer() {
 // Returns null when the mail went out, otherwise the reason it did not.
 // Still never throws, so a failed notification cannot break the request that
 // triggered it — but callers that need to report the outcome can now see it.
-async function sendMail(to, subject, text) {
+async function sendMail(to, subject, text, action) {
   if (!GMAIL_USER || !GMAIL_APP_PASS) {
     console.warn("Email not configured — skipped send to", to);
     return "email not configured";
@@ -86,7 +95,7 @@ async function sendMail(to, subject, text) {
     await mailer().sendMail({
       from: `למדני אנגלית <${GMAIL_USER}>`,
       to, subject, text,
-      html: rtlHtml(text),
+      html: rtlHtml(text, action),
       attachments: [{ filename: "logo.png", path: LOGO_PATH, cid: LOGO_CID }],
     });
     console.log("Email sent to", to, ":", subject);
@@ -405,10 +414,11 @@ exports.onPremiumRequest = onDocumentCreated(
       `טלפון   : ···${r.phoneLast4 || "—"}\n` +
       `אימייל  : ${r.email || "—"}\n` +
       `חבילה   : ${plan.label} · ${r.amount || "—"} ₪\n\n` +
-      `ודא בביט שהתשלום נכנס, ורק אז אשר:\n\n` +
-      `${link}\n\n` +
+      `ודא בביט שהתשלום נכנס, ורק אז אשר.\n\n` +
       `הקישור חד-פעמי. אישור יפתח את הגישה ל-${plan.months} חודשים ` +
-      `וישלח הודעה למשתמש.`
+      `וישלח הודעה למשתמש.\n\n` +
+      `אם הכפתור אינו עובד:\n${link}`,
+      { url: link, label: `✓ אשר גישה — ${plan.label}` }
     );
   }
 );
@@ -462,7 +472,8 @@ exports.approvePremium = onRequest(async (req, res) => {
         `החבילה : ${plan.label}\n` +
         `בתוקף עד : ${fmtDate(expiry)}\n\n` +
         `כל התכנים פתוחים עכשיו — אוצר מילים, דקדוק, הבנת הנקרא ותרגול משפטים.\n\n` +
-        `https://lamdanien.co.il/app.html\n\nתודה,\nלמדני אנגלית`);
+        `תודה,\nלמדני אנגלית`,
+        { url: "https://lamdanien.co.il/app.html", label: "כניסה לאתר ←" });
     }
 
     res.send(page("הגישה נפתחה ✓",
@@ -509,7 +520,8 @@ exports.adminGrantPremium = onRequest(
           await sendMail(u.email, "הגישה נפתחה — למדני אנגלית",
             `שלום,\n\nהגישה המלאה לאתר נפתחה עבורך.\n\n` +
             `בתוקף עד : ${fmtDate(expiry)}\n\n` +
-            `https://lamdanien.co.il/app.html\n\nתודה,\nלמדני אנגלית`);
+            `תודה,\nלמדני אנגלית`,
+            { url: "https://lamdanien.co.il/app.html", label: "כניסה לאתר ←" });
         }
       }
       res.json({ ok: true, expiry: expiry.toISOString(), extended });
