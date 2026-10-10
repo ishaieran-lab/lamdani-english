@@ -570,6 +570,12 @@ function buildLevelGrid() {
     document.getElementById('levelGrid').innerHTML = html;
 }
 
+// The grid is drawn before Firestore has reported whether this account has
+// paid, so without redrawing once it does, a paying customer sees every level
+// locked. The other three content pages already hook these; this one did not.
+window.onUserLogin       = function () { buildLevelGrid(); };
+window.onProgressUpdated = function () { buildLevelGrid(); };
+
 function openLevel(i) {
     if (i > FREE_READING_LEVEL && !isPremium()) { showPaywall(); return; }
     curLevel   = i;
