@@ -239,6 +239,8 @@
     </div>
 </div>
 
+<!-- before the page script: the first render must default to locked -->
+<script src="premium.js"></script>
 <script>
 // ════════════════════════════════════════════════════════════════
 // נתוני אוצר המילים
@@ -2585,9 +2587,9 @@ document.addEventListener('keydown', function(e) {
 
 // ─ ברירות מחדל לאתחול סינכרוני (premium.js נטען אחר כך ומחליף) ─
 var FREE_VOCAB_INDICES = [0, 3, 6];
-function isPremium()    { try { var a=window._firebaseAuth||firebase.auth(); return !!(a&&a.currentUser); } catch(e){ return false; } }
-function showPaywall()  { var el=document.getElementById('paywallOverlay'); if(el) el.style.display='flex'; }
-function closePaywall() { var el=document.getElementById('paywallOverlay'); if(el) el.style.display='none'; }
+// Access control lives in premium.js alone. These pages used to define their
+// own isPremium from the free-site era — grammar's treated any signed-in user
+// as paid, which left the whole module unlocked.
 
 // ════════════════════════════════════════════════════════════════
 initStageCards();
@@ -2624,7 +2626,6 @@ window.onBackspace = function() {
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script defer src="firebase-auth.js"></script>
 <script defer src="user.js"></script>
-<script defer src="premium.js"></script>
 <script defer src="firestore-sync.js"></script>
 <footer class="site-footer">
     <div class="site-footer-inner">
