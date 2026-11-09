@@ -31,6 +31,9 @@
   button:disabled { opacity:.5; cursor:default }
   button.ghost { background:#f1f5f9; color:var(--ink); border:1px solid var(--line);
                  font-weight:600; padding:.5rem 1rem; font-size:.9rem }
+  input { width:100%; font-family:inherit; font-size:1rem; padding:.65rem .8rem;
+          border:1px solid var(--line); border-radius:.6rem; margin-bottom:.5rem }
+  input:focus { outline:2px solid var(--brand); outline-offset:1px }
   .row { display:flex; justify-content:space-between; align-items:center;
          padding:.7rem 0; border-bottom:1px solid var(--line) }
   .row:last-child { border-bottom:0 }
@@ -61,7 +64,17 @@
   <div class="card center" id="sLogin" style="display:none">
     <h1>גיבוי נתונים</h1>
     <p class="sub">יש להתחבר עם חשבון המנהל</p>
-    <button onclick="doLogin()">כניסה עם Google</button>
+
+    <button onclick="doGoogle()">כניסה עם Google</button>
+
+    <p class="sub" style="margin:1.25rem 0 .75rem">או עם אימייל וסיסמה</p>
+    <div style="max-width:320px;margin:0 auto;text-align:right">
+      <input id="inEmail" type="email" placeholder="אימייל" autocomplete="username">
+      <input id="inPass" type="password" placeholder="סיסמה" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter')doEmail()">
+      <button class="ghost" style="width:100%;margin-top:.5rem" onclick="doEmail()">כניסה</button>
+    </div>
+
     <div id="loginErr" class="bad" style="margin-top:1rem;font-size:.9rem"></div>
   </div>
 
@@ -130,13 +143,29 @@ auth.onAuthStateChanged(function(user) {
     count();
 });
 
-function doLogin() {
+function loginErr(e) {
+    if (e.code === 'auth/popup-closed-by-user') return;
+    var msg = {
+        'auth/wrong-password':    'סיסמה שגויה',
+        'auth/invalid-credential': 'אימייל או סיסמה שגויים',
+        'auth/user-not-found':    'אין משתמש כזה',
+        'auth/invalid-email':     'כתובת אימייל לא תקינה',
+        'auth/popup-blocked':     'הדפדפן חסם את החלון — אשר חלונות קופצים ונסה שוב'
+    }[e.code] || ('שגיאה: ' + e.code);
+    document.getElementById('loginErr').textContent = msg;
+}
+
+function doGoogle() {
     document.getElementById('loginErr').textContent = '';
-    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-        .catch(function(e) {
-            if (e.code === 'auth/popup-closed-by-user') return;
-            document.getElementById('loginErr').textContent = 'שגיאה: ' + e.code;
-        });
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(loginErr);
+}
+
+function doEmail() {
+    document.getElementById('loginErr').textContent = '';
+    var em = document.getElementById('inEmail').value.trim();
+    var pw = document.getElementById('inPass').value;
+    if (!em || !pw) { document.getElementById('loginErr').textContent = 'מלא אימייל וסיסמה'; return; }
+    auth.signInWithEmailAndPassword(em, pw).catch(loginErr);
 }
 
 function say(msg, cls) {
