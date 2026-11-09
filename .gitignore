@@ -11,3 +11,10 @@ functions/.env
 
 # dependencies
 node_modules/
+
+# data backups — personal data, never commit, never publish
+גיבוי/
+backup/
+backups/
+lamdani-backup-*.json
+*backup*.json

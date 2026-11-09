@@ -24,7 +24,13 @@
       "story/**",
       "**/*.bak",
       "**/*.log",
-      "**/*.md"
+      "**/*.md",
+
+      "גיבוי/**",
+      "backup/**",
+      "backups/**",
+      "**/lamdani-backup-*.json",
+      "**/*backup*.json"
     ],
     "headers": [
       {
