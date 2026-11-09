@@ -3,3 +3,11 @@ test-voices.html
 *.DS_Store
 Thumbs.db
 .firebase/
+
+# secrets — never commit, never publish
+.env
+*.env
+functions/.env
+
+# dependencies
+node_modules/
